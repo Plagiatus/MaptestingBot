@@ -1,0 +1,20 @@
+{
+    "token": "NDgwMzIzNTU5MDEzNDgyNTA2.DzzABg.akiO6MmYGPuDa9YsKyEiTjnIwK4",
+    "prefix": "!",
+
+    "dbuser":"admin",
+    "dbpass":"sezyFCpmcJ2E298j.eLm9-k",
+
+    "xpsettings": {
+        "levelrequirements": [
+            10,
+            100,
+            500,
+            1500,
+            3000,
+            5000
+        ],
+        "xpfor10minutes": 10,
+        "additionalPerMinute": 1
+    }
+}
