@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Mongo = require("mongodb");
 const config_json_1 = require("./config.json");
+//TODO: Make this not start twice!
 console.log("Database starting");
 let databaseURL = `mongodb://${config_json_1.dbuser}:${config_json_1.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
 let databaseName = "maptestingserver";

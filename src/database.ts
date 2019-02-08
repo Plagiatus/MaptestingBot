@@ -1,8 +1,11 @@
-import * as Http from "http";
-import * as Url from "url";
 import * as Mongo from "mongodb";
 import { dbuser, dbpass } from "./config.json"
 import { MongoUser } from "./utils.js";
+
+
+
+//TODO: Make this not start twice!
+
 console.log("Database starting");
 
 let databaseURL: string = `mongodb://${dbuser}:${dbpass}@ds127115.mlab.com:27115/maptestingserver`;
