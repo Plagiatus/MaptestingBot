@@ -1,16 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const Database = require("../database");
 exports.test = {
     name: "test",
     aliases: ["t"],
     description: "Just a test command.",
     usage: "<name>",
-    globalCooldown: 10,
-    individualCooldown: 10,
+    globalCooldown: 0,
+    individualCooldown: 0,
     guildOnly: true,
     needsArgs: false,
     execute: function test(message, args) {
+        Database.getUser(message.author.id, callback);
         return true;
+        function callback(mu) {
+            if (!mu)
+                return;
+            mu.experience += 100;
+            Database.insertUser(mu);
+        }
     }
 };
 /////////////////// EMBEDS

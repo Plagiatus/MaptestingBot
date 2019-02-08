@@ -1,20 +1,29 @@
 import { Message, RichEmbed } from "discord.js";
 import { Command } from "./command";
-import { Utils } from "../utils";
+import { MongoUser } from "../utils";
+import * as Database from "../database";
 
 export let test: Command = {
     name: "test",
     aliases: ["t"],
     description: "Just a test command.",
     usage: "<name>",
-    globalCooldown: 10,
-    individualCooldown: 10,
+    globalCooldown: 0,
+    individualCooldown: 0,
     guildOnly: true,
     needsArgs: false,
     execute: function test(message: Message, args: string[]): boolean {
-        
+        Database.getUser(message.author.id, callback);
+
         return true;
+
+        function callback(mu: MongoUser) {
+            if(!mu) return;
+            mu.experience += 100;
+            Database.insertUser(mu);
+        }
     }
+
 }
 
 
