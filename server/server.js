@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Http = require("http");
 const Url = require("url");
-const fs = require("fs");
+const request = require("request");
 console.log("Server starting");
 let port = process.env.PORT;
 if (port == undefined)
@@ -22,11 +22,9 @@ function handleRequest(_request, _response) {
         respond(_response, "something went wrong, please retry.");
     }
     else {
-        fs.readFile("./server.html", function (err, resp) {
-            if (err)
-                respond(_response, err.message);
-            else {
-                respond(_response, resp.toString().replace("sessionIDValue", sessionid.toString()));
+        request.get("https://plagiatus.github.io/MaptestingBot/server/server.html", function (error, resp, body) {
+            if (!error && resp.statusCode == 200) {
+                respond(_response, body.toString().replace("sessionIDValue", sessionid.toString()));
             }
         });
     }

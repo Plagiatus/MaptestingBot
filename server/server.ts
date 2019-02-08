@@ -1,6 +1,8 @@
 import * as Http from "http";
+import * as Https from "https";
 import * as Url from "url";
 import * as fs from "fs";
+import * as request from "request";
 
 console.log("Server starting");
 
@@ -23,15 +25,15 @@ function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerRes
 
     let query: AssocStringString = Url.parse(_request.url, true).query;
     var sessionid: number = parseInt(query["sessionid"]);
-    if(!sessionid){
+    if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     } else {
-        fs.readFile("./server.html", function (err, resp){
-            if (err)
-            respond(_response, err.message);
-            else {
-                respond(_response, resp.toString().replace("sessionIDValue",sessionid.toString()));
+        request.get("https://plagiatus.github.io/MaptestingBot/server/server.html", function (error, resp, body) {
+            
+            if (!error && resp.statusCode == 200) {
+                respond(_response, body.toString().replace("sessionIDValue",sessionid.toString()));
             }
+
         });
     }
 
