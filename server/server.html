@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Maptesting setup</title>
+
+    <style>
+        html {
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        label {
+            padding: 10px;
+            display: block;
+            margin: 5px;
+        }
+
+        fieldset:nth-of-type(2) > label{
+            border: 1px solid black;
+            text-align: center;
+            width: 300px;
+        }
+        fieldset:nth-of-type(3) > label{
+            position: relative;
+        }
+        fieldset:nth-of-type(3) > label > input{
+            position: absolute;
+            top: 33%;
+        }
+        fieldset:nth-of-type(3) > label > img{
+            margin-left: 30px;
+        }
+
+        fieldset {
+            width: 400px;
+            height: 500px;
+            float: left;
+        }
+        a {
+            display: block;
+            font-style: italic;
+        }
+        button {
+            width: 1200px;
+            font-size: 2em;
+        }
+        textarea {
+            width: 95%;
+            height: 5em;
+            font-family: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Maptesting Session Setup</h1>
+    <form action="localhost:8100/" method="GET">
+        <div>
+            <fieldset>
+                <legend>Basics</legend>
+                <p>Map Title</p>
+                <input type="text" name="title" required>
+                <p>Map Description</p>
+                <textarea name="description" maxlength="200" required></textarea><a>200 chars max</a>
+                <p>Additional Info</p>
+                <textarea name="additionalInfo" maxlength="200"></textarea><a>200 chars max</a>
+            </fieldset>
+            <fieldset>
+                <legend>Technical Setup</legend>
+                <a>SessionID</a>
+                <input type="text" name="sessionID" disabled value="sessionIDValue" id="sessionid">
+                <p>Version</p>
+                <select name="version">
+                    <option value="1.13">1.13</option>
+                    <option value="1.12.">1.12</option>
+                    <option value="1.11">1.11</option>
+                    <option value="1.14">1.14</option>
+                </select>
+                <a>If you're not on Java, ignore this</a>
+                <p>IP/Server address</p>
+                <input type="text" name="ip" required><a>For Realms enter <strong>"Realms"</strong></a>
+                <p>Platform</p>
+                <label>
+                    <img src="https://gamepedia.cursecdn.com/minecraft_gamepedia/4/47/Java_Edition.png" alt="Java"
+                        height="50"><br>
+                    <input type="radio" name="platform" value="java" required>
+
+                </label>
+                <label>
+                    <img src="https://gamepedia.cursecdn.com/minecraft_gamepedia/4/4d/Mclogo.svg" alt="Bedrock" height="45"><br>
+                    <input type="radio" name="platform" value="bedrock" required>
+
+                </label>
+
+            </fieldset>
+            <fieldset>
+                <legend>Category</legend>
+                <label>
+                    <input type="radio" name="category" value="minigame" required>
+                    <img src="https://i.imgur.com/Og0Bgkg.png" alt="Minigame">
+                </label>
+                <label>
+                    <input type="radio" name="category" value="adventure" required>
+                    <img src="https://i.imgur.com/cpzpXKi.png" alt="Adventure">
+                </label>
+                <label>
+                    <input type="radio" name="category" value="stream" required>
+                    <img src="https://i.imgur.com/ZP0w2rK.png" alt="Stream">
+                </label>
+            </fieldset>
+        </div>
+        <button type="submit">Start Session</button>
+    </form>
+</body>
+
+</html>

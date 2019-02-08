@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Http = require("http");
 const Url = require("url");
+const fs = require("fs");
 console.log("Server starting");
 let port = process.env.PORT;
 if (port == undefined)
@@ -14,14 +15,20 @@ function handleListen() {
     console.log("Listening on port: " + port);
 }
 function handleRequest(_request, _response) {
-    console.log("Request received");
+    console.log("Request received: " + _request.url);
     let query = Url.parse(_request.url, true).query;
     var sessionid = parseInt(query["sessionid"]);
     if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     }
     else {
-        respond(_response, "<h1>hooray!<h1>");
+        fs.readFile("./server.html", function (err, resp) {
+            if (err)
+                respond(_response, err.message);
+            else {
+                respond(_response, resp.toString().replace("sessionIDValue", sessionid.toString()));
+            }
+        });
     }
     // findCallback is an inner function so that _response is in scope
     function findCallback(json) {

@@ -1,5 +1,6 @@
 import * as Http from "http";
 import * as Url from "url";
+import * as fs from "fs";
 
 console.log("Server starting");
 
@@ -18,14 +19,20 @@ function handleListen(): void {
 }
 
 function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerResponse): void {
-    console.log("Request received");
+    console.log("Request received: " + _request.url);
 
     let query: AssocStringString = Url.parse(_request.url, true).query;
     var sessionid: number = parseInt(query["sessionid"]);
     if(!sessionid){
         respond(_response, "something went wrong, please retry.");
     } else {
-        respond(_response, "<h1>hooray!<h1>");
+        fs.readFile("./server.html", function (err, resp){
+            if (err)
+            respond(_response, err.message);
+            else {
+                respond(_response, resp.toString().replace("sessionIDValue",sessionid.toString()));
+            }
+        });
     }
 
 
