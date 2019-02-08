@@ -16,8 +16,10 @@ export let ping: Command = {
     usage: "",
     needsArgs: false,
     guildOnly: false,
+    grantedOnly: false,
     globalCooldown: 0,
     individualCooldown: 1,
+    hidden:false,
     execute: function ping(message: Message, args: string[]): boolean{
         message.reply(`Pong! (Took ${Date.now() - message.createdTimestamp}ms)`);
         return true;

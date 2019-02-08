@@ -3,28 +3,47 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Discord = require("discord.js");
 const Config = require("./config.json");
 const utils_js_1 = require("./utils.js");
-const client = new Discord.Client();
+const database_js_1 = require("./database.js");
+const data_js_1 = require("./data.js");
+exports.client = new Discord.Client();
+exports.db = new database_js_1.Database(dbready);
 let globalCooldowns = new Discord.Collection();
 let individualCooldowns = new Discord.Collection();
-client.login(Config.token);
-client.once('ready', () => {
-    console.log('Ready!');
+function dbready() {
+    console.log("Database connected.");
+    exports.client.login(Config.token);
+}
+exports.client.once('ready', () => {
+    console.log('Client connected. Ready to Go!');
+    exports.data = new data_js_1.Data();
 });
-client.on("message", messageHandler);
+exports.client.on("message", messageHandler);
 function messageHandler(message) {
     if (!message.content.startsWith(Config.prefix) || message.author.bot)
         return;
     let args = message.content.slice(Config.prefix.length).split(/ +/);
     let commandName = args.shift().toLowerCase();
     let command = utils_js_1.Utils.findCommandWithAlias(commandName);
+    //are you in the correct channel?
+    if (!message.channel.name.startsWith("bot")) {
+        message.channel.send("Commands can only be executed in the bot-commands channel.").then(m => {
+            m.delete(5000);
+        });
+        message.delete();
+        return;
+    }
     //does command exist?
     if (!command) {
         return message.reply(`the command you're trying to execute doesn't exist.`);
     }
     ;
+    //does the executor have the permissions to do that?
+    if (command.grantedOnly && !exports.data.isUserPermitted(message.guild.id, message.author.id)) {
+        return message.reply(`you don't have permission to run this command.`);
+    }
     //is this able to be executed inside a direct message?
     if (command.guildOnly && message.channel.type != "text") {
-        return message.reply("This command can't be run inside DMs.");
+        return message.reply("this command can't be run inside DMs.");
     }
     //are args needed & provided?
     if (command.needsArgs && args.length == 0) {

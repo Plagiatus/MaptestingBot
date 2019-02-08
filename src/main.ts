@@ -2,18 +2,29 @@ import * as Discord from "discord.js";
 import * as Config from "./config.json";
 import { Command } from "./commands/command";
 import { Utils } from "./utils.js";
+import { Database } from "./database.js";
+import { Data } from "./data.js";
 
 
-const client = new Discord.Client();
+export const client = new Discord.Client();
+export let data: Data;
+export const db: Database = new Database(dbready);
 
 let globalCooldowns: Discord.Collection<string, number> = new Discord.Collection();
 let individualCooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
 
-client.login(Config.token);
+
+
+function dbready() {
+    console.log("Database connected.");
+    client.login(Config.token);
+}
 
 client.once('ready', () => {
-    console.log('Ready!');
+    console.log('Client connected. Ready to Go!');
+    data = new Data();
 });
+
 
 client.on("message", messageHandler);
 
@@ -24,16 +35,31 @@ function messageHandler(message: Discord.Message) {
     let args: string[] = message.content.slice(Config.prefix.length).split(/ +/);
     let commandName: string = args.shift().toLowerCase();
 
-    
-    let command: Command = Utils.findCommandWithAlias (commandName);
+
+    let command: Command = Utils.findCommandWithAlias(commandName);
+
+    //are you in the correct channel?
+    if(!(<Discord.TextChannel>message.channel).name.startsWith("bot")){
+        message.channel.send("Commands can only be executed in the bot-commands channel.").then(m => {
+            (<Discord.Message>m).delete(5000);
+        })
+        message.delete();
+        return;
+    }
+
     //does command exist?
     if (!command) {
         return message.reply(`the command you're trying to execute doesn't exist.`)
     };
 
+    //does the executor have the permissions to do that?
+    if (command.grantedOnly && !data.isUserPermitted(message.guild.id, message.author.id)) {
+        return message.reply(`you don't have permission to run this command.`)
+    }
+
     //is this able to be executed inside a direct message?
     if (command.guildOnly && message.channel.type != "text") {
-        return message.reply("This command can't be run inside DMs.");
+        return message.reply("this command can't be run inside DMs.");
     }
 
     //are args needed & provided?
@@ -48,7 +74,7 @@ function messageHandler(message: Discord.Message) {
         } else {
             return message.reply(`this command is on global cooldown. Please wait ${((globalCooldowns.get(command.name) - Date.now()) / 1000).toFixed(1)} seconds.`).then(
                 (messageSent) => {
-                    if (messageSent instanceof Discord.Message){
+                    if (messageSent instanceof Discord.Message) {
                         messageSent.delete(5000);
                     }
                 }
@@ -72,7 +98,7 @@ function messageHandler(message: Discord.Message) {
         else {
             return message.reply(`this command is on cooldown. Please wait ${((timestamps.get(message.author.id) - Date.now()) / 1000).toFixed(1)} seconds.`).then(
                 (messageSent) => {
-                    if (messageSent instanceof Discord.Message){
+                    if (messageSent instanceof Discord.Message) {
                         messageSent.delete(5000);
                     }
                 }

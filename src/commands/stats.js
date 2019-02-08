@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Database = require("../Database");
 const discord_js_1 = require("discord.js");
 const utils_1 = require("../utils");
+const main_1 = require("../main");
 exports.stats = {
     name: "stats",
     aliases: ["stat", "me", "lvl", "level"],
@@ -11,12 +11,13 @@ exports.stats = {
     globalCooldown: 0,
     individualCooldown: 3,
     guildOnly: false,
+    grantedOnly: false,
     needsArgs: false,
+    hidden: false,
     execute: function test(message, args) {
-        Database.getUser(message.author.id, callback);
+        main_1.db.getUser(message.author.id, callback);
         return true;
         function callback(mu) {
-            console.log("callback", mu);
             if (!mu)
                 return;
             let level = utils_1.Utils.getLevelFromXP(mu.experience);

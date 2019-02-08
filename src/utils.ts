@@ -37,14 +37,32 @@ export class Utils {
 }
 
 export interface MongoUser{
-    discordID: string,
-    experience: number,
-    sessionsHosted: number,
-    hostedSessionsDuration: number,
-    sessionsJoined: number,
-    joinedSessionsDuration: number,
-    lastPing: number,
-    muted: boolean,
-    mcJavaIGN: string,
+    discordID: string;
+    experience: number;
+    sessionsHosted: number;
+    hostedSessionsDuration: number;
+    sessionsJoined: number;
+    joinedSessionsDuration: number;
+    lastPing: number;
+    muted: boolean;
+    mcJavaIGN: string;
     mcBedrockIGN: string
 }
+
+export interface TestingSession{
+    id: number;
+    hostID: string;
+    startTimestamp: number;
+    endTimestamp: number;
+    platform: "java"|"bedrock";
+    version: string;
+    maxParticipants: number;
+    mapTitle: string;
+    mapDescription: string;
+    additionalInfo: string;
+    ressourcepack: string;
+    ip: string;
+    type: "stream"|"minigame"|"adventure"|"datapack"|"misc";
+    state: "preparing"|"running"|"ending";
+}
+

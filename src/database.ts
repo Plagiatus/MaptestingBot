@@ -1,75 +1,119 @@
 import * as Mongo from "mongodb";
 import { dbuser, dbpass } from "./config.json"
 import { MongoUser } from "./utils.js";
+import { connect } from "net";
 
 
+export class Database {
 
-//TODO: Make this not start twice!
+    databaseURL: string;
+    databaseName: string;
 
-console.log("Database starting");
+    db: Mongo.Db;
+    users: Mongo.Collection;
+    permittedUsers: Mongo.Collection;
+    starting: boolean = false;
+    started: boolean = false;
 
-let databaseURL: string = `mongodb://${dbuser}:${dbpass}@ds127115.mlab.com:27115/maptestingserver`;
-let databaseName: string = "maptestingserver";
+    constructor(callback?: Function) {
+        this.databaseURL = `mongodb://${dbuser}:${dbpass}@ds127115.mlab.com:27115/maptestingserver`;
+        this.databaseName = "maptestingserver";
+        console.log("Database is starting");
+        this.connect(callback);
+    }
 
-let db: Mongo.Db;
-let users: Mongo.Collection;
-let started = false;
+    private connect(callback: Function): void {
+        if (!this.starting) {
+            this.starting = true;
+            console.log("Connecting to Database....");
+            Mongo.MongoClient.connect(this.databaseURL, (_e: Mongo.MongoError, _db: Mongo.Db) => {
+                if (_e) {
+                    console.log("Unable to connect to database, error: ", _e);
+                    this.starting = false;
+                }
+                else {
+                    console.log("Connected to database!");
+                    this.db = _db.db(this.databaseName);
+                    this.users = this.db.collection("users");
+                    this.permittedUsers = this.db.collection("permitted");
+                    this.started = true;
+                    callback();
+                }
+            });
+        }
+    }
 
-if (!started)
-    Mongo.MongoClient.connect(databaseURL, handleConnect);
+    insertUser(_doc: MongoUser): void {
+        // try insertion then activate callback "handleInsert"
+        this.users.findOne({ "discordID": _doc.discordID }).then(result => {
 
-function handleConnect(_e: Mongo.MongoError, _db: Mongo.Db): void {
-    if (_e)
-        console.log("Unable to connect to database, error: ", _e);
-    else {
-        console.log("Connected to database!");
-        db = _db.db(databaseName);
-        users = db.collection("users");
-        started = true;
+            //found object, so we need to update it.
+            if (result) {
+                this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+            }
+            //haven't found object, so we need to create a new one.
+            else {
+                this.users.insertOne(_doc);
+            }
+        });
+    }
+
+    getUser(userID: string, callback: Function) {
+        this.users.find({ "discordID": userID }).limit(1).next((_err, result) => {
+            if (result) {
+                let mu: MongoUser = <MongoUser>result;
+                callback(mu);
+            } else {
+                let mu: MongoUser = {
+                    discordID: userID,
+                    experience: 0,
+                    hostedSessionsDuration: 0,
+                    joinedSessionsDuration: 0,
+                    lastPing: 0,
+                    mcBedrockIGN: null,
+                    mcJavaIGN: null,
+                    muted: false,
+                    sessionsHosted: 0,
+                    sessionsJoined: 0
+                }
+                this.insertUser(mu);
+                callback(mu);
+            }
+        });
+    }
+
+    loadPermissions(callback: Function) {
+
+    }
+
+    getPermittedUsers(guildID: string, callback) {
+        let c: Mongo.Cursor = this.permittedUsers.find({ "guildID": guildID });
+        c.toArray((_e, arr) => {
+            if(_e) console.log(_e);
+            else callback(arr);
+        });
+    }
+
+    promoteUser(guildID: string, userID: string){
+        // try insertion then activate callback "handleInsert"
+        this.permittedUsers.findOne({"guildID":guildID,"userID":userID}).then(result => {
+
+            //found object, so we need to update it.
+            if (result) {
+                // this.permittedUsers.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+            }
+            //haven't found object, so we need to create a new one.
+            else {
+                this.permittedUsers.insertOne({"guildID":guildID,"userID":userID});
+            }
+        });
+    }
+
+    demoteUser(guildID: string, userID: string){
+         this.permittedUsers.findOneAndDelete({"guildID":guildID,"userID":userID});
     }
 }
 
-
-export function insertUser(_doc: MongoUser): void {
-    // try insertion then activate callback "handleInsert"
-    users.findOne({ "discordID": _doc.discordID }).then(result => {
-
-        //found object, so we need to update it.
-        if (result) {
-            users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
-        }
-        //haven't found object, so we need to create a new one.
-        else {
-            users.insertOne(_doc);
-        }
-    });
-}
-
-export function getUser(userID: string, callback: Function) {
-    users.find({ "discordID": userID }).limit(1).next((_err, result) => {
-        if (result) {
-            console.log("if", result);
-            let mu: MongoUser = <MongoUser>result;
-            callback(mu);
-        } else {
-            console.log("else");
-            let mu: MongoUser = {
-                discordID: userID,
-                experience: 0,
-                hostedSessionsDuration: 0,
-                joinedSessionsDuration: 0,
-                lastPing: 0,
-                mcBedrockIGN: null,
-                mcJavaIGN: null,
-                muted: false,
-                sessionsHosted: 0,
-                sessionsJoined: 0
-            }
-            insertUser(mu);
-            callback(mu);
-        }
-    });
-}
 
 
 function handleInsert(_e: Mongo.MongoError): void {

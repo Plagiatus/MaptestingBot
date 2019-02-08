@@ -11,12 +11,15 @@ exports.help = {
     globalCooldown: 0,
     individualCooldown: 0,
     guildOnly: false,
+    grantedOnly: false,
+    hidden: false,
     needsArgs: false,
     execute: function test(message, args) {
         if (!args.length) {
             let response = "Available Commands:\n";
             for (let c of command_1.commands.values()) {
-                response += `${c.name}, `;
+                if (!c.hidden)
+                    response += `${c.name}, `;
             }
             response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
             message.reply(response);
@@ -28,7 +31,7 @@ exports.help = {
             }
             else {
                 let response = `***${command.name}***\n------------\n${command.description}\n`;
-                response += `_Usage:_ ${config_json_1.prefix}${command.name} ${command.usage}\n`;
+                response += `_Usage:_ \`${config_json_1.prefix}${command.name} ${command.usage}\`\n`;
                 if (command.aliases.length > 0) {
                     response += `_Aliases:_ ${command.aliases}\n`;
                 }
