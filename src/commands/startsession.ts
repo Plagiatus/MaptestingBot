@@ -42,7 +42,7 @@ export let startsession: Command = {
             version: null,
             guild: message.guild
         }
-        message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}`);
+        message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}`);
         data.waitingSessions.push(session);
         console.log(`preparing session #${session.id}`);
 
