@@ -5,13 +5,13 @@ import { Utils } from "./utils.js";
 import { Database } from "./database.js";
 import { Data } from "./data.js";
 import { SessionStarter } from "./httpserver";
-import { SessionHandler } from "./sessionhandler.js";
+import { SessionManager } from "./sessionmanager.js";
 
 
 export const client = new Discord.Client();
 export let data: Data;
 export const db: Database = new Database(dbready);
-export let sessionHandler: SessionHandler;
+export let sessionHandler: SessionManager;
 
 let globalCooldowns: Discord.Collection<string, number> = new Discord.Collection();
 let individualCooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
@@ -26,7 +26,7 @@ function dbready() {
 client.once('ready', () => {
     console.log('Client connected. Ready to Go!');
     data = new Data();
-    sessionHandler = new SessionHandler();
+    sessionHandler = new SessionManager();
 });
 
 

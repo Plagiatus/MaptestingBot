@@ -6,7 +6,7 @@ const utils_js_1 = require("./utils.js");
 const database_js_1 = require("./database.js");
 const data_js_1 = require("./data.js");
 const httpserver_1 = require("./httpserver");
-const sessionhandler_js_1 = require("./sessionhandler.js");
+const sessionmanager_js_1 = require("./sessionmanager.js");
 exports.client = new Discord.Client();
 exports.db = new database_js_1.Database(dbready);
 let globalCooldowns = new Discord.Collection();
@@ -19,7 +19,7 @@ function dbready() {
 exports.client.once('ready', () => {
     console.log('Client connected. Ready to Go!');
     exports.data = new data_js_1.Data();
-    exports.sessionHandler = new sessionhandler_js_1.SessionHandler();
+    exports.sessionHandler = new sessionmanager_js_1.SessionManager();
 });
 exports.client.on("message", messageHandler);
 function messageHandler(message) {

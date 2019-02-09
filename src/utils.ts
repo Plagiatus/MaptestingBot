@@ -41,11 +41,12 @@ export class Utils {
 
         let emb: RichEmbed = new RichEmbed()
             .setAuthor(author.username, author.avatarURL)
-            .setTitle(session.mapTitle)
+            .setTitle("🌍 "+ session.mapTitle)
             .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
-            .addField("Description", session.mapDescription)
-            .addField("Additional Info", session.additionalInfo)
-            .addField(`Participants 0/${session.maxParticipants}`, `@${author.username}#${author.discriminator}`)
+            .addField("💬 Description", session.mapDescription)
+            .addBlankField()
+            .addField("ℹ️ Additional Info", session.additionalInfo)
+            .addField(`😃 Participants 0/${session.maxParticipants}`, `@${author.username}#${author.discriminator}`)
             .setThumbnail(Config.sessionCategories[session.category].img)
         return emb;
 
