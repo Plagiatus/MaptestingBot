@@ -8,20 +8,20 @@ class Database {
         this.started = false;
         this.databaseURL = `mongodb://${config_json_1.dbuser}:${config_json_1.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
-        console.log("Database is starting");
+        console.debug("[DATABASE] starting");
         this.connect(callback);
     }
     connect(callback) {
         if (!this.starting) {
             this.starting = true;
-            console.log("Connecting to Database....");
+            console.debug("[DATABASE] Connecting....");
             Mongo.MongoClient.connect(this.databaseURL, (_e, _db) => {
                 if (_e) {
-                    console.log("Unable to connect to database, error: ", _e);
+                    console.log("[DATABASE] Unable to connect, error: ", _e);
                     this.starting = false;
                 }
                 else {
-                    console.log("Connected to database!");
+                    console.info("[DATABASE] connected");
                     this.db = _db.db(this.databaseName);
                     this.users = this.db.collection("users");
                     this.permittedUsers = this.db.collection("permitted");
@@ -98,5 +98,5 @@ class Database {
 }
 exports.Database = Database;
 function handleInsert(_e) {
-    console.log("Database insertion returned -> " + _e);
+    // console.log("Database insertion returned -> " + _e);
 }

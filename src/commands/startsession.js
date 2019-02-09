@@ -21,6 +21,18 @@ exports.startsession = {
             message.reply("you've already created a session in the last 10 minutes. Please don't spam.");
             return true;
         }
+        if (main_1.data.runningSessions.some((s) => {
+            return s.hostID == message.author.id;
+        })) {
+            message.reply("you already have a session running. You can only have one session running at a time.");
+            return true;
+        }
+        for (let role of main_1.sessionManager.sessionRoles.values()) {
+            if (message.member.roles.has(role.id)) {
+                message.reply("you already have a session running. You can only have one session running at a time.");
+                return true;
+            }
+        }
         let session = {
             endTimestamp: Infinity,
             hostID: message.author.id,
@@ -37,11 +49,12 @@ exports.startsession = {
             state: "preparing",
             category: null,
             version: null,
-            guild: message.guild
+            guild: message.guild,
+            ping: false
         };
         message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}`);
         main_1.data.waitingSessions.push(session);
-        console.log(`preparing session #${session.id}`);
+        console.debug(`preparing session #${session.id}`);
         return true;
     }
 };

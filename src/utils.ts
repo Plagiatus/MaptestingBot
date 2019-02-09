@@ -38,16 +38,18 @@ export class Utils {
     }
 
     public static SessionToListingEmbed(session: TestingSession, author: User, mu: MongoUser): RichEmbed {
-
+        let version: string = session.platform == "java" ? "Minecraft: Java Edition " : "Minecraft: Bedrock"
         let emb: RichEmbed = new RichEmbed()
             .setAuthor(author.username, author.avatarURL)
-            .setTitle("🌍 "+ session.mapTitle)
+            .setTitle("🌍 " + session.mapTitle)
             .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
             .addField("💬 Description", session.mapDescription)
             .addBlankField()
             .addField("ℹ️ Additional Info", session.additionalInfo)
-            .addField(`😃 Participants 0/${session.maxParticipants}`, `@${author.username}#${author.discriminator}`)
+            .addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
+            .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
+            .setFooter(`${version} ${session.version}`);
         return emb;
 
 
@@ -59,12 +61,22 @@ export class Utils {
             .setAuthor(author.username, author.avatarURL)
             .setTitle(session.mapTitle)
             .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
-            .addField("💬 Description", session.mapDescription)
-            .addField("ℹ️ Additional Info", session.additionalInfo)
-            .addField("🌐 IP/Server", session.ip, true);
+            .addField("💬 Description", session.mapDescription);
+        if (session.additionalInfo != "")
+            emb.addField("ℹ️ Additional Info", session.additionalInfo);
+
+        emb.addField("🌐 IP/Server", `\`${session.ip}\``, true);
         if (session.resourcepack != "")
             emb.addField("🗃️ Resourcepack", `[Download here](${session.resourcepack})`, true);
-        emb.setThumbnail(Config.sessionCategories[session.category].img)
+        let footer: string = "";
+        if (session.platform == "java")
+            footer += "Minecraft: Java Edition " + session.version;
+        if (session.platform == "bedrock")
+            footer += "Minecraft: Bedrock";
+        if (session.ip == "Realms")
+            footer += " | This session is conducted on Minecraft Realms. The host needs to invite you for you to be able to join.";
+        emb.setFooter(footer)
+            .setThumbnail(Config.sessionCategories[session.category].img)
         return emb;
 
 
@@ -101,5 +113,6 @@ export interface TestingSession {
     category: "stream" | "minigame" | "adventure" | "datapack" | "other";
     state: "preparing" | "running" | "ending";
     guild: Guild;
+    ping: boolean;
 }
 

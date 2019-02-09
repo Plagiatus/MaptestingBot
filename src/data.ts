@@ -19,7 +19,7 @@ export class Data {
     checkWaitingSeasons(){
         for(let i:number = 0; i < this.waitingSessions.length; i++){
             if(this.waitingSessions[i].setupTimestamp < Date.now() - 600000){
-                console.log(`Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`)
+                console.log(`[DATAHANDLER] Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`)
                 this.waitingSessions.splice(i,1);
                 i--;
             }

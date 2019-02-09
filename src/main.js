@@ -13,13 +13,13 @@ let globalCooldowns = new Discord.Collection();
 let individualCooldowns = new Discord.Collection();
 let sessionStarter = new httpserver_1.SessionStarter();
 function dbready() {
-    console.log("Database connected.");
+    console.debug("[MAIN] Database connected.");
     exports.client.login(Config.token);
 }
 exports.client.once('ready', () => {
-    console.log('Client connected. Ready to Go!');
+    console.debug('[MAIN] Client connected. Ready to Go!');
     exports.data = new data_js_1.Data();
-    exports.sessionHandler = new sessionmanager_js_1.SessionManager();
+    exports.sessionManager = new sessionmanager_js_1.SessionManager();
 });
 exports.client.on("message", messageHandler);
 function messageHandler(message) {

@@ -11,7 +11,7 @@ import { SessionManager } from "./sessionmanager.js";
 export const client = new Discord.Client();
 export let data: Data;
 export const db: Database = new Database(dbready);
-export let sessionHandler: SessionManager;
+export let sessionManager: SessionManager;
 
 let globalCooldowns: Discord.Collection<string, number> = new Discord.Collection();
 let individualCooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
@@ -19,14 +19,14 @@ let individualCooldowns: Discord.Collection<string, Discord.Collection<string, n
 let sessionStarter: SessionStarter = new SessionStarter();
 
 function dbready() {
-    console.log("Database connected.");
+    console.debug("[MAIN] Database connected.");
     client.login(Config.token);
 }
 
 client.once('ready', () => {
-    console.log('Client connected. Ready to Go!');
+    console.debug('[MAIN] Client connected. Ready to Go!');
     data = new Data();
-    sessionHandler = new SessionManager();
+    sessionManager = new SessionManager();
 });
 
 

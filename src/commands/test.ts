@@ -35,7 +35,8 @@ export let test: Command = {
             category: null,
             version: null,
             guild: message.guild,
-            setupTimestamp: Date.now()
+            setupTimestamp: Date.now(),
+            ping: false
         }
 
 

@@ -18,21 +18,21 @@ export class Database {
     constructor(callback?: Function) {
         this.databaseURL = `mongodb://${dbuser}:${dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
-        console.log("Database is starting");
+        console.debug("[DATABASE] starting");
         this.connect(callback);
     }
 
     private connect(callback: Function): void {
         if (!this.starting) {
             this.starting = true;
-            console.log("Connecting to Database....");
+            console.debug("[DATABASE] Connecting....");
             Mongo.MongoClient.connect(this.databaseURL, (_e: Mongo.MongoError, _db: Mongo.Db) => {
                 if (_e) {
-                    console.log("Unable to connect to database, error: ", _e);
+                    console.log("[DATABASE] Unable to connect, error: ", _e);
                     this.starting = false;
                 }
                 else {
-                    console.log("Connected to database!");
+                    console.info("[DATABASE] connected");
                     this.db = _db.db(this.databaseName);
                     this.users = this.db.collection("users");
                     this.permittedUsers = this.db.collection("permitted");
@@ -117,5 +117,5 @@ export class Database {
 
 
 function handleInsert(_e: Mongo.MongoError): void {
-    console.log("Database insertion returned -> " + _e);
+    // console.log("Database insertion returned -> " + _e);
 }

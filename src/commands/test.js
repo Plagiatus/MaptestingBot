@@ -30,7 +30,8 @@ exports.test = {
             category: null,
             version: null,
             guild: message.guild,
-            setupTimestamp: Date.now()
+            setupTimestamp: Date.now(),
+            ping: false
         };
         let role;
         message.guild.createRole({ name: "host-" + session.id, color: "#0eb711", hoist: true, mentionable: false }).then(r => {
