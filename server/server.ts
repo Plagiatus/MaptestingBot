@@ -24,7 +24,8 @@ function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerRes
     console.log("Request received: " + _request.url);
 
     let query: AssocStringString = Url.parse(_request.url, true).query;
-    var sessionid: number = parseInt(query["sessionid"]);
+    let sessionid: number = parseInt(query["sessionid"]);
+    let timestamp: string = query["timestamp"];
     if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     } else {
@@ -33,7 +34,7 @@ function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerRes
             if (!error && resp.statusCode == 200) {
                 respond(_response, body.toString()
                 .replace("sessionIDValue",sessionid.toString())
-                .replace("STARTTIMESTAMPHERE",Date.now().toString())
+                .replace("STARTTIMESTAMPHERE",timestamp ? timestamp : Date.now().toString)
                 );
             }
 

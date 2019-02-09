@@ -17,7 +17,8 @@ function handleListen() {
 function handleRequest(_request, _response) {
     console.log("Request received: " + _request.url);
     let query = Url.parse(_request.url, true).query;
-    var sessionid = parseInt(query["sessionid"]);
+    let sessionid = parseInt(query["sessionid"]);
+    let timestamp = query["timestamp"];
     if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     }
@@ -26,7 +27,7 @@ function handleRequest(_request, _response) {
             if (!error && resp.statusCode == 200) {
                 respond(_response, body.toString()
                     .replace("sessionIDValue", sessionid.toString())
-                    .replace("STARTTIMESTAMPHERE", Date.now().toString()));
+                    .replace("STARTTIMESTAMPHERE", timestamp ? timestamp : Date.now().toString));
             }
         });
     }

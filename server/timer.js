@@ -7,6 +7,7 @@ function init() {
         console.log("timestamp was null");
     }
     timerDiv = document.getElementById("timer");
+    updateTimer();
     setInterval(updateTimer, 1000);
 }
 function updateTimer() {

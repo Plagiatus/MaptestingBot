@@ -10,7 +10,7 @@ function init(){
     }
 
     timerDiv = <HTMLDivElement>document.getElementById("timer");
-    
+    updateTimer();
     setInterval(updateTimer, 1000);
 }
 
