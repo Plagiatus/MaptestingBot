@@ -140,7 +140,7 @@ export class SessionManager {
                             },
                             {
                                 id: client.user.id,
-                                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL"]
+                                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
                             }
                         ]).then(c => {
                             console.debug("voice channel created")

@@ -115,7 +115,7 @@ class SessionManager {
                             },
                             {
                                 id: main_1.client.user.id,
-                                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL"]
+                                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
                             }
                         ]).then(c => {
                             console.debug("voice channel created");
