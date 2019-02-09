@@ -40,13 +40,13 @@ export class SessionStarter {
                     resp = resp.replace("None available. This probably is a bug.", "No sessionID recieved. This shouldn't happen.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR1");
                     respond(_response, resp);
                 } else {
-                    respond(_response, "No sessionID recieved. This shouldn't happen.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR1");
+                    respond(_response, `No sessionID recieved. This shouldn't happen.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR1<br><em>Please also tell your Admin "TPDL1"</em>`);
                 }
 
             });
             return;
         }
-        let test: TestingSession = JSON.parse(JSON.stringify(query));
+        let test: TestingSession = JSON.parse(JSON.stringify(query.query));
         for (let s of data.waitingSessions.values()) {
             if (s.id == test.id) {
                 console.log(`session with id ${sessionid} successfully recieved. starting...`);
@@ -55,7 +55,7 @@ export class SessionStarter {
                     if (!error && resp.statusCode == 200) {
                         respond(_response, body.toString());
                     } else {
-                        respond(_response, "Session started. You can close this window now.");
+                        respond(_response, `Your session has been set up successfully. You can close this window now.<br><em>Please tell your Admin "TPDL0"</em>`);
                     }
 
                 });
@@ -92,7 +92,7 @@ export class SessionStarter {
                 resp = resp.replace("None available. This probably is a bug.", "Session ID not found. Probably caused by a timeout or a faulty sessionID.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR2");
                 respond(_response, resp);
             } else {
-                respond(_response, "Session ID not found. Probably caused by a timeout or a faulty sessionID.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR2");
+                respond(_response, `Session ID not found. Probably caused by a timeout or a faulty sessionID.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR2<br><em>Please also tell your Admin "TPDL2"</em>`);
             }
 
         });
