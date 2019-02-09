@@ -31,7 +31,7 @@
                 <p>Additional Info</p>
                 <textarea name="additionalInfo" maxlength="200"></textarea><a>200 chars max</a>
                 <p>Participants</p>
-                <input type="number" step="1" name="maxParticipants" min="0" value="0"><a>How many people can join your session <strong>(including you)</strong>. 0 = infinite</a>
+                <input type="number" step="1" name="maxParticipants" min="0" value="0"><a>How many people can join your session <strong>(not including you)</strong>. 0 = infinite</a>
             </fieldset>
             <fieldset>
                 <legend>Technical Setup</legend>
@@ -77,6 +77,14 @@
                 <label>
                     <input type="radio" name="category" value="stream" required>
                     <img src="https://i.imgur.com/ZP0w2rK.png" alt="Stream">
+                </label>
+                <p>Ping online users?</p>
+                <a>This has a cooldown, so even if you select "Yes" here, it may not ping because it's still on cooldown for you.<br>Cooldown varies with experience level.</a>
+                <label>
+                    <input type="radio" name="ping" value="yes"> <p>Yes</p>
+                </label>
+                <label>
+                    <input type="radio" name="ping" value="no" checked> <p>No</p>
                 </label>
             </fieldset>
         </div>

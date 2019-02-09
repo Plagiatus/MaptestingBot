@@ -5,11 +5,13 @@ import { Utils } from "./utils.js";
 import { Database } from "./database.js";
 import { Data } from "./data.js";
 import { SessionStarter } from "./httpserver";
+import { SessionHandler } from "./sessionhandler.js";
 
 
 export const client = new Discord.Client();
 export let data: Data;
 export const db: Database = new Database(dbready);
+export let sessionHandler: SessionHandler;
 
 let globalCooldowns: Discord.Collection<string, number> = new Discord.Collection();
 let individualCooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
@@ -24,6 +26,7 @@ function dbready() {
 client.once('ready', () => {
     console.log('Client connected. Ready to Go!');
     data = new Data();
+    sessionHandler = new SessionHandler();
 });
 
 
@@ -39,20 +42,42 @@ function messageHandler(message: Discord.Message) {
 
     let command: Command = Utils.findCommandWithAlias(commandName);
 
-    //are you in the correct channel?
-    if (!(<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" }) &&
-        !(<Discord.TextChannel>message.channel).parent.name.includes("session") && command.channel.some(v => { return v == "session" || v == "all" })) {
-        message.channel.send("Commands can only be executed in the bot-commands channel.").then(m => {
-            (<Discord.Message>m).delete(5000);
-        })
-        message.delete();
-        return;
-    }
-
     //does command exist?
     if (!command) {
-        return message.reply(`the command you're trying to execute doesn't exist.`)
+        message.delete(5000);
+        return message.reply(`the command you're trying to execute doesn't exist.`).then(m => {
+            (<Discord.Message>m).delete(5000);
+        });
     };
+
+    //are you in the correct channel?
+    if ((<Discord.TextChannel>message.channel).parent) {
+        if (!((<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" })) &&
+            !((<Discord.TextChannel>message.channel).parent.name.includes("session") && command.channel.some(v => { return v == "session" || v == "all" }))
+        ) {
+            message.delete();
+            if (command.channel.some(v => { return v == "bot"})) {
+                return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
+                    (<Discord.Message>m).delete(5000);
+                });
+            }
+            return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                (<Discord.Message>m).delete(5000);
+            });
+        }
+    } else {
+        if (!((<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" }))){
+            message.delete();
+            if (command.channel.some(v => { return v == "bot" })) {
+                return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
+                    (<Discord.Message>m).delete(5000);
+                });
+            }
+            return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                (<Discord.Message>m).delete(5000);
+            });
+        }
+    }
 
     //does the executor have the permissions to do that?
     if (command.grantedOnly && !data.isUserPermitted(message.guild.id, message.author.id)) {

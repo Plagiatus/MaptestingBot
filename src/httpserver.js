@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Http = require("http");
 const Url = require("url");
-const utils_1 = require("./utils");
 const main_1 = require("./main");
 const request = require("request");
 class SessionStarter {
@@ -67,9 +66,7 @@ class SessionStarter {
                     version: test.version,
                     guild: s.guild,
                 };
-                main_1.data.waitingSessions.splice(main_1.data.waitingSessions.indexOf(s), 1);
-                main_1.data.runningSessions.push(sess);
-                sess.guild.defaultChannel.send(utils_1.Utils.SessionToEmbed(sess));
+                main_1.sessionHandler.startNew(sess);
                 return;
             }
         }

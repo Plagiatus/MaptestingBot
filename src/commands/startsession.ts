@@ -5,7 +5,7 @@ import { data } from "../main";
 
 export let startsession: Command = {
     name : "startsession",
-    aliases: ["s","startsession","session","testing","testingsession"],
+    aliases: ["s","start","session","testing","testingsession"],
     description: "Start a testing session to playtest your map.",
     usage: "",
     needsArgs: false,

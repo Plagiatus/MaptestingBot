@@ -1,6 +1,9 @@
-import { Message, Guild, RichEmbed } from "discord.js";
+import { Message, Guild, RichEmbed, User } from "discord.js";
 import { Command, commands } from "./commands/command";
-import { xpSettings } from "./config.json";
+import * as Config from "./config.json";
+import { Database } from "./database";
+import { db } from "./main";
+import { MongoClient } from "mongodb";
 
 export class Utils {
     public static removeMessage(message: Message, delay: number = 0) {
@@ -15,10 +18,10 @@ export class Utils {
         return null;
     }
 
-    public static getLevelFromXP(xp: number): number{
+    public static getLevelFromXP(xp: number): number {
         let level: number = 0;
-        for(let i:number = 0; i < xpSettings.levels.length; i++){
-            if(xp >= xpSettings.levels[i].minXP){
+        for (let i: number = 0; i < Config.xpSettings.levels.length; i++) {
+            if (xp >= Config.xpSettings.levels[i].minXP) {
                 level = i;
             }
         }
@@ -26,23 +29,48 @@ export class Utils {
         return level;
     }
 
-    public static getLevelColor(level: number): string{
-        return xpSettings.levels[level].color;
+    public static getLevelColor(level: number): string {
+        return Config.xpSettings.levels[level].color;
     }
 
-    public static getLevelImage(level: number): string{
-        return xpSettings.levels[level].img;
+    public static getLevelImage(level: number): string {
+        return Config.xpSettings.levels[level].img;
     }
 
-    public static SessionToEmbed(session: TestingSession): RichEmbed{
+    public static SessionToListingEmbed(session: TestingSession, author: User, mu: MongoUser): RichEmbed {
+
         let emb: RichEmbed = new RichEmbed()
-        .setTitle(session.mapTitle)
-        .addField("Description",session.mapDescription);
+            .setAuthor(author.username, author.avatarURL)
+            .setTitle(session.mapTitle)
+            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .addField("Description", session.mapDescription)
+            .addField("Additional Info", session.additionalInfo)
+            .addField(`Participants 0/${session.maxParticipants}`, `@${author.username}#${author.discriminator}`)
+            .setThumbnail(Config.sessionCategories[session.category].img)
         return emb;
+
+
+    }
+
+    public static SessionToSessionEmbed(session: TestingSession, author: User, mu: MongoUser): RichEmbed {
+
+        let emb: RichEmbed = new RichEmbed()
+            .setAuthor(author.username, author.avatarURL)
+            .setTitle(session.mapTitle)
+            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .addField("💬 Description", session.mapDescription)
+            .addField("ℹ️ Additional Info", session.additionalInfo)
+            .addField("🌐 IP/Server", session.ip, true);
+        if (session.resourcepack != "")
+            emb.addField("🗃️ Resourcepack", `[Download here](${session.resourcepack})`, true);
+        emb.setThumbnail(Config.sessionCategories[session.category].img)
+        return emb;
+
+
     }
 }
 
-export interface MongoUser{
+export interface MongoUser {
     discordID: string;
     experience: number;
     sessionsHosted: number;
@@ -55,13 +83,13 @@ export interface MongoUser{
     mcBedrockIGN: string
 }
 
-export interface TestingSession{
+export interface TestingSession {
     id: number;
     hostID: string;
     setupTimestamp: number;
     startTimestamp: number;
     endTimestamp: number;
-    platform: "java"|"bedrock";
+    platform: "java" | "bedrock";
     version: string;
     maxParticipants: number;
     mapTitle: string;
@@ -69,8 +97,8 @@ export interface TestingSession{
     additionalInfo: string;
     resourcepack: string;
     ip: string;
-    category: "stream"|"minigame"|"adventure"|"datapack"|"misc";
-    state: "preparing"|"running"|"ending";
+    category: "stream" | "minigame" | "adventure" | "datapack" | "other";
+    state: "preparing" | "running" | "ending";
     guild: Guild;
 }
 

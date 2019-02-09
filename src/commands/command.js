@@ -8,6 +8,7 @@ const promote_1 = require("./promote");
 const demote_1 = require("./demote");
 const bobdosomething_1 = require("./bobdosomething");
 const startsession_1 = require("./startsession");
+const tip_1 = require("./tip");
 class Command {
 }
 exports.Command = Command;
@@ -20,3 +21,4 @@ exports.commands.set(startsession_1.startsession.name, startsession_1.startsessi
 exports.commands.set(promote_1.promote.name, promote_1.promote);
 exports.commands.set(demote_1.demote.name, demote_1.demote);
 exports.commands.set(bobdosomething_1.bobdosomething.name, bobdosomething_1.bobdosomething);
+exports.commands.set(tip_1.tip.name, tip_1.tip);

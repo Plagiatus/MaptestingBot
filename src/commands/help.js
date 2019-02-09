@@ -17,7 +17,7 @@ exports.help = {
     channel: ["bot", "session"],
     execute: function test(message, args) {
         if (!args.length) {
-            let response = "Available Commands:\n";
+            let response = "Available Commands in this channel:\n";
             for (let c of command_1.commands.values()) {
                 if (!c.hidden)
                     if (message.channel.parent.name.includes("session") && c.channel.some(v => { return v == "session"; }))
@@ -31,7 +31,10 @@ exports.help = {
         else {
             let command = utils_1.Utils.findCommandWithAlias(args[0].toLowerCase());
             if (!command) {
-                message.reply("that is not a valid command");
+                message.reply("that is not a valid command").then(m => {
+                    m.delete(5000);
+                    message.delete(5000);
+                });
             }
             else {
                 let response = `***${command.name}***\n------------\n${command.description}\n`;

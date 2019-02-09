@@ -6,11 +6,16 @@ declare module "*.json" {
     const xpSettings: {
         levels: [
             {
-                lvl:number,
+                lvl: number,
                 minXP: number,
                 color: string,
                 img: string
             }];
+    };
+    const sessionCategories: {
+        [key: string]: {
+            img:string;
+        }
     }
     // export default token;
 }

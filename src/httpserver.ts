@@ -2,7 +2,7 @@ import * as Http from "http";
 import * as Url from "url";
 import { TestingSession, Utils } from "./utils";
 import { test } from "./commands/test";
-import { data, client } from "./main";
+import { data, client, sessionHandler } from "./main";
 import { Guild } from "discord.js";
 import * as request from "request";
 
@@ -76,9 +76,7 @@ export class SessionStarter {
                     version: test.version,
                     guild: s.guild,
                 }
-                data.waitingSessions.splice(data.waitingSessions.indexOf(s), 1);
-                data.runningSessions.push(sess);
-                sess.guild.defaultChannel.send(Utils.SessionToEmbed(sess));
+                sessionHandler.startNew(sess);
                 return;
             }
         }

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const command_1 = require("./commands/command");
-const config_json_1 = require("./config.json");
+const Config = require("./config.json");
 class Utils {
     static removeMessage(message, delay = 0) {
         setTimeout(message.delete, delay);
@@ -18,23 +18,41 @@ class Utils {
     }
     static getLevelFromXP(xp) {
         let level = 0;
-        for (let i = 0; i < config_json_1.xpSettings.levels.length; i++) {
-            if (xp >= config_json_1.xpSettings.levels[i].minXP) {
+        for (let i = 0; i < Config.xpSettings.levels.length; i++) {
+            if (xp >= Config.xpSettings.levels[i].minXP) {
                 level = i;
             }
         }
         return level;
     }
     static getLevelColor(level) {
-        return config_json_1.xpSettings.levels[level].color;
+        return Config.xpSettings.levels[level].color;
     }
     static getLevelImage(level) {
-        return config_json_1.xpSettings.levels[level].img;
+        return Config.xpSettings.levels[level].img;
     }
-    static SessionToEmbed(session) {
+    static SessionToListingEmbed(session, author, mu) {
         let emb = new discord_js_1.RichEmbed()
+            .setAuthor(author.username, author.avatarURL)
             .setTitle(session.mapTitle)
-            .addField("Description", session.mapDescription);
+            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .addField("Description", session.mapDescription)
+            .addField("Additional Info", session.additionalInfo)
+            .addField(`Participants 0/${session.maxParticipants}`, `@${author.username}#${author.discriminator}`)
+            .setThumbnail(Config.sessionCategories[session.category].img);
+        return emb;
+    }
+    static SessionToSessionEmbed(session, author, mu) {
+        let emb = new discord_js_1.RichEmbed()
+            .setAuthor(author.username, author.avatarURL)
+            .setTitle(session.mapTitle)
+            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .addField("💬 Description", session.mapDescription)
+            .addField("ℹ️ Additional Info", session.additionalInfo)
+            .addField("🌐 IP/Server", session.ip, true);
+        if (session.resourcepack != "")
+            emb.addField("🗃️ Resourcepack", `[Download here](${session.resourcepack})`, true);
+        emb.setThumbnail(Config.sessionCategories[session.category].img);
         return emb;
     }
 }

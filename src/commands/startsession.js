@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const main_1 = require("../main");
 exports.startsession = {
     name: "startsession",
-    aliases: ["s", "startsession", "session", "testing", "testingsession"],
+    aliases: ["s", "start", "session", "testing", "testingsession"],
     description: "Start a testing session to playtest your map.",
     usage: "",
     needsArgs: false,

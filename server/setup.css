@@ -48,6 +48,11 @@ fieldset:nth-of-type(3) > label > input{
 fieldset:nth-of-type(3) > label > img{
     margin-left: 30px;
 }
+fieldset:nth-of-type(3) > label > p{
+    margin-left: 30px;
+    margin-top: 0.25em;
+    margin-bottom: 0px;
+}
 
 a {
     display: block;

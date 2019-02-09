@@ -7,6 +7,7 @@ import { promote } from "./promote";
 import { demote } from "./demote";
 import { bobdosomething } from "./bobdosomething";
 import { startsession } from "./startsession";
+import { tip } from "./tip";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -43,3 +44,4 @@ commands.set(startsession.name, startsession);
 commands.set(promote.name, promote);
 commands.set(demote.name, demote);
 commands.set(bobdosomething.name, bobdosomething);
+commands.set(tip.name, tip);
