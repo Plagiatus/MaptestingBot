@@ -28,7 +28,7 @@ export let test: Command = {
             mapTitle: "",
             maxParticipants: Infinity,
             platform: null,
-            ressourcepack: "",
+            resourcepack: "",
             startTimestamp: Infinity,
             state: "preparing",
             category: null,

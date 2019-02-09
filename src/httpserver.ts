@@ -49,7 +49,7 @@ export class SessionStarter {
                         mapTitle: test.mapTitle,
                         maxParticipants: test.maxParticipants,
                         platform: test.platform,
-                        ressourcepack: test.ressourcepack,
+                        resourcepack: test.resourcepack,
                         setupTimestamp: s.id,
                         state: "running",
                         category: test.category,

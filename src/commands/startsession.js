@@ -30,7 +30,7 @@ exports.startsession = {
             mapTitle: "",
             maxParticipants: Infinity,
             platform: null,
-            ressourcepack: "",
+            resourcepack: "",
             startTimestamp: Infinity,
             setupTimestamp: Date.now(),
             state: "preparing",

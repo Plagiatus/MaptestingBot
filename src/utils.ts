@@ -67,7 +67,7 @@ export interface TestingSession{
     mapTitle: string;
     mapDescription: string;
     additionalInfo: string;
-    ressourcepack: string;
+    resourcepack: string;
     ip: string;
     category: "stream"|"minigame"|"adventure"|"datapack"|"misc";
     state: "preparing"|"running"|"ending";
