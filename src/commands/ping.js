@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const command_1 = require("./command");
 // export ping: Command = {
 //     execute = (message: Message, args?: any): boolean {
 //         message.channel.send(`Pong! (Took ${Date.now() - message.createdTimestamp}ms)`);
@@ -23,3 +24,4 @@ exports.ping = {
         return true;
     }
 };
+command_1.commands.set(exports.ping.name, exports.ping);

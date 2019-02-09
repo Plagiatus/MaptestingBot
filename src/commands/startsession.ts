@@ -1,4 +1,4 @@
-import { Command } from "./command";
+import { Command, commands } from "./command";
 import { Message, TextChannel } from "discord.js";
 import { TestingSession } from "../utils";
 import { data, sessionManager } from "../main";
@@ -56,6 +56,7 @@ export let startsession: Command = {
             guild: message.guild,
             ping: false
         }
+        //TODO: change this to a DM
         message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}`);
         data.waitingSessions.push(session);
         console.debug(`[STARTSESSION] preparing session #${session.id}`);
@@ -68,3 +69,5 @@ function setupSession(session: TestingSession) {
     let tc: TextChannel = <TextChannel>session.guild.channels.get("listing");
     tc.send("Test");
 }
+
+commands.set(startsession.name, startsession);

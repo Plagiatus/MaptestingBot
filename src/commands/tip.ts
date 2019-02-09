@@ -15,7 +15,7 @@ export let tip: Command = {
     hidden:false,
     channel: ["session"],
     execute: function ping(message: Message, args: string[]): boolean{
-
+        //TODO: actually implement the tip command
         return true;
     }
 }

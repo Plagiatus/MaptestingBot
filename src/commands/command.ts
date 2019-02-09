@@ -36,12 +36,5 @@ export class Command {
 export let commands: Map<string, Command> = new Map(
 
 );
-commands.set(ping.name, ping);
-commands.set(test.name, test);
-commands.set(help.name, help);
-commands.set(stats.name, stats);
-commands.set(startsession.name, startsession);
-commands.set(promote.name, promote);
-commands.set(demote.name, demote);
-commands.set(bobdosomething.name, bobdosomething);
-commands.set(tip.name, tip);
+
+//TODO: add all the commands

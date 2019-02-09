@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const command_1 = require("./command");
 const main_1 = require("../main");
 exports.promote = {
     name: "promote",
@@ -35,3 +36,4 @@ exports.promote = {
         return true;
     }
 };
+command_1.commands.set(exports.promote.name, exports.promote);

@@ -136,15 +136,16 @@ class SessionManager {
         for (let c of sessionCategoryChannel.children.values()) {
             if (c.type == "text") {
                 let tc = c;
+                // TODO: change text to real text
                 tc.send(`This session has ended. This channel will self-destruct in X seconds. bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
+                //TODO: add all the XP etc to the users.
             }
         }
         setTimeout(this.destroySession.bind(this), 10000, session);
     }
     destroySession(session) {
-        console.log(`[SESSIONMANAGER] [${session.id}] Removed`);
         let sessionCategoryChannel = this.sessionChannels.get(session.id);
         for (let c of sessionCategoryChannel.children.values()) {
             c.delete();
@@ -154,6 +155,7 @@ class SessionManager {
         this.sessionMessages.delete(session.id);
         this.sessionRoles.get(session.id).delete();
         this.sessionRoles.delete(session.id);
+        console.log(`[SESSIONMANAGER] [${session.id}] Removed`);
     }
 }
 exports.SessionManager = SessionManager;

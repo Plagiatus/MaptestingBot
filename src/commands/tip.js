@@ -13,6 +13,7 @@ exports.tip = {
     hidden: false,
     channel: ["session"],
     execute: function ping(message, args) {
+        //TODO: actually implement the tip command
         return true;
     }
 };

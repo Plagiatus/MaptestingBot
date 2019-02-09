@@ -1,4 +1,4 @@
-import { Command } from "./command";
+import { Command, commands } from "./command";
 import { Message } from "discord.js";
 
 export let bobdosomething: Command = {
@@ -18,3 +18,5 @@ export let bobdosomething: Command = {
         return true;
     }
 }
+
+commands.set(bobdosomething.name, bobdosomething);

@@ -1,4 +1,4 @@
-import { Command } from "./command";
+import { Command, commands } from "./command";
 import { Message } from "discord.js";
 import { data } from "../main";
 
@@ -37,3 +37,5 @@ export let demote: Command = {
         return true;
     }
 }
+
+commands.set(demote.name, demote);

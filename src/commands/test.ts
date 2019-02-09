@@ -1,5 +1,5 @@
 import { Message, RichEmbed, MessageCollector, PermissionOverwrites, Role, TextChannel, Collector, ReactionCollector, Emoji, ReactionEmoji } from "discord.js";
-import { Command } from "./command";
+import { Command, commands } from "./command";
 import { MongoUser, TestingSession } from "../utils";
 import { Database } from "../database";
 import { db, data, client } from "../main";
@@ -103,6 +103,8 @@ export let test: Command = {
 function filter(m: Message) {
     return m.content.includes("discord");
 }
+
+commands.set(test.name,test);
 
 /////////////////////////////////getting and changing Users from the db
 // db.getUser(message.author.id, callback);

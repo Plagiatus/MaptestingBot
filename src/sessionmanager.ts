@@ -162,16 +162,17 @@ export class SessionManager {
         for(let c of sessionCategoryChannel.children.values()){
             if(c.type == "text"){
                 let tc: Discord.TextChannel = <Discord.TextChannel>c;
-                tc.send(`This session has ended. This channel will self-destruct in X seconds. bye bye!\n${this.sessionRoles.get(session.id)}`)
+                // TODO: change text to real text
+                tc.send(`This session has ended. This channel will self-destruct in X seconds. bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state="ending";
+                //TODO: add all the XP etc to the users.
             }
         }
         setTimeout(this.destroySession.bind(this),10000,session);
     }
 
     destroySession(session: TestingSession){
-        console.log(`[SESSIONMANAGER] [${session.id}] Removed`);
         let sessionCategoryChannel: Discord.CategoryChannel = this.sessionChannels.get(session.id);
         for(let c of sessionCategoryChannel.children.values()){
             c.delete();
@@ -181,5 +182,6 @@ export class SessionManager {
         this.sessionMessages.delete(session.id);
         this.sessionRoles.get(session.id).delete();
         this.sessionRoles.delete(session.id);
+        console.log(`[SESSIONMANAGER] [${session.id}] Removed`);
     }
 }

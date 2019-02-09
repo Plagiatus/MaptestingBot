@@ -48,3 +48,4 @@ exports.help = {
         return true;
     }
 };
+command_1.commands.set(exports.help.name, exports.help);

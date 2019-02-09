@@ -1,4 +1,4 @@
-import { Command } from "./command";
+import { Command, commands } from "./command";
 import { Message } from "discord.js";
 
 // export ping: Command = {
@@ -26,3 +26,5 @@ export let ping: Command = {
         return true;
     }
 }
+
+commands.set(ping.name, ping);

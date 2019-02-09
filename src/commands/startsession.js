@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const command_1 = require("./command");
 const main_1 = require("../main");
 exports.startsession = {
     name: "startsession",
@@ -52,6 +53,7 @@ exports.startsession = {
             guild: message.guild,
             ping: false
         };
+        //TODO: change this to a DM
         message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}`);
         main_1.data.waitingSessions.push(session);
         console.debug(`[STARTSESSION] preparing session #${session.id}`);
@@ -62,3 +64,4 @@ function setupSession(session) {
     let tc = session.guild.channels.get("listing");
     tc.send("Test");
 }
+command_1.commands.set(exports.startsession.name, exports.startsession);
