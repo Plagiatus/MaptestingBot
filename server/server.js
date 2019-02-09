@@ -4,8 +4,8 @@ const Http = require("http");
 const Url = require("url");
 const request = require("request");
 console.log("Server starting");
-let port = process.env.PORT;
-if (port == undefined)
+let port = parseInt(process.env.PORT);
+if (!port)
     port = 8100;
 let server = Http.createServer();
 server.addListener("listening", handleListen);
@@ -16,9 +16,9 @@ function handleListen() {
 }
 function handleRequest(_request, _response) {
     console.log("Request received: " + _request.url);
-    let query = Url.parse(_request.url, true).query;
-    let sessionid = parseInt(query["sessionid"]);
-    let timestamp = query["timestamp"];
+    let query = Url.parse(_request.url, true);
+    let sessionid = parseInt(query.query["sessionid"]);
+    let timestamp = query.query["timestamp"];
     if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     }

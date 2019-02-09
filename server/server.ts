@@ -3,11 +3,12 @@ import * as Https from "https";
 import * as Url from "url";
 import * as fs from "fs";
 import * as request from "request";
+import { stringify } from "querystring";
 
 console.log("Server starting");
 
-let port: number = process.env.PORT;
-if (port == undefined)
+let port: number = parseInt(process.env.PORT);
+if (!port)
     port = 8100;
 
 let server: Http.Server = Http.createServer();
@@ -23,9 +24,9 @@ function handleListen(): void {
 function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerResponse): void {
     console.log("Request received: " + _request.url);
 
-    let query: AssocStringString = Url.parse(_request.url, true).query;
-    let sessionid: number = parseInt(query["sessionid"]);
-    let timestamp: string = query["timestamp"];
+    let query: Url.UrlWithParsedQuery = Url.parse(_request.url, true);
+    let sessionid: number = parseInt(<string> query.query["sessionid"]);
+    let timestamp: string = <string>query.query["timestamp"];
     if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     } else {
