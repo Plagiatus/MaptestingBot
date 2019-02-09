@@ -51,8 +51,7 @@ class SessionManager {
                 });
                 //session channels & messages
                 let sessionRole;
-                session.guild.createRole({ name: `session-${session.id}`, color: "#0eb711" }).then(r => {
-                    r.mentionable = true;
+                session.guild.createRole({ name: `session-${session.id}`, color: "#0eb711", mentionable: true }).then(r => {
                     sessionRole = r;
                     this.sessionRoles.set(session.id, r);
                     u.addRole(r);
@@ -68,7 +67,7 @@ class SessionManager {
                         },
                         {
                             id: main_1.client.user.id,
-                            allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS"]
+                            allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
                         }
                     ]).then(category => {
                         this.sessionChannels.set(session.id, category);
@@ -119,8 +118,12 @@ class SessionManager {
                                 allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL"]
                             }
                         ]).then(c => {
+                            console.debug("voice channel created");
                             let voicechannel = c;
                             voicechannel.setParent(category);
+                            console.debug("voice channel moved");
+                        }).catch(r => {
+                            console.error(r);
                         });
                     });
                 });
