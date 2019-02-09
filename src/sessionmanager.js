@@ -120,10 +120,10 @@ class SessionManager {
                         ]).then(c => {
                             console.debug("voice channel created");
                             let voicechannel = c;
-                            voicechannel.setParent(category);
+                            voicechannel.setParent(category).catch(r => {
+                                console.error(r);
+                            });
                             console.debug("voice channel moved");
-                        }).catch(r => {
-                            console.error(r);
                         });
                     });
                 });
