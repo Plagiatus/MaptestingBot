@@ -29,11 +29,11 @@ class SessionStarter {
             request.get("https://plagiatus.github.io/MaptestingBot/server/error.html", function (error, resp, body) {
                 if (!error && resp.statusCode == 200) {
                     let resp = body.toString();
-                    resp = resp.replace("None available. This probably is a bug.", "No sessionID recieved. This shouldn't happen.\nPlease start a new session and let the Admins know of this Problem.\nErrorCode: SR1");
-                    this.respond(_response, resp);
+                    resp = resp.replace("None available. This probably is a bug.", "No sessionID recieved. This shouldn't happen.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR1");
+                    respond(_response, resp);
                 }
                 else {
-                    this.respond(_response, "No sessionID recieved. This shouldn't happen.\nPlease start a new session and let the Admins know of this Problem.\nErrorCode: SR1");
+                    respond(_response, "No sessionID recieved. This shouldn't happen.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR1");
                 }
             });
             return;
@@ -44,10 +44,10 @@ class SessionStarter {
                 console.log(`session with id ${sessionid} successfully recieved. starting...`);
                 request.get("https://plagiatus.github.io/MaptestingBot/server/success.html", function (error, resp, body) {
                     if (!error && resp.statusCode == 200) {
-                        this.respond(_response, body.toString());
+                        respond(_response, body.toString());
                     }
                     else {
-                        this.respond(_response, "Session started. You can close this window now.");
+                        respond(_response, "Session started. You can close this window now.");
                     }
                 });
                 let sess = {
@@ -76,23 +76,22 @@ class SessionStarter {
         }
         console.log(`someone tried to start a session with an invalid ID: ${sessionid}`);
         request.get("https://plagiatus.github.io/MaptestingBot/server/error.html", function (error, resp, body) {
-            console.log(error, resp.statusCode);
             if (!error && resp.statusCode == 200) {
                 let resp = body.toString();
-                resp = resp.replace("None available. This probably is a bug.", "Session ID not found. Probably caused by a timeout or a faulty sessionID.\nPlease start a new session and let the Admins know of this Problem.\nErrorCode: SR2");
-                this.respond(_response, resp);
+                resp = resp.replace("None available. This probably is a bug.", "Session ID not found. Probably caused by a timeout or a faulty sessionID.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR2");
+                respond(_response, resp);
             }
             else {
-                this.respond(_response, "Session ID not found. Probably caused by a timeout or a faulty sessionID.\nPlease start a new session and let the Admins know of this Problem.\nErrorCode: SR2");
+                respond(_response, "Session ID not found. Probably caused by a timeout or a faulty sessionID.<br>Please start a new session and let the Admins know of this Problem.<br>ErrorCode: SR2");
             }
         });
     }
-    respond(_response, _text) {
-        // console.log("Preparing response: " + _text);
-        _response.setHeader("Access-Control-Allow-Origin", "*");
-        _response.setHeader("content-type", "text/html; charset=utf-8");
-        _response.write(_text);
-        _response.end();
-    }
 }
 exports.SessionStarter = SessionStarter;
+function respond(_response, _text) {
+    // console.log("Preparing response: " + _text);
+    _response.setHeader("Access-Control-Allow-Origin", "*");
+    _response.setHeader("content-type", "text/html; charset=utf-8");
+    _response.write(_text);
+    _response.end();
+}
