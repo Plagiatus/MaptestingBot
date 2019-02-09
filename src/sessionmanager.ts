@@ -71,6 +71,7 @@ export class SessionManager {
                 //session channels & messages
                 let sessionRole: Discord.Role;
                 session.guild.createRole({ name: `session-${session.id}`, color: "#0eb711" }).then(r => {
+                    r.mentionable = true;
                     sessionRole = r;
                     this.sessionRoles.set(session.id, r);
                     u.addRole(r);
@@ -103,7 +104,7 @@ export class SessionManager {
                             },
                             {
                                 id: client.user.id,
-                                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS"]
+                                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
                             }
                         ]).then(c => {
                             let textchannel: Discord.TextChannel = <Discord.TextChannel>c;
@@ -140,7 +141,7 @@ export class SessionManager {
                             },
                             {
                                 id: client.user.id,
-                                allow: ["MANAGE_CHANNELS"]
+                                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL"]
                             }
                         ]).then(c => {
                             let voicechannel: Discord.TextChannel = <Discord.TextChannel>c;

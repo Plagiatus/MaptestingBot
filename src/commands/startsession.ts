@@ -58,7 +58,7 @@ export let startsession: Command = {
         }
         message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}`);
         data.waitingSessions.push(session);
-        console.debug(`preparing session #${session.id}`);
+        console.debug(`[STARTSESSION] preparing session #${session.id}`);
 
         return true;
     }
