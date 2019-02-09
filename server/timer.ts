@@ -2,6 +2,7 @@ window.addEventListener("load", init);
 
 let startTimestamp = Date.now();
 let timerDiv: HTMLDivElement;
+let intervalID;
 
 function init(){
     if(startTimestamp == undefined){
@@ -11,15 +12,18 @@ function init(){
 
     timerDiv = <HTMLDivElement>document.getElementById("timer");
     updateTimer();
-    setInterval(updateTimer, 1000);
+    intervalID = setInterval(updateTimer, 1000);
 }
 
 function updateTimer(){
     let minutes = Math.floor((600000 + startTimestamp - Date.now())/60000);
     let seconds = Math.floor((600000 + startTimestamp - Date.now())/1000 % 60);
     if(minutes < 0 || seconds < 0){
+        clearInterval(intervalID);
         minutes = 0;
         seconds = 0;
+        document.getElementsByTagName("button")[0].disabled = true;
+        document.getElementsByTagName("button")[0].innerHTML = "Time ran out. Please start a new session.";
     }
     let minStr: string = (minutes / 9 > 1) ? minutes.toString() : "0"+minutes.toString();
     let secStr: string = (seconds / 9 > 1) ? seconds.toString() : "0"+seconds.toString();
