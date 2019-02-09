@@ -2,7 +2,7 @@ import * as Http from "http";
 import * as Url from "url";
 import { TestingSession, Utils } from "./utils";
 import { test } from "./commands/test";
-import { data, client, sessionHandler } from "./main";
+import { data, client, sessionManager } from "./main";
 import { Guild } from "discord.js";
 import * as request from "request";
 
@@ -77,7 +77,7 @@ export class SessionStarter {
                     guild: s.guild,
                     ping: newSession.ping
                 }
-                sessionHandler.startNew(sess);
+                sessionManager.startNew(sess);
                 return;
             }
         }

@@ -67,7 +67,7 @@ class SessionStarter {
                     guild: s.guild,
                     ping: newSession.ping
                 };
-                main_1.sessionHandler.startNew(sess);
+                main_1.sessionManager.startNew(sess);
                 return;
             }
         }
