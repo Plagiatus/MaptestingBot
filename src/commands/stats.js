@@ -14,6 +14,7 @@ exports.stats = {
     grantedOnly: false,
     needsArgs: false,
     hidden: false,
+    channel: ["bot"],
     execute: function test(message, args) {
         main_1.db.getUser(message.author.id, callback);
         return true;

@@ -12,6 +12,7 @@ exports.promote = {
     needsArgs: true,
     usage: "<user>",
     hidden: true,
+    channel: ["bot"],
     execute: function (message, args) {
         if (message.mentions.users.size == 1) {
             if (main_1.data.promoteUser(message.guild.id, message.mentions.users.first().id)) {

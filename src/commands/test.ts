@@ -16,6 +16,7 @@ export let test: Command = {
     grantedOnly: false,
     needsArgs: false,
     hidden: true,
+    channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
 
         let session: TestingSession = {

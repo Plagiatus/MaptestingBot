@@ -11,6 +11,7 @@ exports.bobdosomething = {
     grantedOnly: false,
     needsArgs: false,
     hidden: true,
+    channel: ["bot"],
     execute: function test(message, args) {
         message.reply("your ult charge is too low! Kill some more Widowmakers.");
         return true;

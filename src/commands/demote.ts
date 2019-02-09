@@ -12,6 +12,7 @@ export let demote: Command = {
     guildOnly: true,
     needsArgs: true,
     hidden: true,
+    channel: ["bot"],
     usage: "<user>",
     execute: function (message: Message, args: string[]): boolean {
 

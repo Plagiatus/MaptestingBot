@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, TextChannel, CategoryChannel } from "discord.js";
 import { Command, commands } from "./command";
 import { prefix } from "../config.json"
 import { Utils } from "../utils";
@@ -14,12 +14,16 @@ export let help: Command = {
     grantedOnly: false,
     hidden: false,
     needsArgs: false,
+    channel: ["bot", "session"],
     execute: function test(message: Message, args: string[]): boolean {
         if (!args.length) {
             let response: string = "Available Commands:\n";
             for (let c of commands.values()) {
                 if (!c.hidden)
-                    response += `${c.name}, `
+                    if ((<TextChannel>message.channel).parent.name.includes("session") && c.channel.some(v => { return v == "session" }))
+                        response += `${c.name}, `
+                    else if (!(<TextChannel>message.channel).parent.name.includes("session") && c.channel.some(v => { return v != "session" }))
+                        response += `${c.name}, `
             }
             response += `\nFor detailed information, use ${prefix}${this.name} ${this.usage}.`
             message.reply(response);

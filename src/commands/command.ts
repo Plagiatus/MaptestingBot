@@ -26,6 +26,7 @@ export class Command {
     globalCooldown: number;
     individualCooldown: number;
     hidden: boolean;
+    channel: ("all"|"session"|"nonSession"|"bot")[];
 
     //the actual code to run when this command is called.
     execute: CommandHandler;

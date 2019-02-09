@@ -4,7 +4,7 @@ import { Command } from "./commands/command";
 import { Utils } from "./utils.js";
 import { Database } from "./database.js";
 import { Data } from "./data.js";
-import {SessionStarter}  from "./httpserver";
+import { SessionStarter } from "./httpserver";
 
 
 export const client = new Discord.Client();
@@ -40,7 +40,8 @@ function messageHandler(message: Discord.Message) {
     let command: Command = Utils.findCommandWithAlias(commandName);
 
     //are you in the correct channel?
-    if(!(<Discord.TextChannel>message.channel).name.startsWith("bot")){
+    if (!(<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" }) &&
+        !(<Discord.TextChannel>message.channel).parent.name.includes("session") && command.channel.some(v => { return v == "session" || v == "all" })) {
         message.channel.send("Commands can only be executed in the bot-commands channel.").then(m => {
             (<Discord.Message>m).delete(5000);
         })

@@ -11,6 +11,7 @@ exports.demote = {
     guildOnly: true,
     needsArgs: true,
     hidden: true,
+    channel: ["bot"],
     usage: "<user>",
     execute: function (message, args) {
         if (message.mentions.users.size == 1) {

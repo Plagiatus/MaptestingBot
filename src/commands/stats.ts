@@ -15,6 +15,7 @@ export let stats: Command = {
     grantedOnly: false,
     needsArgs: false,
     hidden: false,
+    channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
         db.getUser(message.author.id, callback);
         return true;

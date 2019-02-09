@@ -12,6 +12,7 @@ exports.test = {
     grantedOnly: false,
     needsArgs: false,
     hidden: true,
+    channel: ["bot"],
     execute: function test(message, args) {
         let session = {
             endTimestamp: Infinity,

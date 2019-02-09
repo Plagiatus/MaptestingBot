@@ -14,6 +14,7 @@ export let startsession: Command = {
     globalCooldown: 0,
     individualCooldown: 10,
     hidden:false,
+    channel: ["bot"],
     execute: function ping(message: Message, args: string[]): boolean{
         data.checkWaitingSeasons();
         if(data.waitingSessions.some((s) => {

@@ -20,6 +20,7 @@ export let ping: Command = {
     globalCooldown: 0,
     individualCooldown: 1,
     hidden:false,
+    channel: ["bot"],
     execute: function ping(message: Message, args: string[]): boolean{
         message.reply(`Pong! (Took ${Date.now() - message.createdTimestamp}ms)`);
         return true;

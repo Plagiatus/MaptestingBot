@@ -13,6 +13,7 @@ export let promote: Command = {
     needsArgs: true,
     usage: "<user>",
     hidden: true,
+    channel: ["bot"],
     execute: function (message: Message, args: string[]): boolean {
 
         if (message.mentions.users.size == 1) {

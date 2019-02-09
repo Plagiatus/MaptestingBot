@@ -27,7 +27,8 @@ function messageHandler(message) {
     let commandName = args.shift().toLowerCase();
     let command = utils_js_1.Utils.findCommandWithAlias(commandName);
     //are you in the correct channel?
-    if (!message.channel.name.startsWith("bot")) {
+    if (!message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; }) &&
+        !message.channel.parent.name.includes("session") && command.channel.some(v => { return v == "session" || v == "all"; })) {
         message.channel.send("Commands can only be executed in the bot-commands channel.").then(m => {
             m.delete(5000);
         });

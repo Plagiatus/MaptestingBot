@@ -12,6 +12,7 @@ exports.startsession = {
     globalCooldown: 0,
     individualCooldown: 10,
     hidden: false,
+    channel: ["bot"],
     execute: function ping(message, args) {
         main_1.data.checkWaitingSeasons();
         if (main_1.data.waitingSessions.some((s) => {

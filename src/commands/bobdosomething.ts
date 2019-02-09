@@ -12,6 +12,7 @@ export let bobdosomething: Command = {
     grantedOnly: false,
     needsArgs: false,
     hidden: true,
+    channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
         message.reply("your ult charge is too low! Kill some more Widowmakers.");
         return true;

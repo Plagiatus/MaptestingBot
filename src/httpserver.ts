@@ -12,10 +12,9 @@ export class SessionStarter {
 
 
     constructor() {
-        console.log("Http Server starting", this.port);
+        console.log("Http Server starting");
         if (!this.port)
             this.port = 8100;
-        console.log(this.port);
         this.server.addListener("listening", this.handleListen.bind(this));
         this.server.addListener("request", this.handleRequest.bind(this));
         this.server.listen(this.port);

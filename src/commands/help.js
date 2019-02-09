@@ -14,12 +14,16 @@ exports.help = {
     grantedOnly: false,
     hidden: false,
     needsArgs: false,
+    channel: ["bot", "session"],
     execute: function test(message, args) {
         if (!args.length) {
             let response = "Available Commands:\n";
             for (let c of command_1.commands.values()) {
                 if (!c.hidden)
-                    response += `${c.name}, `;
+                    if (message.channel.parent.name.includes("session") && c.channel.some(v => { return v == "session"; }))
+                        response += `${c.name}, `;
+                    else if (!message.channel.parent.name.includes("session") && c.channel.some(v => { return v != "session"; }))
+                        response += `${c.name}, `;
             }
             response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
             message.reply(response);
