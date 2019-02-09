@@ -1,13 +1,18 @@
 import { stringify } from "querystring";
 import { Client, Role } from "discord.js";
 import { client, db, data } from "./main";
+import { TestingSession } from "./utils";
 
 export class Data {
     permittedUsers: Map<string, string[]>;
-    
+    waitingSessions: TestingSession[];
+    runningSessions: TestingSession[];
+
 
     constructor() {
         this.initalizePermittedUsers();
+        this.waitingSessions = [];
+        this.runningSessions = [];
     }
 
     

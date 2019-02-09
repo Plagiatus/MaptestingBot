@@ -4,6 +4,7 @@ import { Command } from "./commands/command";
 import { Utils } from "./utils.js";
 import { Database } from "./database.js";
 import { Data } from "./data.js";
+import {SessionStarter}  from "./httpserver";
 
 
 export const client = new Discord.Client();
@@ -13,7 +14,7 @@ export const db: Database = new Database(dbready);
 let globalCooldowns: Discord.Collection<string, number> = new Discord.Collection();
 let individualCooldowns: Discord.Collection<string, Discord.Collection<string, number>> = new Discord.Collection();
 
-
+let sessionStarter: SessionStarter = new SessionStarter();
 
 function dbready() {
     console.log("Database connected.");

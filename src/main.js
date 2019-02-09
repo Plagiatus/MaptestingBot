@@ -5,10 +5,12 @@ const Config = require("./config.json");
 const utils_js_1 = require("./utils.js");
 const database_js_1 = require("./database.js");
 const data_js_1 = require("./data.js");
+const httpserver_1 = require("./httpserver");
 exports.client = new Discord.Client();
 exports.db = new database_js_1.Database(dbready);
 let globalCooldowns = new Discord.Collection();
 let individualCooldowns = new Discord.Collection();
+let sessionStarter = new httpserver_1.SessionStarter();
 function dbready() {
     console.log("Database connected.");
     exports.client.login(Config.token);

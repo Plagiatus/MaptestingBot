@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const command_1 = require("./commands/command");
 const config_json_1 = require("./config.json");
 class Utils {
@@ -29,6 +30,12 @@ class Utils {
     }
     static getLevelImage(level) {
         return config_json_1.xpSettings.levels[level].img;
+    }
+    static SessionToEmbed(session) {
+        let emb = new discord_js_1.RichEmbed()
+            .setTitle(session.mapTitle)
+            .addField("Description", session.mapDescription);
+        return emb;
     }
 }
 exports.Utils = Utils;

@@ -3,6 +3,7 @@ import { Command } from "./command";
 import { MongoUser, TestingSession } from "../utils";
 import { Database } from "../database";
 import { db, data, client } from "../main";
+import { Data } from "../data";
 
 export let test: Command = {
     name: "test",
@@ -30,8 +31,10 @@ export let test: Command = {
             ressourcepack: "",
             startTimestamp: Infinity,
             state: "preparing",
-            type: null,
-            version: null
+            category: null,
+            version: null,
+            guild: message.guild,
+            setupTimestamp: Date.now()
         }
 
 

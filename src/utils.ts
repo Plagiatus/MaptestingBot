@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, Guild, RichEmbed } from "discord.js";
 import { Command, commands } from "./commands/command";
 import { xpSettings } from "./config.json";
 
@@ -34,6 +34,12 @@ export class Utils {
         return xpSettings.levels[level].img;
     }
 
+    public static SessionToEmbed(session: TestingSession): RichEmbed{
+        let emb: RichEmbed = new RichEmbed()
+        .setTitle(session.mapTitle)
+        .addField("Description",session.mapDescription);
+        return emb;
+    }
 }
 
 export interface MongoUser{
@@ -52,6 +58,7 @@ export interface MongoUser{
 export interface TestingSession{
     id: number;
     hostID: string;
+    setupTimestamp: number;
     startTimestamp: number;
     endTimestamp: number;
     platform: "java"|"bedrock";
@@ -62,7 +69,8 @@ export interface TestingSession{
     additionalInfo: string;
     ressourcepack: string;
     ip: string;
-    type: "stream"|"minigame"|"adventure"|"datapack"|"misc";
+    category: "stream"|"minigame"|"adventure"|"datapack"|"misc";
     state: "preparing"|"running"|"ending";
+    guild: Guild;
 }
 

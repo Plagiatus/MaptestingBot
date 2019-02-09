@@ -4,6 +4,8 @@ const main_1 = require("./main");
 class Data {
     constructor() {
         this.initalizePermittedUsers();
+        this.waitingSessions = [];
+        this.runningSessions = [];
     }
     initalizePermittedUsers() {
         this.permittedUsers = new Map();
