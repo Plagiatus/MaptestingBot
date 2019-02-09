@@ -24,7 +24,9 @@ function handleRequest(_request, _response) {
     else {
         request.get("https://plagiatus.github.io/MaptestingBot/server/setup.html", function (error, resp, body) {
             if (!error && resp.statusCode == 200) {
-                respond(_response, body.toString().replace("sessionIDValue", sessionid.toString()));
+                respond(_response, body.toString()
+                    .replace("sessionIDValue", sessionid.toString())
+                    .replace("STARTTIMESTAMPHERE", Date.now().toString()));
             }
         });
     }

@@ -6,14 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Maptesting setup</title>
-    <link rel="stylesheet" href="https://plagiatus.github.io/MaptestingBot/server/setup.css">
+    <!-- <link rel="stylesheet" href="https://plagiatus.github.io/MaptestingBot/server/setup.css"> -->
+    <link rel="stylesheet" href="./setup.css">
+    <!-- <script src="https://plagiatus.github.io/MaptestingBot/server/timer.js"></script> -->
+    <script src="./timer.js"></script>
+    <script>
+        startTimestamp = STARTTIMESTAMPHERE;
+    </script>
 </head>
 
 <body>
     <h1>Maptesting Session Setup</h1>
+    <div id="timer">00:00</div>
+    <div id="timerdesc">Time left</div>
     <form action="localhost:8100/" method="GET">
         <div>
-
             <fieldset>
                 <legend>Basics</legend>
                 <p>Map Title</p>
@@ -22,6 +29,8 @@
                 <textarea name="mapDescription" maxlength="200" required></textarea><a>200 chars max</a>
                 <p>Additional Info</p>
                 <textarea name="additionalInfo" maxlength="200"></textarea><a>200 chars max</a>
+                <p>Participants</p>
+                <input type="number" step="1" name="maxParticipants" min="0" value="0"><a>How many people can join your session <strong>(including you)</strong>. 0 = infinite</a>
             </fieldset>
             <fieldset>
                 <legend>Technical Setup</legend>
@@ -36,7 +45,9 @@
                 </select>
                 <a>If you're not on Java, ignore this</a>
                 <p>IP/Server address</p>
-                <input type="text" name="ip" required><a>For Realms enter <strong>"Realms"</strong></a>
+                <input type="text" name="ip" required><a>For Realms enter <strong>Realms</strong></a>
+                <p>Ressourcepack</p>
+                <input type="text" name="ressourcepack"><a>Link to ressourcepack. Leave blank if no RP is required.</a>
                 <p>Platform</p>
                 <label>
                     <img src="https://gamepedia.cursecdn.com/minecraft_gamepedia/4/47/Java_Edition.png" alt="Java"
@@ -52,7 +63,8 @@
 
             </fieldset>
             <fieldset>
-                <legend>Category</legend>
+                <legend>Other</legend>
+                <p>Category</p>
                 <label>
                     <input type="radio" name="category" value="minigame" required>
                     <img src="https://i.imgur.com/Og0Bgkg.png" alt="Minigame">
