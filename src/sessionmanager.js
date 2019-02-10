@@ -19,14 +19,16 @@ class SessionManager {
     startNew(session) {
         //TODO: ping if allowed
         console.log(`[SESSIONMANAGER] [${session.id}] Starting`);
-        for (let s of main_1.data.waitingSessions.values()) {
-            if (s.id == session.id) {
-                main_1.data.waitingSessions.splice(main_1.data.waitingSessions.indexOf(s), 1);
+        for (let i = 0; i < main_1.data.waitingSessions.length; i++) {
+            if (main_1.data.waitingSessions[i].id == session.id) {
+                main_1.data.waitingSessions.splice(i, 1);
+                i--;
             }
         }
         if (session.maxParticipants <= 0)
             session.maxParticipants = Infinity;
         main_1.data.runningSessions.push(session);
+        this.updateCategoryName(session.guild);
         this.sessionMessages.set(session.id, new Map());
         session.guild.fetchMember(session.hostID).then(u => {
             let author = u.user;
@@ -118,13 +120,10 @@ class SessionManager {
                                 allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
                             }
                         ]).then(c => {
-                            console.debug("voice channel created");
                             let voicechannel = c;
-                            console.log(category.id, voicechannel.id);
                             voicechannel.setParent(category.id).catch(r => {
                                 console.error(r);
                             });
-                            console.debug("voice channel moved");
                         });
                     });
                 });
@@ -143,19 +142,40 @@ class SessionManager {
                 //TODO: add all the XP etc to the users.
             }
         }
+        //remove session messages in listing
+        this.sessionMessages.get(session.id).get("listingPre").delete();
+        this.sessionMessages.get(session.id).get("listingEntry").delete();
+        this.sessionMessages.get(session.id).get("listingPost").delete();
+        this.sessionMessages.delete(session.id);
+        //remove session from saved list
+        main_1.data.runningSessions.splice(main_1.data.runningSessions.indexOf(session), 1);
+        //finalise
+        this.updateCategoryName(session.guild);
         setTimeout(this.destroySession.bind(this), 10000, session);
     }
     destroySession(session) {
+        //remove session channels
         let sessionCategoryChannel = this.sessionChannels.get(session.id);
         for (let c of sessionCategoryChannel.children.values()) {
             c.delete();
         }
         sessionCategoryChannel.delete();
         this.sessionChannels.delete(session.id);
-        this.sessionMessages.delete(session.id);
+        //remove session role
         this.sessionRoles.get(session.id).delete();
         this.sessionRoles.delete(session.id);
+        //log
         console.log(`[SESSIONMANAGER] [${session.id}] Removed`);
+    }
+    updateCategoryName(guild) {
+        let newName = "ERROR";
+        if (main_1.data.runningSessions.length <= 0) {
+            newName = "🔴 no active session";
+        }
+        else {
+            newName = `🔵 ${main_1.data.runningSessions.length} active session${main_1.data.runningSessions.length > 1 ? "s" : ""}`;
+        }
+        this.listing.get(guild.id).parent.setName(newName);
     }
 }
 exports.SessionManager = SessionManager;
