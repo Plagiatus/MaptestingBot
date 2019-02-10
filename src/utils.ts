@@ -44,9 +44,10 @@ export class Utils {
             .setTitle("🌍 " + session.mapTitle)
             .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
             .addField("💬 Description", session.mapDescription)
-            .addBlankField()
-            .addField("ℹ️ Additional Info", session.additionalInfo)
-            .addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
+            .addBlankField();
+        if (session.additionalInfo != "")
+            emb.addField("ℹ️ Additional Info", session.additionalInfo);
+        emb.addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
             .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
             .setFooter(`${version} ${session.version}`);
