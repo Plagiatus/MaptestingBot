@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const main_1 = require("../main");
-exports.end = {
-    name: "endsession",
-    aliases: ["stop", "st", "end"],
+exports.stopsession = {
+    name: "stopsession",
+    aliases: ["stop", "st", "end", "endsession"],
     description: "End the session.",
     usage: "",
     needsArgs: false,

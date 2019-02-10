@@ -2,9 +2,9 @@ import { Command, commands } from "./command";
 import { Message, TextChannel } from "discord.js";
 import { data, sessionManager } from "../main";
 
-export let end: Command = {
-    name : "endsession",
-    aliases: ["stop","st","end"],
+export let stopsession: Command = {
+    name : "stopsession",
+    aliases: ["stop","st","end","endsession"],
     description: "End the session.",
     usage: "",
     needsArgs: false,

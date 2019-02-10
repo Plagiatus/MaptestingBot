@@ -9,7 +9,7 @@ const demote_1 = require("./demote");
 const bobdosomething_1 = require("./bobdosomething");
 const startsession_1 = require("./startsession");
 const tip_1 = require("./tip");
-const end_1 = require("./end");
+const stopsession_1 = require("./stopsession");
 class Command {
 }
 exports.Command = Command;
@@ -24,7 +24,7 @@ exports.commands.set(promote_1.promote.name, promote_1.promote);
 exports.commands.set(stats_1.stats.name, stats_1.stats);
 //session
 exports.commands.set(startsession_1.startsession.name, startsession_1.startsession);
-exports.commands.set(end_1.end.name, end_1.end);
+exports.commands.set(stopsession_1.stopsession.name, stopsession_1.stopsession);
 exports.commands.set(tip_1.tip.name, tip_1.tip);
 //jokes
 exports.commands.set(bobdosomething_1.bobdosomething.name, bobdosomething_1.bobdosomething);

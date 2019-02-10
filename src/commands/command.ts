@@ -8,7 +8,7 @@ import { demote } from "./demote";
 import { bobdosomething } from "./bobdosomething";
 import { startsession } from "./startsession";
 import { tip } from "./tip";
-import { end } from "./end";
+import { stopsession } from "./stopsession";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -48,7 +48,7 @@ commands.set(stats.name, stats);
 
 //session
 commands.set(startsession.name, startsession);
-commands.set(end.name, end);
+commands.set(stopsession.name, stopsession);
 commands.set(tip.name, tip);
 
 

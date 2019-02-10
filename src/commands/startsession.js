@@ -29,7 +29,7 @@ exports.startsession = {
         }
         for (let role of main_1.sessionManager.sessionRoles.values()) {
             if (message.member.roles.has(role.id)) {
-                message.reply("you already have a session running. You can only have one session running at a time.");
+                message.reply("you already are in a session. You can only be in one session at a time.");
                 return true;
             }
         }
