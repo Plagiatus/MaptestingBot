@@ -1,0 +1,45 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Config = require("./config.json");
+const main_1 = require("../main");
+exports.register = {
+    name: "register",
+    aliases: ["reg"],
+    description: "Register your username so you can join a session.",
+    usage: "<Java|Bedrock> <Username>",
+    needsArgs: true,
+    guildOnly: true,
+    grantedOnly: false,
+    globalCooldown: 0,
+    individualCooldown: 1,
+    hidden: false,
+    channel: ["bot"],
+    execute: function ping(message, args) {
+        if (args.length > 2) {
+            message.reply(`not enough arguments. Usage: ${Config.prefix}${exports.register.name} ${exports.register.usage}`);
+            return true;
+        }
+        let platform = args.shift().toLowerCase();
+        if (platform != "java" && platform != "bedrock") {
+            message.reply(`the first argument must be either "Java" or "Bedrock".`);
+            return true;
+        }
+        let username = args.join(" ");
+        main_1.db.getUser(message.author.id, (mu) => {
+            if (platform == "java") {
+                mu.mcJavaIGN = username;
+                main_1.db.insertUser(mu);
+                message.reply(`thank you. Set your Java Username to \`${username}\``);
+                return true;
+            }
+            else if (platform == "bedrock") {
+                mu.mcBedrockIGN = username;
+                main_1.db.insertUser(mu);
+                message.reply(`thank you. Set your Bedrock Username to \`${username}\``);
+                return true;
+            }
+            message.reply("How did you manage to end up with this message? Please tell an Admin about this. Error: REG1");
+        });
+        return true;
+    }
+};

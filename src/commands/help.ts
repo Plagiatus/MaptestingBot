@@ -20,9 +20,9 @@ export let help: Command = {
             let response: string = "Available Commands in this channel:\n";
             for (let c of commands.values()) {
                 if (!c.hidden)
-                    if ((<TextChannel>message.channel).parent.name.includes("session") && c.channel.some(v => { return v == "session" }))
+                    if ((<TextChannel>message.channel).parent.name.startsWith("session") && c.channel.some(v => { return v == "session" }))
                         response += `${c.name}, `
-                    else if (!(<TextChannel>message.channel).parent.name.includes("session") && c.channel.some(v => { return v != "session" }))
+                    else if (!(<TextChannel>message.channel).parent.name.startsWith("session") && c.channel.some(v => { return v != "session" }))
                         response += `${c.name}, `
             }
             response += `\nFor detailed information, use ${prefix}${this.name} ${this.usage}.`

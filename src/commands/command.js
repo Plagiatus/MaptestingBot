@@ -10,6 +10,7 @@ const bobdosomething_1 = require("./bobdosomething");
 const startsession_1 = require("./startsession");
 const tip_1 = require("./tip");
 const stopsession_1 = require("./stopsession");
+const leave_1 = require("./leave");
 class Command {
 }
 exports.Command = Command;
@@ -26,5 +27,6 @@ exports.commands.set(stats_1.stats.name, stats_1.stats);
 exports.commands.set(startsession_1.startsession.name, startsession_1.startsession);
 exports.commands.set(stopsession_1.stopsession.name, stopsession_1.stopsession);
 exports.commands.set(tip_1.tip.name, tip_1.tip);
+exports.commands.set(leave_1.leave.name, leave_1.leave);
 //jokes
 exports.commands.set(bobdosomething_1.bobdosomething.name, bobdosomething_1.bobdosomething);

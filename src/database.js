@@ -59,7 +59,7 @@ class Database {
                     lastPing: 0,
                     mcBedrockIGN: null,
                     mcJavaIGN: null,
-                    muted: false,
+                    muted: 0,
                     sessionsHosted: 0,
                     sessionsJoined: 0
                 };

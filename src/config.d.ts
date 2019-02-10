@@ -9,8 +9,19 @@ declare module "*.json" {
                 lvl: number,
                 minXP: number,
                 color: string,
-                img: string
-            }];
+                img: string,
+                pingcooldown: number
+            }
+        ],
+        joinedSessions: {
+            xpfor10minutes: number,
+            additionalPerMinute: number
+        },
+        hostedSessions: {
+            xpfor10minutes: number,
+            additionalPerMinute: number
+        }
+
     };
     const sessionCategories: {
         [key: string]: {

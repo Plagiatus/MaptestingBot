@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const command_1 = require("./commands/command");
 const Config = require("./config.json");
+const main_1 = require("./main");
 class Utils {
     static removeMessage(message, delay = 0) {
         setTimeout(message.delete, delay);
@@ -62,12 +63,130 @@ class Utils {
         if (session.platform == "java")
             footer += "Minecraft: Java Edition " + session.version;
         if (session.platform == "bedrock")
-            footer += "Minecraft: Bedrock";
+            footer += "Minecraft: Bedrock | The host probably needs to add you to their friends list";
         if (session.ip == "Realms")
             footer += " | This session is conducted on Minecraft Realms. The host needs to invite you for you to be able to join.";
         emb.setFooter(footer)
             .setThumbnail(Config.sessionCategories[session.category].img);
         return emb;
+    }
+    static JoinedEmbed(user, mu, type = "java") {
+        let emb = new discord_js_1.RichEmbed()
+            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .setTitle("A tester joined the session")
+            .addField("Welcome", `${main_1.data.usedEmojis.get(user.guild.id).get("joined")} ${user} joined.`);
+        if (type == "java")
+            emb.addField("Username", `\`${mu.mcJavaIGN}\``, true);
+        else
+            emb.addField("Username", `\`${mu.mcBedrockIGN}\``, true);
+        emb.addField("Level", this.getLevelFromXP(mu.experience), true);
+        return emb;
+    }
+    static LeftEmbed(user) {
+        let emb = new discord_js_1.RichEmbed()
+            .setColor("#f44242")
+            .setTitle("A tester left the session")
+            .addField("Bye Bye", `${main_1.data.usedEmojis.get(user.guild.id).get("left")} ${user} left. :wave:`);
+        return emb;
+    }
+    static minutesToXP(minutes, hostedOrJoined) {
+        let xp = 0;
+        if (minutes > 10) {
+            return xp;
+        }
+        minutes -= 10;
+        if (hostedOrJoined == "hosted") {
+            xp += Config.xpSettings.hostedSessions.xpfor10minutes;
+            xp += minutes * Config.xpSettings.hostedSessions.additionalPerMinute;
+        }
+        if (hostedOrJoined == "joined") {
+            xp += Config.xpSettings.joinedSessions.xpfor10minutes;
+            xp += minutes * Config.xpSettings.joinedSessions.additionalPerMinute;
+        }
+        return Math.floor(xp);
+    }
+    static handleSessionOverUserUpdates(session, uis) {
+        main_1.db.getUser(uis.user.id, mu => {
+            let minutes = (Date.now() - uis.joined) / 60000;
+            if (mu.discordID == session.hostID) {
+                mu.hostedSessionsDuration += minutes;
+                mu.sessionsHosted += 1;
+                let level = Utils.getLevelFromXP(mu.experience);
+                mu.experience += Utils.minutesToXP(minutes, "hosted");
+                if (Utils.getLevelFromXP(mu.experience) > level) {
+                    this.handleLevelup(mu, session.guild);
+                }
+                else {
+                    main_1.db.insertUser(mu);
+                }
+            }
+            else {
+                mu.joinedSessionsDuration += minutes;
+                mu.sessionsJoined += 1;
+                let level = Utils.getLevelFromXP(mu.experience);
+                mu.experience += Utils.minutesToXP(minutes, "joined");
+                if (Utils.getLevelFromXP(mu.experience) > level) {
+                    this.handleLevelup(mu, session.guild);
+                }
+                else {
+                    main_1.db.insertUser(mu);
+                }
+            }
+        });
+    }
+    static setLevelRole(gm, level) {
+        gm.removeRoles(Array.from(main_1.data.levelRoles.get(gm.guild.id).values()));
+        gm.setRoles([main_1.data.levelRoles.get(gm.guild.id).get(level)]);
+    }
+    static handleLevelup(mu, guild) {
+        let newLvl = Utils.getLevelFromXP(mu.experience);
+        let gMember = guild.members.get(mu.discordID);
+        //reset ping cooldown as an additional reward
+        mu.lastPing = 0;
+        let emb = new discord_js_1.RichEmbed()
+            .setAuthor(gMember.displayName, gMember.user.avatar)
+            .setTitle("LEVELUP!")
+            .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`);
+        for (let c of guild.channels.values()) {
+            if (c.name.startsWith("bot") && c.type == "text") {
+                c.send(emb);
+            }
+        }
+        this.setLevelRole(gMember, newLvl);
+        main_1.db.insertUser(mu);
+    }
+    static getRandomCompliment() {
+        let rand = Math.floor(Math.random() * 8);
+        let comp = "";
+        switch (rand) {
+            case 0:
+                comp = "Fancy.";
+                break;
+            case 1:
+                comp = "Groovy.";
+                break;
+            case 2:
+                comp = "Nice.";
+                break;
+            case 3:
+                comp = "Round of applause.";
+                break;
+            case 4:
+                comp = "Gogogo!";
+                break;
+            case 5:
+                comp = "Bow before them.";
+                break;
+            case 6:
+                comp = "Are you proud yet, dad?";
+                break;
+            case 7:
+                comp = "Jealous much?";
+                break;
+            default:
+                break;
+        }
+        return comp;
     }
 }
 exports.Utils = Utils;

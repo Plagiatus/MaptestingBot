@@ -9,6 +9,7 @@ import { bobdosomething } from "./bobdosomething";
 import { startsession } from "./startsession";
 import { tip } from "./tip";
 import { stopsession } from "./stopsession";
+import { leave } from "./leave";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -50,7 +51,7 @@ commands.set(stats.name, stats);
 commands.set(startsession.name, startsession);
 commands.set(stopsession.name, stopsession);
 commands.set(tip.name, tip);
-
+commands.set(leave.name, leave);
 
 //jokes
 commands.set(bobdosomething.name, bobdosomething);

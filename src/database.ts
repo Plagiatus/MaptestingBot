@@ -58,7 +58,7 @@ export class Database {
         });
     }
 
-    getUser(userID: string, callback: Function) {
+    getUser(userID: string, callback: (mu: MongoUser) => void) {
         this.users.find({ "discordID": userID }).limit(1).next((_err, result) => {
             if (result) {
                 let mu: MongoUser = <MongoUser>result;
@@ -72,7 +72,7 @@ export class Database {
                     lastPing: 0,
                     mcBedrockIGN: null,
                     mcJavaIGN: null,
-                    muted: false,
+                    muted: 0,
                     sessionsHosted: 0,
                     sessionsJoined: 0
                 }

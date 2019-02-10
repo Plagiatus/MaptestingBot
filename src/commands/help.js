@@ -20,9 +20,9 @@ exports.help = {
             let response = "Available Commands in this channel:\n";
             for (let c of command_1.commands.values()) {
                 if (!c.hidden)
-                    if (message.channel.parent.name.includes("session") && c.channel.some(v => { return v == "session"; }))
+                    if (message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v == "session"; }))
                         response += `${c.name}, `;
-                    else if (!message.channel.parent.name.includes("session") && c.channel.some(v => { return v != "session"; }))
+                    else if (!message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v != "session"; }))
                         response += `${c.name}, `;
             }
             response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;

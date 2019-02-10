@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
 const main_1 = require("./main");
+const Config = require("./config.json");
 class SessionManager {
     constructor() {
         this.sessionChannels = new Map();
@@ -15,6 +16,7 @@ class SessionManager {
         }
         this.sessionMessages = new Map();
         this.sessionRoles = new Map();
+        this.sessionPlayers = new Map();
     }
     startNew(session) {
         //TODO: ping if allowed
@@ -30,47 +32,55 @@ class SessionManager {
         main_1.data.runningSessions.push(session);
         this.updateCategoryName(session.guild);
         this.sessionMessages.set(session.id, new Map());
-        session.guild.fetchMember(session.hostID).then(u => {
-            let author = u.user;
+        this.sessionPlayers.set(session.id, new Map());
+        session.guild.fetchMember(session.hostID).then(hostGuildMember => {
+            this.sessionPlayers.get(session.id).set(hostGuildMember.id, { joined: Date.now(), user: hostGuildMember });
+            let author = hostGuildMember.user;
             main_1.db.getUser(author.id, mu => {
+                let listingPreContent = `${hostGuildMember} ist hosting a testingsession, testing ${session.mapTitle}.`;
+                if (session.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 3600000) {
+                    listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
+                    mu.lastPing = Date.now();
+                }
                 //listing messages
-                this.listing.get(session.guild.id).send("New testing session started. Click to join").then(m => {
-                    this.sessionMessages.get(session.id).set("listingPre", m);
-                    this.listing.get(session.guild.id).send(utils_1.Utils.SessionToListingEmbed(session, author, mu)).then(n => {
-                        this.sessionMessages.get(session.id).set("listingEntry", n);
-                        this.listing.get(session.guild.id).send(`🌱 ${author} 🇭 created the session.`).then(o => {
-                            this.sessionMessages.get(session.id).set("listingPost", o);
-                            let joinEmoji;
-                            let joinedEmoji;
-                            for (let e of session.guild.emojis.values()) {
-                                if (e.name == "join")
-                                    joinEmoji = e;
-                                if (e.name == "joined")
-                                    joinedEmoji = e;
-                            }
-                            o.react(joinEmoji).then(() => {
-                                let rc = o.createReactionCollector(m => { return m.emoji == joinEmoji; }, { time: 18000000 });
+                this.listing.get(session.guild.id).send(listingPreContent).then(newListingPreMessage => {
+                    this.sessionMessages.get(session.id).set("listingPre", newListingPreMessage);
+                    this.listing.get(session.guild.id).send(utils_1.Utils.SessionToListingEmbed(session, author, mu)).then(newListingPostMessage => {
+                        this.sessionMessages.get(session.id).set("listingEntry", newListingPostMessage);
+                        this.listing.get(session.guild.id).send(`🌱 ${author} 🇭 created the session.`).then(newListingPostMessage => {
+                            this.sessionMessages.get(session.id).set("listingPost", newListingPostMessage);
+                            newListingPostMessage.react(main_1.data.usedEmojis.get(session.guild.id).get("join")).then(() => {
+                                let rc = newListingPostMessage.createReactionCollector(m => { return m.emoji == main_1.data.usedEmojis.get(session.guild.id).get("join"); }, { time: 18000000 });
                                 rc.on("collect", collected => {
                                     for (let reactedUser of collected.users.values()) {
                                         if (reactedUser.id != main_1.client.user.id) {
                                             //add users to session if they reaced
                                             collected.remove(reactedUser);
-                                            //is session full?
-                                            //is user in a session already?
                                             session.guild.fetchMember(reactedUser.id).then(reactedGuildUser => {
+                                                //TODO: check if they set their Username
+                                                //is session full?
                                                 if (this.sessionRoles.get(session.id).members.size >= session.maxParticipants + 1) //+1 because host doesn't count
                                                  {
                                                     this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
                                                     return;
                                                 }
+                                                //is user in a session already?
                                                 this.sessionRoles.forEach(role => {
                                                     if (reactedGuildUser.roles.has(role.id)) {
                                                         this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
                                                         return;
                                                     }
                                                     reactedGuildUser.addRole(this.sessionRoles.get(session.id));
-                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`${joinedEmoji} ${reactedGuildUser} joined the session.`);
-                                                    //TODO: send message to session text channel
+                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`${main_1.data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
+                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
+                                                    //send message to session text channel
+                                                    for (let c of this.sessionChannels.get(session.id).children.values()) {
+                                                        if (c.type == "text") {
+                                                            main_1.db.getUser(reactedUser.id, mu => {
+                                                                c.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
+                                                            });
+                                                        }
+                                                    }
                                                 });
                                             });
                                         }
@@ -85,7 +95,7 @@ class SessionManager {
                 session.guild.createRole({ name: `session-${session.id}`, color: "#0eb711", mentionable: true }).then(r => {
                     sessionRole = r;
                     this.sessionRoles.set(session.id, r);
-                    u.addRole(r);
+                    hostGuildMember.addRole(r);
                     //create overarching Category
                     session.guild.createChannel(`session #${session.id}`, "category", [
                         {
@@ -169,7 +179,11 @@ class SessionManager {
                 tc.send(`This session has ended. This channel will self-destruct in X seconds. bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
-                //TODO: add all the XP etc to the users.
+                // TODO: add all the XP etc to the users.
+                for (let userInSession of this.sessionPlayers.get(session.id).values()) {
+                    // console.log(`${userInSession.user.nickname} was in here for ${(Date.now() - userInSession.joined) / 1000} seconds`);
+                    utils_1.Utils.handleSessionOverUserUpdates(session, userInSession);
+                }
             }
         }
         //remove session messages in listing

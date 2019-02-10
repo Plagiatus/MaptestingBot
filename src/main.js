@@ -39,7 +39,7 @@ function messageHandler(message) {
     //are you in the correct channel?
     if (message.channel.parent) {
         if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; })) &&
-            !(message.channel.parent.name.includes("session") && command.channel.some(v => { return v == "session" || v == "all"; }))) {
+            !(message.channel.parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all"; }))) {
             message.delete();
             if (command.channel.some(v => { return v == "bot"; })) {
                 return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
@@ -119,3 +119,5 @@ function messageHandler(message) {
         console.error(error);
     }
 }
+// handle 'error' events properly
+exports.client.on('error', console.error);

@@ -53,7 +53,7 @@ function messageHandler(message: Discord.Message) {
     //are you in the correct channel?
     if ((<Discord.TextChannel>message.channel).parent) {
         if (!((<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" })) &&
-            !((<Discord.TextChannel>message.channel).parent.name.includes("session") && command.channel.some(v => { return v == "session" || v == "all" }))
+            !((<Discord.TextChannel>message.channel).parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all" }))
         ) {
             message.delete();
             if (command.channel.some(v => { return v == "bot"})) {
@@ -145,3 +145,5 @@ function messageHandler(message: Discord.Message) {
 }
 
 
+// handle 'error' events properly
+client.on('error', console.error);
