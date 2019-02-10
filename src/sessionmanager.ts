@@ -3,6 +3,7 @@ import { TestingSession, Utils, MongoUser } from "./utils";
 import { data, db, client } from "./main";
 import { stringify } from "querystring";
 import { debug } from "util";
+import { ECANCELED } from "constants";
 
 type sessionMessageTypes = "listingPre" | "listingEntry" | "listingPost" | "sessionPre" | "sessionInfo";
 
@@ -57,13 +58,44 @@ export class SessionManager {
                                 this.listing.get(session.guild.id).send(`🌱 ${author} 🇭 created the session.`).then(
                                     o => {
                                         this.sessionMessages.get(session.id).set("listingPost", <Discord.Message>o);
-                                        let emoji: Discord.Emoji;
+                                        let joinEmoji: Discord.Emoji;
+                                        let joinedEmoji: Discord.Emoji;
                                         for (let e of session.guild.emojis.values()) {
                                             if (e.name == "join")
-                                                emoji = e;
+                                                joinEmoji = e;
+                                            if (e.name == "joined")
+                                                joinedEmoji = e;
                                         }
-                                        (<Discord.Message>o).react(emoji).then(() => {
-                                            //TODO: Add Emoji listener for joining
+                                        (<Discord.Message>o).react(joinEmoji).then(() => {
+                                            let rc: Discord.ReactionCollector = (<Discord.Message>o).createReactionCollector(m => {return m.emoji == joinEmoji}, {time:18000000});
+                                            rc.on("collect", collected=> {
+                                                for(let reactedUser of collected.users.values()){
+                                                    if(reactedUser.id != client.user.id){
+                                                        //add users to session if they reaced
+                                                        collected.remove(reactedUser);
+                                                        //is session full?
+                                                        //is user in a session already?
+                                                        session.guild.fetchMember(reactedUser.id).then(
+                                                            reactedGuildUser => {
+                                                                if(this.sessionRoles.get(session.id).members.size >= session.maxParticipants + 1)   //+1 because host doesn't count
+                                                                {
+                                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
+                                                                    return;
+                                                                }
+                                                                this.sessionRoles.forEach(role => {
+                                                                    if(reactedGuildUser.roles.has(role.id)){
+                                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
+                                                                        return;
+                                                                    }
+                                                                    reactedGuildUser.addRole(this.sessionRoles.get(session.id));
+                                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`${joinedEmoji} ${reactedGuildUser} joined the session.`);
+                                                                    //TODO: send message to session text channel
+                                                                });
+                                                            }
+                                                        );
+                                                    }
+                                                }
+                                            });
                                         });
                                     }
                                 )
@@ -120,6 +152,7 @@ export class SessionManager {
                                         rc.on("collect", (collected) => {
                                             if (collected.users.has(session.hostID) && session.state == "running") {
                                                 this.endSession(session);
+                                                rc.stop();
                                             }
                                         })
                                     });
@@ -190,8 +223,10 @@ export class SessionManager {
 
         //remove session channels
         let sessionCategoryChannel: Discord.CategoryChannel = this.sessionChannels.get(session.id);
+        let i: number = 1;
         for (let c of sessionCategoryChannel.children.values()) {
-            c.delete();
+            setTimeout(c.delete.bind(c),i * 500);
+            i++;
         }
         sessionCategoryChannel.delete();
         this.sessionChannels.delete(session.id);
