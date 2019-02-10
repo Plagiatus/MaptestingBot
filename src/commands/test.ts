@@ -4,6 +4,7 @@ import { MongoUser, TestingSession } from "../utils";
 import { Database } from "../database";
 import { db, data, client } from "../main";
 import { Data } from "../data";
+import request = require("request");
 
 export let test: Command = {
     name: "test",
@@ -18,91 +19,95 @@ export let test: Command = {
     hidden: true,
     channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
-
-        let session: TestingSession = {
-            endTimestamp: Infinity,
-            hostID: message.author.id,
-            id: Math.floor(Math.random() * 10000),
-            additionalInfo: "",
-            ip: "",
-            mapDescription: "",
-            mapTitle: "",
-            maxParticipants: Infinity,
-            platform: null,
-            resourcepack: "",
-            startTimestamp: Infinity,
-            state: "preparing",
-            category: null,
-            version: null,
-            guild: message.guild,
-            setupTimestamp: Date.now(),
-            ping: false
-        }
-
-
-        let role: Role;
-        message.guild.createRole({ name: "host-" + session.id, color: "#0eb711", hoist: true, mentionable: false }).then(r => {
-            role = r;
-            
-            message.guild.members.get(message.author.id).addRole(role);    
-
-            message.guild.createChannel("session-" + session.id, "category", [{
-                id: message.guild.id,
-                deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-            },
-            {
-                id: client.user.id,
-                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS"]
-            }, {
-                id: role.id,
-                allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-            }
-            ])
-
-                .then(category => {
-                    category.guild.createChannel("sessionsetup", "text", [{
-                        id: message.guild.id,
-                        deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                    },
-                    {
-                        id: client.user.id,
-                        allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS"]
-                    }, {
-                        id: role.id,
-                        allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                    }]).then(c => {
-                        let tc : TextChannel = (<TextChannel>c);
-                        tc.setParent(category);
-                        tc.sendMessage(":octagonal_sign: Abort the setup").then(m => {
-                            (<Message>m).react("🛑").then(r => {
-                                let rc: ReactionCollector = (<Message>m).createReactionCollector(m => {return m.emoji.name == "🛑"});
-                                rc.on("collect", collected =>{
-                                    console.log(collected.users.has(message.author.id));
-                                });
-                                let coll: MessageCollector = tc.createMessageCollector(m => true, { time: 60000 });
-                                let sessionSetupProgress: number = 0;
-        
-                                coll.on("end", collected => {
-                                    c.delete();
-                                    category.delete();
-                                    role.delete();
-                                });
-        
-                                coll.on("collect", collected => {
-                                    console.log(collected);
-                                });
-                            });
-                        });
-                    });
-                });
+        request.get("https://api.mojang.com/users/profiles/minecraft/ghfedjysdnjdbhjsdhbdhbdhbkysdfhb", function (error, resp, body) {
+            console.log(body);
         });
         return true;
     }
 }
 
-function filter(m: Message) {
-    return m.content.includes("discord");
-}
+// let session: TestingSession = {
+//     endTimestamp: Infinity,
+//     hostID: message.author.id,
+//     id: Math.floor(Math.random() * 10000),
+//     additionalInfo: "",
+//     ip: "",
+//     mapDescription: "",
+//     mapTitle: "",
+//     maxParticipants: Infinity,
+//     platform: null,
+//     resourcepack: "",
+//     startTimestamp: Infinity,
+//     state: "preparing",
+//     category: null,
+//     version: null,
+//     guild: message.guild,
+//     setupTimestamp: Date.now(),
+//     ping: false
+// }
+
+
+// let role: Role;
+// message.guild.createRole({ name: "host-" + session.id, color: "#0eb711", hoist: true, mentionable: false }).then(r => {
+//     role = r;
+
+//     message.guild.members.get(message.author.id).addRole(role);    
+
+//     message.guild.createChannel("session-" + session.id, "category", [{
+//         id: message.guild.id,
+//         deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
+//     },
+//     {
+//         id: client.user.id,
+//         allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS"]
+//     }, {
+//         id: role.id,
+//         allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
+//     }
+//     ])
+
+//         .then(category => {
+//             category.guild.createChannel("sessionsetup", "text", [{
+//                 id: message.guild.id,
+//                 deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
+//             },
+//             {
+//                 id: client.user.id,
+//                 allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS"]
+//             }, {
+//                 id: role.id,
+//                 allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
+//             }]).then(c => {
+//                 let tc : TextChannel = (<TextChannel>c);
+//                 tc.setParent(category);
+//                 tc.sendMessage(":octagonal_sign: Abort the setup").then(m => {
+//                     (<Message>m).react("🛑").then(r => {
+//                         let rc: ReactionCollector = (<Message>m).createReactionCollector(m => {return m.emoji.name == "🛑"});
+//                         rc.on("collect", collected =>{
+//                             console.log(collected.users.has(message.author.id));
+//                         });
+//                         let coll: MessageCollector = tc.createMessageCollector(m => true, { time: 60000 });
+//                         let sessionSetupProgress: number = 0;
+
+//                         coll.on("end", collected => {
+//                             c.delete();
+//                             category.delete();
+//                             role.delete();
+//                         });
+
+//                         coll.on("collect", collected => {
+//                             console.log(collected);
+//                         });
+//                     });
+//                 });
+//             });
+//         });
+// });
+// return true;
+
+// function filter(m: Message) {
+//     return m.content.includes("discord");
+// }
 
 
 /////////////////////////////////getting and changing Users from the db

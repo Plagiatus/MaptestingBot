@@ -1,8 +1,9 @@
 import { Command, commands } from "./command";
 import { Message } from "discord.js";
-import * as Config from "./config.json";
+import * as Config from "../config.json";
 import { db, sessionManager, data } from "../main";
 import { MongoUser } from "../utils";
+import request = require("request");
 
 export let register: Command = {
     name: "register",
@@ -17,7 +18,7 @@ export let register: Command = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message: Message, args: string[]): boolean {
-        if (args.length > 2) {
+        if (args.length < 2) {
             message.reply(`not enough arguments. Usage: ${Config.prefix}${register.name} ${register.usage}`);
             return true;
         }
@@ -29,9 +30,17 @@ export let register: Command = {
         let username: string = args.join(" ");
         db.getUser(message.author.id, (mu: MongoUser) => {
             if (platform == "java") {
-                mu.mcJavaIGN = username;
-                db.insertUser(mu);
-                message.reply(`thank you. Set your Java Username to \`${username}\``);
+                request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
+                    if(!error && resp.statusCode == 200){
+                        mu.mcJavaIGN = username;
+                        db.insertUser(mu);
+                        message.reply(`thank you. Set your Java Username to \`${username}\``);
+                        return true;
+                    } else {
+                        message.reply(`couldn't set your Java Username to \`${username}\`. Did you misspell it?`);
+                        return true;
+                    }
+                });
                 return true;
             }
             else if (platform == "bedrock") {

@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Config = require("./config.json");
+const Config = require("../config.json");
 const main_1 = require("../main");
+const request = require("request");
 exports.register = {
     name: "register",
     aliases: ["reg"],
@@ -15,7 +16,7 @@ exports.register = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message, args) {
-        if (args.length > 2) {
+        if (args.length < 2) {
             message.reply(`not enough arguments. Usage: ${Config.prefix}${exports.register.name} ${exports.register.usage}`);
             return true;
         }
@@ -27,9 +28,18 @@ exports.register = {
         let username = args.join(" ");
         main_1.db.getUser(message.author.id, (mu) => {
             if (platform == "java") {
-                mu.mcJavaIGN = username;
-                main_1.db.insertUser(mu);
-                message.reply(`thank you. Set your Java Username to \`${username}\``);
+                request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
+                    if (!error && resp.statusCode == 200) {
+                        mu.mcJavaIGN = username;
+                        main_1.db.insertUser(mu);
+                        message.reply(`thank you. Set your Java Username to \`${username}\``);
+                        return true;
+                    }
+                    else {
+                        message.reply(`couldn't set your Java Username to \`${username}\`. Did you misspell it?`);
+                        return true;
+                    }
+                });
                 return true;
             }
             else if (platform == "bedrock") {

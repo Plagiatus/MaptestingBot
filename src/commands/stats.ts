@@ -6,7 +6,7 @@ import { db } from "../main";
 
 export let stats: Command = {
     name: "stats",
-    aliases: ["stat", "me", "lvl", "level"],
+    aliases: ["stat", "me", "lvl", "level", "xp"],
     description: "Check out your own stats as they are saved on the server.",
     usage: "",
     globalCooldown: 0,
@@ -26,8 +26,7 @@ export let stats: Command = {
             let embed: RichEmbed = new RichEmbed()
                 .setColor(Utils.getLevelColor(level))
                 .setAuthor(message.author.username, message.author.avatarURL)
-                .attachFile(`../img/${Utils.getLevelImage(level)}`)
-                .setThumbnail(`attachment://${Utils.getLevelImage(level)}`)
+                .setThumbnail(`${Utils.getLevelImage(level)}`)
                 .addField("Experience", mu.experience, true)
                 .addField("Level", level, true)
                 .addField("Sessions Hosted", mu.sessionsHosted, true)

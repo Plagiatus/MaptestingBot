@@ -49,23 +49,23 @@ class Data {
                 }
             }
             if (!found) {
-                g.createRole({ name: "Level 1", mentionable: false, color: "#7693e0" }).then(r => {
-                    this.levelRoles.get(g.id).set(1, r);
+                g.createRole({ name: "Master Level 🔥", mentionable: false, color: "#ff7272", hoist: true }).then(r => {
+                    this.levelRoles.get(g.id).set(6, r);
                 });
-                g.createRole({ name: "Level 2", mentionable: false, color: "#00c03d" }).then(r => {
-                    this.levelRoles.get(g.id).set(2, r);
-                });
-                g.createRole({ name: "Level 3 ☀", mentionable: false, color: "#00c03d" }).then(r => {
-                    this.levelRoles.get(g.id).set(3, r);
+                g.createRole({ name: "Level 5 💎", mentionable: false, color: "#2ad3e2", hoist: true }).then(r => {
+                    this.levelRoles.get(g.id).set(5, r);
                 });
                 g.createRole({ name: "Level 4 ✨", mentionable: false, color: "#c7118d" }).then(r => {
                     this.levelRoles.get(g.id).set(4, r);
                 });
-                g.createRole({ name: "Level 5 💎", mentionable: false, color: "#c7118d", hoist: true }).then(r => {
-                    this.levelRoles.get(g.id).set(5, r);
+                g.createRole({ name: "Level 3 ☀", mentionable: false, color: "#ddb825" }).then(r => {
+                    this.levelRoles.get(g.id).set(3, r);
                 });
-                g.createRole({ name: "Master Level 🔥", mentionable: false, color: "#ff7272", hoist: true }).then(r => {
-                    this.levelRoles.get(g.id).set(6, r);
+                g.createRole({ name: "Level 2", mentionable: false, color: "#00c03d" }).then(r => {
+                    this.levelRoles.get(g.id).set(2, r);
+                });
+                g.createRole({ name: "Level 1", mentionable: false, color: "#7693e0" }).then(r => {
+                    this.levelRoles.get(g.id).set(1, r);
                 });
             }
         }

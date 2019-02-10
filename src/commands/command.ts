@@ -10,6 +10,9 @@ import { startsession } from "./startsession";
 import { tip } from "./tip";
 import { stopsession } from "./stopsession";
 import { leave } from "./leave";
+import { addxp } from "./addxp";
+import { register } from "./register";
+import { mute } from "./mute";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -46,12 +49,15 @@ commands.set(test.name, test);
 commands.set(demote.name, demote);
 commands.set(promote.name, promote);
 commands.set(stats.name, stats);
+commands.set(addxp.name, addxp);
 
 //session
 commands.set(startsession.name, startsession);
 commands.set(stopsession.name, stopsession);
 commands.set(tip.name, tip);
 commands.set(leave.name, leave);
+commands.set(register.name, register);
+commands.set(mute.name, mute);
 
 //jokes
 commands.set(bobdosomething.name, bobdosomething);

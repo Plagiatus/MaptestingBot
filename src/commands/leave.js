@@ -31,8 +31,8 @@ exports.leave = {
         message.channel.send(utils_1.Utils.LeftEmbed(message.guild.members.get(message.author.id)));
         message.guild.members.get(message.author.id).removeRole(main_1.sessionManager.sessionRoles.get(sessionID));
         message.delete();
-        //TODO: handle duration and subsequent XP gain
-        console.log((Date.now() - main_1.sessionManager.sessionPlayers.get(sessionID).get(message.author.id).joined) / 1000, "seconds");
+        // console.log((Date.now() - sessionManager.sessionPlayers.get(sessionID).get(message.author.id).joined) / 1000, "seconds");
+        utils_1.Utils.handleSessionOverUserUpdates(main_1.data.runningSessions.find((s) => { return s.id == sessionID; }), main_1.sessionManager.sessionPlayers.get(sessionID).get(message.author.id));
         main_1.sessionManager.sessionPlayers.get(sessionID).delete(message.author.id);
         return true;
     }

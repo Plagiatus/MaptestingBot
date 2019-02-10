@@ -1,7 +1,7 @@
 import { Command } from "./command";
 import { Message } from "discord.js";
 import { TestingSession } from "../utils";
-import { data, sessionManager } from "../main";
+import { data, sessionManager, db } from "../main";
 
 export let startsession: Command = {
     name: "startsession",
@@ -35,7 +35,6 @@ export let startsession: Command = {
                 return true;
             }
         }
-
 
         let session: TestingSession = {
             endTimestamp: Infinity,

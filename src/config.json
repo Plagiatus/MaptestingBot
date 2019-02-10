@@ -9,49 +9,49 @@
                 "lvl": 0,
                 "minXP": 0,
                 "color": "",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/GwNfhP0.png",
                 "pingcooldown": 9001
             },
             {
                 "lvl": 1,
                 "minXP": 10,
                 "color": "#7693e0",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/kJzIlSt.png",
                 "pingcooldown": 48
             },
             {
                 "lvl": 2,
                 "minXP": 100,
                 "color": "#00c03d",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/TnG6WFQ.png",
                 "pingcooldown": 24
             },
             {
                 "lvl": 3,
                 "minXP": 500,
                 "color": "#ddb825",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/kqEQu3n.png",
                 "pingcooldown": 12
             },
             {
                 "lvl": 4,
                 "minXP": 1500,
                 "color": "#c7118d",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/qCoiX3W.png",
                 "pingcooldown": 6
             },
             {
                 "lvl": 5,
                 "minXP": 3000,
                 "color": "#2ad3e2",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/vU9JPoO.png",
                 "pingcooldown": 2
             },
             {
                 "lvl": 6,
                 "minXP": 5000,
                 "color": "#ff7272",
-                "img": "stream.png",
+                "img": "https://i.imgur.com/anefxuF.png",
                 "pingcooldown": 1
             }
         ],
@@ -60,7 +60,7 @@
             "additionalPerMinute": 1
         },
         "hostedSessions": {
-            "xpFor10Minutes": 30,
+            "xpfor10minutes": 30,
             "additionalPerMinute": 1
         }
     },

@@ -45,7 +45,7 @@ class Utils {
         emb.addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
             .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
-            .setFooter(`${version} ${session.version}`);
+            .setFooter(`${version} ${session.platform == "java" ? session.version : ""}`);
         return emb;
     }
     static SessionToSessionEmbed(session, author, mu) {
@@ -91,7 +91,7 @@ class Utils {
     }
     static minutesToXP(minutes, hostedOrJoined) {
         let xp = 0;
-        if (minutes > 10) {
+        if (minutes < 10) {
             return xp;
         }
         minutes -= 10;
@@ -144,9 +144,10 @@ class Utils {
         //reset ping cooldown as an additional reward
         mu.lastPing = 0;
         let emb = new discord_js_1.RichEmbed()
-            .setAuthor(gMember.displayName, gMember.user.avatar)
+            .setAuthor(gMember.displayName, gMember.user.displayAvatarURL)
             .setTitle("LEVELUP!")
-            .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`);
+            .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`)
+            .setColor(this.getLevelColor(newLvl));
         for (let c of guild.channels.values()) {
             if (c.name.startsWith("bot") && c.type == "text") {
                 c.send(emb);

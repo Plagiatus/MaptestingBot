@@ -6,7 +6,7 @@ export let tip: Command = {
     name : "tip",
     aliases: [],
     description: "Send a player some of your hard earned experience as a thank you.",
-    usage: "<amount>",
+    usage: "<user> <amount>",
     needsArgs: true,
     guildOnly: true,
     grantedOnly: false,

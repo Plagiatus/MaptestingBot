@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
 const main_1 = require("./main");
 const Config = require("./config.json");
+const register_1 = require("./commands/register");
 class SessionManager {
     constructor() {
         this.sessionChannels = new Map();
@@ -19,7 +20,6 @@ class SessionManager {
         this.sessionPlayers = new Map();
     }
     startNew(session) {
-        //TODO: ping if allowed
         console.log(`[SESSIONMANAGER] [${session.id}] Starting`);
         for (let i = 0; i < main_1.data.waitingSessions.length; i++) {
             if (main_1.data.waitingSessions[i].id == session.id) {
@@ -41,9 +41,11 @@ class SessionManager {
                 if (session.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 3600000) {
                     listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
                     mu.lastPing = Date.now();
+                    this.listing.get(session.guild.id).rolePermissions(main_1.data.disableNotificationsRole.get(session.guild.id)).remove("VIEW_CHANNEL");
                 }
                 //listing messages
                 this.listing.get(session.guild.id).send(listingPreContent).then(newListingPreMessage => {
+                    this.listing.get(session.guild.id).rolePermissions(main_1.data.disableNotificationsRole.get(session.guild.id)).add("VIEW_CHANNEL");
                     this.sessionMessages.get(session.id).set("listingPre", newListingPreMessage);
                     this.listing.get(session.guild.id).send(utils_1.Utils.SessionToListingEmbed(session, author, mu)).then(newListingPostMessage => {
                         this.sessionMessages.get(session.id).set("listingEntry", newListingPostMessage);
@@ -57,30 +59,35 @@ class SessionManager {
                                             //add users to session if they reaced
                                             collected.remove(reactedUser);
                                             session.guild.fetchMember(reactedUser.id).then(reactedGuildUser => {
-                                                //TODO: check if they set their Username
-                                                //is session full?
-                                                if (this.sessionRoles.get(session.id).members.size >= session.maxParticipants + 1) //+1 because host doesn't count
-                                                 {
-                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
-                                                    return;
-                                                }
-                                                //is user in a session already?
-                                                this.sessionRoles.forEach(role => {
-                                                    if (reactedGuildUser.roles.has(role.id)) {
-                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
+                                                main_1.db.getUser(reactedGuildUser.id, reacedMongoUser => {
+                                                    if ((!reacedMongoUser.mcJavaIGN && session.platform == "java") || (!reacedMongoUser.mcBedrockIGN && session.platform == "bedrock")) {
+                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`❓ ${reactedGuildUser} you don't have your username set for this platform. Please use ${Config.prefix}${register_1.register.name} in a bot channel first.`);
                                                         return;
                                                     }
-                                                    reactedGuildUser.addRole(this.sessionRoles.get(session.id));
-                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`${main_1.data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
-                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
-                                                    //send message to session text channel
-                                                    for (let c of this.sessionChannels.get(session.id).children.values()) {
-                                                        if (c.type == "text") {
-                                                            main_1.db.getUser(reactedUser.id, mu => {
-                                                                c.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
-                                                            });
-                                                        }
+                                                    //is session full?
+                                                    if (this.sessionRoles.get(session.id).members.size >= session.maxParticipants + 1) //+1 because host doesn't count
+                                                     {
+                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
+                                                        return;
                                                     }
+                                                    //is user in a session already?
+                                                    this.sessionRoles.forEach(role => {
+                                                        if (reactedGuildUser.roles.has(role.id)) {
+                                                            this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
+                                                            return;
+                                                        }
+                                                        reactedGuildUser.addRole(this.sessionRoles.get(session.id));
+                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`${main_1.data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
+                                                        this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
+                                                        //send message to session text channel
+                                                        for (let c of this.sessionChannels.get(session.id).children.values()) {
+                                                            if (c.type == "text") {
+                                                                main_1.db.getUser(reactedUser.id, mu => {
+                                                                    c.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
+                                                                });
+                                                            }
+                                                        }
+                                                    });
                                                 });
                                             });
                                         }
@@ -113,7 +120,7 @@ class SessionManager {
                     ]).then(category => {
                         this.sessionChannels.set(session.id, category);
                         //create Text channel
-                        category.guild.createChannel("Text", "text", [
+                        category.guild.createChannel("chat", "text", [
                             {
                                 id: session.guild.id,
                                 deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
@@ -181,7 +188,6 @@ class SessionManager {
                 session.state = "ending";
                 // TODO: add all the XP etc to the users.
                 for (let userInSession of this.sessionPlayers.get(session.id).values()) {
-                    // console.log(`${userInSession.user.nickname} was in here for ${(Date.now() - userInSession.joined) / 1000} seconds`);
                     utils_1.Utils.handleSessionOverUserUpdates(session, userInSession);
                 }
             }
@@ -211,7 +217,7 @@ class SessionManager {
         this.sessionRoles.get(session.id).delete();
         this.sessionRoles.delete(session.id);
         //log
-        console.log(`[SESSIONMANAGER] [${session.id}] Removed`);
+        console.log(`[SESSIONMANAGER] [${session.id}] Ended`);
     }
     updateCategoryName(guild) {
         let newName = "ERROR";

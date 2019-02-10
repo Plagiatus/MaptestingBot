@@ -35,49 +35,49 @@ export class Data {
     private initializelevelRoles() {
         this.levelRoles = new Map<string, Map<number, Role>>();
         for (let g of client.guilds.values()) {
-            this.levelRoles.set(g.id, new Map<number,Role>());
+            this.levelRoles.set(g.id, new Map<number, Role>());
             let found: boolean = false;
             for (let r of g.roles.values()) {
                 if (r.name.includes("Level")) {
-                    if(r.name.includes("1")){
+                    if (r.name.includes("1")) {
                         this.levelRoles.get(g.id).set(1, r);
                     }
-                    if(r.name.includes("2")){
+                    if (r.name.includes("2")) {
                         this.levelRoles.get(g.id).set(2, r);
                     }
-                    if(r.name.includes("3")){
+                    if (r.name.includes("3")) {
                         this.levelRoles.get(g.id).set(3, r);
                     }
-                    if(r.name.includes("4")){
+                    if (r.name.includes("4")) {
                         this.levelRoles.get(g.id).set(4, r);
                     }
-                    if(r.name.includes("5")){
+                    if (r.name.includes("5")) {
                         this.levelRoles.get(g.id).set(5, r);
                     }
-                    if(r.name.includes("Master") || r.name.includes("6")){
+                    if (r.name.includes("Master") || r.name.includes("6")) {
                         this.levelRoles.get(g.id).set(6, r);
                     }
                     found = true;
                 }
             }
             if (!found) {
-                g.createRole({ name: "Level 1", mentionable: false, color:"#7693e0" }).then(r => {
-                    this.levelRoles.get(g.id).set(1, r);
+                g.createRole({ name: "Master Level 🔥", mentionable: false, color: "#ff7272", hoist: true }).then(r => {
+                    this.levelRoles.get(g.id).set(6, r);
                 });
-                g.createRole({ name: "Level 2", mentionable: false, color:"#00c03d" }).then(r => {
-                    this.levelRoles.get(g.id).set(2, r);
-                });
-                g.createRole({ name: "Level 3 ☀", mentionable: false, color:"#00c03d" }).then(r => {
-                    this.levelRoles.get(g.id).set(3, r);
-                });
-                g.createRole({ name: "Level 4 ✨", mentionable: false, color:"#c7118d" }).then(r => {
-                    this.levelRoles.get(g.id).set(4, r);
-                });
-                g.createRole({ name: "Level 5 💎", mentionable: false, color:"#c7118d", hoist: true }).then(r => {
+                g.createRole({ name: "Level 5 💎", mentionable: false, color: "#2ad3e2", hoist: true }).then(r => {
                     this.levelRoles.get(g.id).set(5, r);
                 });
-                g.createRole({ name: "Master Level 🔥", mentionable: false, color:"#ff7272", hoist: true }).then(r => {
-                    this.levelRoles.get(g.id).set(6, r);
+                g.createRole({ name: "Level 4 ✨", mentionable: false, color: "#c7118d" }).then(r => {
+                    this.levelRoles.get(g.id).set(4, r);
+                });
+                g.createRole({ name: "Level 3 ☀", mentionable: false, color: "#ddb825" }).then(r => {
+                    this.levelRoles.get(g.id).set(3, r);
+                });
+                g.createRole({ name: "Level 2", mentionable: false, color: "#00c03d" }).then(r => {
+                    this.levelRoles.get(g.id).set(2, r);
+                });
+                g.createRole({ name: "Level 1", mentionable: false, color: "#7693e0" }).then(r => {
+                    this.levelRoles.get(g.id).set(1, r);
                 });
             }
         }

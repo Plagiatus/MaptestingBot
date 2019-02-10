@@ -51,7 +51,7 @@ export class Utils {
         emb.addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
             .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
-            .setFooter(`${version} ${session.version}`);
+            .setFooter(`${version} ${session.platform == "java" ? session.version : ""}`);
         return emb;
 
 
@@ -106,7 +106,7 @@ export class Utils {
 
     public static minutesToXP(minutes: number, hostedOrJoined: "hosted" | "joined"): number {
         let xp: number = 0;
-        if (minutes > 10) {
+        if (minutes < 10) {
             return xp;
         }
         minutes -= 10;
@@ -162,9 +162,10 @@ export class Utils {
         mu.lastPing = 0;
 
         let emb: RichEmbed = new RichEmbed()
-            .setAuthor(gMember.displayName, gMember.user.avatar)
+            .setAuthor(gMember.displayName, gMember.user.displayAvatarURL)
             .setTitle("LEVELUP!")
             .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`)
+            .setColor(this.getLevelColor(newLvl));
         for(let c of guild.channels.values()){
             if(c.name.startsWith("bot") && c.type == "text"){
                 (<TextChannel>c).send(emb);
