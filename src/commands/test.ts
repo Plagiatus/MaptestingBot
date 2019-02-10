@@ -104,7 +104,6 @@ function filter(m: Message) {
     return m.content.includes("discord");
 }
 
-commands.set(test.name,test);
 
 /////////////////////////////////getting and changing Users from the db
 // db.getUser(message.author.id, callback);

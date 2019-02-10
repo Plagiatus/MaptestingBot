@@ -8,6 +8,7 @@ import { demote } from "./demote";
 import { bobdosomething } from "./bobdosomething";
 import { startsession } from "./startsession";
 import { tip } from "./tip";
+import { end } from "./end";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -33,8 +34,23 @@ export class Command {
     execute: CommandHandler;
 }
 
-export let commands: Map<string, Command> = new Map(
-
-);
+export let commands: Map<string, Command> = new Map<string, Command>();
 
 //TODO: add all the commands
+
+//general
+commands.set(help.name, help);
+commands.set(ping.name, ping);
+commands.set(test.name, test);
+commands.set(demote.name, demote);
+commands.set(promote.name, promote);
+commands.set(stats.name, stats);
+
+//session
+commands.set(startsession.name, startsession);
+commands.set(end.name, end);
+commands.set(tip.name, tip);
+
+
+//jokes
+commands.set(bobdosomething.name, bobdosomething);

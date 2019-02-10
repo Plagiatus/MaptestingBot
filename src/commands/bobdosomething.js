@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const command_1 = require("./command");
 exports.bobdosomething = {
     name: "bobdosomething",
     aliases: ["bob!"],
@@ -18,4 +17,3 @@ exports.bobdosomething = {
         return true;
     }
 };
-command_1.commands.set(exports.bobdosomething.name, exports.bobdosomething);

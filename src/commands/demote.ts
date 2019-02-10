@@ -37,5 +37,3 @@ export let demote: Command = {
         return true;
     }
 }
-
-commands.set(demote.name, demote);

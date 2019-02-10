@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const command_1 = require("./command");
 const main_1 = require("../main");
 exports.test = {
     name: "test",
@@ -91,7 +90,6 @@ exports.test = {
 function filter(m) {
     return m.content.includes("discord");
 }
-command_1.commands.set(exports.test.name, exports.test);
 /////////////////////////////////getting and changing Users from the db
 // db.getUser(message.author.id, callback);
 // return true;

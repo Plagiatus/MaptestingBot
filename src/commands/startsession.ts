@@ -1,5 +1,5 @@
-import { Command, commands } from "./command";
-import { Message, TextChannel } from "discord.js";
+import { Command } from "./command";
+import { Message } from "discord.js";
 import { TestingSession } from "../utils";
 import { data, sessionManager } from "../main";
 
@@ -56,18 +56,18 @@ export let startsession: Command = {
             guild: message.guild,
             ping: false
         }
-        //TODO: change this to a DM
-        message.reply(`Session started. set it up here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}`);
-        data.waitingSessions.push(session);
-        console.debug(`[STARTSESSION] preparing session #${session.id}`);
-
+        //send DM to user to start session
+        message.author.send(`Session preparations started. Set up your session here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}\n_This link is valid for 10 minutes_.`)
+            .then(() => {
+                message.reply("i've sent you a DM with the link to set up your session.");
+                data.waitingSessions.push(session);
+                console.debug(`[STARTSESSION] preparing session #${session.id}`);
+            })
+            .catch(error => {
+                console.log(`[STARTSESSION] Couldn't send a DM to ${message.author.tag}.\n${error}`);
+                message.reply("i wasn't able to DM you the link! Do you have DMs enabled?\nTo enable DMs from this server, enable them in this servers privacy settings: https://i.imgur.com/KP0pbbS.png");
+            })
         return true;
     }
 }
 
-function setupSession(session: TestingSession) {
-    let tc: TextChannel = <TextChannel>session.guild.channels.get("listing");
-    tc.send("Test");
-}
-
-commands.set(startsession.name, startsession);

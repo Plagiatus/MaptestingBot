@@ -35,5 +35,3 @@ export let promote: Command = {
         return true;
     }
 }
-
-commands.set(promote.name, promote);

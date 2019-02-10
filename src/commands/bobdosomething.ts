@@ -18,5 +18,3 @@ export let bobdosomething: Command = {
         return true;
     }
 }
-
-commands.set(bobdosomething.name, bobdosomething);

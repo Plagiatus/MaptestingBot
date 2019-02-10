@@ -1,14 +1,6 @@
 import { Command, commands } from "./command";
 import { Message } from "discord.js";
 
-// export ping: Command = {
-//     execute = (message: Message, args?: any): boolean {
-//         message.channel.send(`Pong! (Took ${Date.now() - message.createdTimestamp}ms)`);
-//         return true;
-//     }
-
-// }
-
 export let ping: Command = {
     name : "ping",
     aliases: ["p"],
@@ -26,5 +18,3 @@ export let ping: Command = {
         return true;
     }
 }
-
-commands.set(ping.name, ping);

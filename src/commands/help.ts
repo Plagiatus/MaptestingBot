@@ -46,5 +46,3 @@ export let help: Command = {
         return true;
     }
 }
-
-commands.set(help.name, help);
