@@ -17,16 +17,28 @@ exports.help = {
     channel: ["bot", "session"],
     execute: function test(message, args) {
         if (!args.length) {
-            let response = "Available Commands in this channel:\n";
-            for (let c of command_1.commands.values()) {
-                if (!c.hidden)
-                    if (message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v == "session"; }))
-                        response += `${c.name}, `;
-                    else if (!message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v != "session"; }))
-                        response += `${c.name}, `;
+            if (message.channel.type == "text") {
+                let response = "Available Commands in this channel:\n";
+                for (let c of command_1.commands.values()) {
+                    if (!c.hidden)
+                        if (message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v == "session"; }))
+                            response += `${c.name}, `;
+                        else if (!message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v != "session"; }))
+                            response += `${c.name}, `;
+                }
+                response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
+                message.reply(response);
             }
-            response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
-            message.reply(response);
+            else {
+                let response = "Available Commands in this channel:\n";
+                for (let c of command_1.commands.values()) {
+                    if (!c.hidden)
+                        if (!c.guildOnly)
+                            response += `${c.name}, `;
+                }
+                response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
+                message.reply(response);
+            }
         }
         else {
             let command = utils_1.Utils.findCommandWithAlias(args[0].toLowerCase());

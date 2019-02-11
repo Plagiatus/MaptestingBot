@@ -10,7 +10,7 @@ exports.stats = {
     usage: "",
     globalCooldown: 0,
     individualCooldown: 3,
-    guildOnly: false,
+    guildOnly: true,
     grantedOnly: false,
     needsArgs: false,
     hidden: false,

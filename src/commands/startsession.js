@@ -7,7 +7,7 @@ exports.startsession = {
     description: "Start a testing session to playtest your map.",
     usage: "",
     needsArgs: false,
-    guildOnly: false,
+    guildOnly: true,
     grantedOnly: false,
     globalCooldown: 0,
     individualCooldown: 10,

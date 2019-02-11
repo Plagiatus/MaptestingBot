@@ -36,41 +36,43 @@ function messageHandler(message) {
         });
     }
     ;
-    //are you in the correct channel?
-    if (message.channel.parent) {
-        if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; })) &&
-            !(message.channel.parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all"; }))) {
-            message.delete();
-            if (command.channel.some(v => { return v == "bot"; })) {
-                return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
-                    m.delete(5000);
-                });
-            }
-            return message.channel.send("This command can only be executed in a session channel.").then(m => {
-                m.delete(5000);
-            });
-        }
-    }
-    else {
-        if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; }))) {
-            message.delete();
-            if (command.channel.some(v => { return v == "bot"; })) {
-                return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
-                    m.delete(5000);
-                });
-            }
-            return message.channel.send("This command can only be executed in a session channel.").then(m => {
-                m.delete(5000);
-            });
-        }
-    }
-    //does the executor have the permissions to do that?
-    if (command.grantedOnly && !exports.data.isUserPermitted(message.guild.id, message.author.id)) {
-        return message.reply(`you don't have permission to run this command.`);
-    }
     //is this able to be executed inside a direct message?
     if (command.guildOnly && message.channel.type != "text") {
         return message.reply("this command can't be run inside DMs.");
+    }
+    //are you in the correct channel?
+    if (message.channel.type == "text") {
+        if (message.channel.parent) {
+            if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; })) &&
+                !(message.channel.parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all"; }))) {
+                message.delete();
+                if (command.channel.some(v => { return v == "bot"; })) {
+                    return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
+                        m.delete(5000);
+                    });
+                }
+                return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                    m.delete(5000);
+                });
+            }
+        }
+        else {
+            if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; }))) {
+                message.delete();
+                if (command.channel.some(v => { return v == "bot"; })) {
+                    return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
+                        m.delete(5000);
+                    });
+                }
+                return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                    m.delete(5000);
+                });
+            }
+        }
+        //does the executor have the permissions to do that?
+        if (command.grantedOnly && !exports.data.isUserPermitted(message.guild.id, message.author.id)) {
+            return message.reply(`you don't have permission to run this command.`);
+        }
     }
     //are args needed & provided?
     if (command.needsArgs && args.length == 0) {

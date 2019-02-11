@@ -16,17 +16,29 @@ export let help: Command = {
     needsArgs: false,
     channel: ["bot", "session"],
     execute: function test(message: Message, args: string[]): boolean {
+
         if (!args.length) {
-            let response: string = "Available Commands in this channel:\n";
-            for (let c of commands.values()) {
-                if (!c.hidden)
-                    if ((<TextChannel>message.channel).parent.name.startsWith("session") && c.channel.some(v => { return v == "session" }))
-                        response += `${c.name}, `
-                    else if (!(<TextChannel>message.channel).parent.name.startsWith("session") && c.channel.some(v => { return v != "session" }))
-                        response += `${c.name}, `
+            if (message.channel.type == "text") {
+                let response: string = "Available Commands in this channel:\n";
+                for (let c of commands.values()) {
+                    if (!c.hidden)
+                        if ((<TextChannel>message.channel).parent.name.startsWith("session") && c.channel.some(v => { return v == "session" }))
+                            response += `${c.name}, `
+                        else if (!(<TextChannel>message.channel).parent.name.startsWith("session") && c.channel.some(v => { return v != "session" }))
+                            response += `${c.name}, `
+                }
+                response += `\nFor detailed information, use ${prefix}${this.name} ${this.usage}.`
+                message.reply(response);
+            } else {
+                let response: string = "Available Commands in this channel:\n";
+                for (let c of commands.values()) {
+                    if (!c.hidden)
+                        if (!c.guildOnly)
+                            response += `${c.name}, `;
+                }
+                response += `\nFor detailed information, use ${prefix}${this.name} ${this.usage}.`
+                message.reply(response);
             }
-            response += `\nFor detailed information, use ${prefix}${this.name} ${this.usage}.`
-            message.reply(response);
         } else {
             let command: Command = Utils.findCommandWithAlias(args[0].toLowerCase());
             if (!command) {
@@ -43,6 +55,7 @@ export let help: Command = {
                 message.channel.send(response);
             }
         }
+
         return true;
     }
 }
