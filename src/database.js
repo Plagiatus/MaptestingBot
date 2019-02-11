@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Mongo = require("mongodb");
-const config_json_1 = require("./config.json");
+const SConfig = require("./secretconfig.json");
 class Database {
     constructor(callback) {
         this.starting = false;
         this.started = false;
-        this.databaseURL = `mongodb://${config_json_1.dbuser}:${config_json_1.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
+        this.databaseURL = `mongodb://${SConfig.dbuser}:${SConfig.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
         console.debug("[DATABASE] starting");
         this.connect(callback);

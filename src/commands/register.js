@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const SConfig = require("../secretconfig.json");
 const Config = require("../config.json");
 const main_1 = require("../main");
 const request = require("request");
@@ -53,7 +54,7 @@ exports.register = {
                         message.reply(`couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request due to rate limitations. If you're sure that you spelled it correctly, please try again in an hour.`);
                         console.log("[BEDROCK API] Error: ", resp.statusCode);
                     }
-                }).setHeader("X-AUTH", "9352871a669eb1f489357dfb87acf63e218f2304");
+                }).setHeader("X-AUTH", SConfig.xboxtoken);
                 return true;
             }
             message.reply("How did you manage to end up with this message? Please tell an Admin about this. Error: REG1");

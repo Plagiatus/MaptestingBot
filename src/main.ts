@@ -1,5 +1,6 @@
 import * as Discord from "discord.js";
 import * as Config from "./config.json";
+import * as SConfig from "./secretconfig.json";
 import { Command } from "./commands/command";
 import { Utils } from "./utils.js";
 import { Database } from "./database.js";
@@ -20,7 +21,7 @@ let sessionStarter: SessionStarter = new SessionStarter();
 
 function dbready() {
     console.debug("[MAIN] Database connected.");
-    client.login(Config.token);
+    client.login(SConfig.token);
 }
 
 client.once('ready', () => {

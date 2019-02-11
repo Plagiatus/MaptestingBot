@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Discord = require("discord.js");
 const Config = require("./config.json");
+const SConfig = require("./secretconfig.json");
 const utils_js_1 = require("./utils.js");
 const database_js_1 = require("./database.js");
 const data_js_1 = require("./data.js");
@@ -14,7 +15,7 @@ let individualCooldowns = new Discord.Collection();
 let sessionStarter = new httpserver_1.SessionStarter();
 function dbready() {
     console.debug("[MAIN] Database connected.");
-    exports.client.login(Config.token);
+    exports.client.login(SConfig.token);
 }
 exports.client.once('ready', () => {
     console.debug('[MAIN] Client connected. Ready to Go!');

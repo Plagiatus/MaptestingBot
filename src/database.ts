@@ -1,5 +1,5 @@
 import * as Mongo from "mongodb";
-import { dbuser, dbpass } from "./config.json"
+import * as SConfig from "./secretconfig.json"
 import { MongoUser } from "./utils.js";
 import { connect } from "net";
 
@@ -16,7 +16,7 @@ export class Database {
     started: boolean = false;
 
     constructor(callback?: Function) {
-        this.databaseURL = `mongodb://${dbuser}:${dbpass}@ds127115.mlab.com:27115/maptestingserver`;
+        this.databaseURL = `mongodb://${SConfig.dbuser}:${SConfig.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
         console.debug("[DATABASE] starting");
         this.connect(callback);
