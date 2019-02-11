@@ -56,7 +56,7 @@ class Database {
                     experience: 0,
                     hostedSessionsDuration: 0,
                     joinedSessionsDuration: 0,
-                    lastPing: 0,
+                    lastPing: Infinity,
                     mcBedrockIGN: null,
                     mcJavaIGN: null,
                     muted: 0,

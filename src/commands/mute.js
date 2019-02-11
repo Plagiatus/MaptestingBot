@@ -16,13 +16,13 @@ exports.mute = {
     execute: function ping(message, args) {
         let guildMember = message.guild.members.get(message.author.id);
         let disableRole = main_1.data.disableNotificationsRole.get(message.guild.id);
-        if (guildMember.roles.has(disableRole.id)) {
-            guildMember.addRole(disableRole);
-            message.reply(`you have been un-muted.`);
+        if (!guildMember.roles.has(disableRole.id)) {
+            guildMember.addRole(disableRole.id);
+            message.reply(`you have been muted.`);
         }
         else {
-            guildMember.removeRole(disableRole);
-            message.reply(`you have been muted.`);
+            guildMember.removeRole(disableRole.id);
+            message.reply(`you have been un-muted.`);
             main_1.db.getUser(message.author.id, mu => {
                 mu.muted = Date.now();
                 main_1.db.insertUser(mu);

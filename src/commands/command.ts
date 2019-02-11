@@ -13,6 +13,7 @@ import { leave } from "./leave";
 import { addxp } from "./addxp";
 import { register } from "./register";
 import { mute } from "./mute";
+import { caniping } from "./caniping";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -58,6 +59,7 @@ commands.set(tip.name, tip);
 commands.set(leave.name, leave);
 commands.set(register.name, register);
 commands.set(mute.name, mute);
+commands.set(caniping.name, caniping);
 
 //jokes
 commands.set(bobdosomething.name, bobdosomething);

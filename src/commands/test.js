@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = require("request");
+const main_1 = require("../main");
 exports.test = {
     name: "test",
     aliases: ["t"],
@@ -14,8 +14,9 @@ exports.test = {
     hidden: true,
     channel: ["bot"],
     execute: function test(message, args) {
-        request.get("https://api.mojang.com/users/profiles/minecraft/ghfedjysdnjdbhjsdhbdhbdhbkysdfhb", function (error, resp, body) {
-            console.log(body);
+        main_1.db.getUser(message.author.id, mu => {
+            mu.lastPing = 0;
+            main_1.db.insertUser(mu);
         });
         return true;
     }

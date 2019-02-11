@@ -34,6 +34,10 @@ export class Utils {
         return Config.xpSettings.levels[level].color;
     }
 
+    public static getPingCooldown(level: number): number {
+        return Config.xpSettings.levels[level].pingcooldown * 60 * 60 * 1000;
+    }
+
     public static getLevelImage(level: number): string {
         return Config.xpSettings.levels[level].img;
     }

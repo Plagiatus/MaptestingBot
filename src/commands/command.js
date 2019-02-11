@@ -14,6 +14,7 @@ const leave_1 = require("./leave");
 const addxp_1 = require("./addxp");
 const register_1 = require("./register");
 const mute_1 = require("./mute");
+const caniping_1 = require("./caniping");
 class Command {
 }
 exports.Command = Command;
@@ -34,5 +35,6 @@ exports.commands.set(tip_1.tip.name, tip_1.tip);
 exports.commands.set(leave_1.leave.name, leave_1.leave);
 exports.commands.set(register_1.register.name, register_1.register);
 exports.commands.set(mute_1.mute.name, mute_1.mute);
+exports.commands.set(caniping_1.caniping.name, caniping_1.caniping);
 //jokes
 exports.commands.set(bobdosomething_1.bobdosomething.name, bobdosomething_1.bobdosomething);

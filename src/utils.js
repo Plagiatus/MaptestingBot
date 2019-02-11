@@ -29,6 +29,9 @@ class Utils {
     static getLevelColor(level) {
         return Config.xpSettings.levels[level].color;
     }
+    static getPingCooldown(level) {
+        return Config.xpSettings.levels[level].pingcooldown * 60 * 60 * 1000;
+    }
     static getLevelImage(level) {
         return Config.xpSettings.levels[level].img;
     }

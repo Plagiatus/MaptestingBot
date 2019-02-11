@@ -43,9 +43,17 @@ exports.register = {
                 return true;
             }
             else if (platform == "bedrock") {
-                mu.mcBedrockIGN = username;
-                main_1.db.insertUser(mu);
-                message.reply(`thank you. Set your Bedrock Username to \`${username}\``);
+                request.get(`https://xboxapi.com/v2/xuid/${username}`, function (error, resp, body) {
+                    if (!error && resp.statusCode == 200) {
+                        mu.mcBedrockIGN = username;
+                        main_1.db.insertUser(mu);
+                        message.reply(`thank you. Set your Bedrock Username to \`${username}\``);
+                    }
+                    else {
+                        message.reply(`couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request due to rate limitations. If you're sure that you spelled it correctly, please try again in an hour.`);
+                        console.log("[BEDROCK API] Error: ", resp.statusCode);
+                    }
+                }).setHeader("X-AUTH", "9352871a669eb1f489357dfb87acf63e218f2304");
                 return true;
             }
             message.reply("How did you manage to end up with this message? Please tell an Admin about this. Error: REG1");

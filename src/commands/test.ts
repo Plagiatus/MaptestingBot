@@ -19,8 +19,9 @@ export let test: Command = {
     hidden: true,
     channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
-        request.get("https://api.mojang.com/users/profiles/minecraft/ghfedjysdnjdbhjsdhbdhbdhbkysdfhb", function (error, resp, body) {
-            console.log(body);
+        db.getUser(message.author.id, mu => {
+           mu.lastPing = 0;
+           db.insertUser(mu);
         });
         return true;
     }

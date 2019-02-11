@@ -7,6 +7,8 @@ import { debug } from "util";
 import { ECANCELED } from "constants";
 import { register } from "./commands/register";
 
+//TODO: Rewrite this to be async. no need to use .then() all the time.
+
 type sessionMessageTypes = "listingPre" | "listingEntry" | "listingPost" | "sessionPre" | "sessionInfo";
 
 export class SessionManager {
@@ -53,15 +55,16 @@ export class SessionManager {
             let author: Discord.User = hostGuildMember.user;
             db.getUser(author.id, mu => {
                 let listingPreContent: string = `${hostGuildMember} ist hosting a testingsession, testing ${session.mapTitle}.`;
-                if(session.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 3600000){
+                if(session.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 60 * 60 * 1000){
                     listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
                     mu.lastPing = Date.now();
-                    this.listing.get(session.guild.id).rolePermissions(data.disableNotificationsRole.get(session.guild.id)).remove("VIEW_CHANNEL");
+                    db.insertUser(mu);
+                    this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, {VIEW_CHANNEL: false, READ_MESSAGES:false});
                 }
                 //listing messages
                 this.listing.get(session.guild.id).send(listingPreContent).then(
                     newListingPreMessage => {
-                        this.listing.get(session.guild.id).rolePermissions(data.disableNotificationsRole.get(session.guild.id)).add("VIEW_CHANNEL");
+                        this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, {VIEW_CHANNEL: true, READ_MESSAGES:true});
                         this.sessionMessages.get(session.id).set("listingPre", <Discord.Message>newListingPreMessage);
                         this.listing.get(session.guild.id).send(Utils.SessionToListingEmbed(session, author, mu)).then(
                             newListingPostMessage => {
@@ -216,11 +219,11 @@ export class SessionManager {
         for (let c of sessionCategoryChannel.children.values()) {
             if (c.type == "text") {
                 let tc: Discord.TextChannel = <Discord.TextChannel>c;
-                // TODO: change text to real text
-                tc.send(`This session has ended. This channel will self-destruct in X seconds. bye bye!\n${this.sessionRoles.get(session.id)}`);
+                //TODO: set correct time text here
+                tc.send(`This session has ended. This channel will self-destruct in 10 seconds.\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
-                // TODO: add all the XP etc to the users.
+
                 for (let userInSession of this.sessionPlayers.get(session.id).values()) {
                     Utils.handleSessionOverUserUpdates(session, userInSession);
                 }
@@ -239,6 +242,7 @@ export class SessionManager {
         //finalise
         this.updateCategoryName(session.guild);
 
+        //TODO: set correct time.
         setTimeout(this.destroySession.bind(this), 10000, session);
     }
 
@@ -251,7 +255,7 @@ export class SessionManager {
             setTimeout(c.delete.bind(c), i * 500);
             i++;
         }
-        sessionCategoryChannel.delete();
+        setTimeout(sessionCategoryChannel.delete.bind(sessionCategoryChannel), 1500);
         this.sessionChannels.delete(session.id);
 
         //remove session role
