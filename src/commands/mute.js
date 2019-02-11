@@ -19,14 +19,14 @@ exports.mute = {
         if (!guildMember.roles.has(disableRole.id)) {
             guildMember.addRole(disableRole.id);
             message.reply(`you have been muted.`);
-        }
-        else {
-            guildMember.removeRole(disableRole.id);
-            message.reply(`you have been un-muted.`);
             main_1.db.getUser(message.author.id, mu => {
                 mu.muted = Date.now();
                 main_1.db.insertUser(mu);
             });
+        }
+        else {
+            guildMember.removeRole(disableRole.id);
+            message.reply(`you have been un-muted.`);
         }
         return true;
     }

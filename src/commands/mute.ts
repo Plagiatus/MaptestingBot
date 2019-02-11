@@ -20,13 +20,13 @@ export let mute: Command = {
         if (!guildMember.roles.has(disableRole.id)) {
             guildMember.addRole(disableRole.id);
             message.reply(`you have been muted.`);
-        } else {
-            guildMember.removeRole(disableRole.id);
-            message.reply(`you have been un-muted.`);
             db.getUser(message.author.id, mu => {
                 mu.muted = Date.now();
                 db.insertUser(mu);
             });
+        } else {
+            guildMember.removeRole(disableRole.id);
+            message.reply(`you have been un-muted.`);
         }
         return true;
     }
