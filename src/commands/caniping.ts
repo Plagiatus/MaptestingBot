@@ -6,7 +6,7 @@ import { Utils } from "../utils";
 export let caniping: Command = {
     name : "caniping",
     aliases: ["cip"],
-    description: "Allows you to check if, and if not, when you can ping the next time.",
+    description: "Allows you to check if (and if not, when) you can ping the next time.",
     usage: "",
     needsArgs: false,
     guildOnly: true,
