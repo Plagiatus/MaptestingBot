@@ -28,28 +28,28 @@
             },
             {
                 "lvl": 3,
-                "minXP": 500,
+                "minXP": 250,
                 "color": "#ddb825",
                 "img": "https://i.imgur.com/kqEQu3n.png",
                 "pingcooldown": 12
             },
             {
                 "lvl": 4,
-                "minXP": 1500,
+                "minXP": 500,
                 "color": "#c7118d",
                 "img": "https://i.imgur.com/qCoiX3W.png",
                 "pingcooldown": 6
             },
             {
                 "lvl": 5,
-                "minXP": 3000,
+                "minXP": 1100,
                 "color": "#2ad3e2",
                 "img": "https://i.imgur.com/vU9JPoO.png",
                 "pingcooldown": 2
             },
             {
                 "lvl": 6,
-                "minXP": 5000,
+                "minXP": 1800,
                 "color": "#ff7272",
                 "img": "https://i.imgur.com/anefxuF.png",
                 "pingcooldown": 1
