@@ -4,6 +4,7 @@ const utils_1 = require("./utils");
 const main_1 = require("./main");
 const Config = require("./config.json");
 const register_1 = require("./commands/register");
+const tip_1 = require("./commands/tip");
 class SessionManager {
     constructor() {
         this.sessionChannels = new Map();
@@ -196,7 +197,7 @@ class SessionManager {
             if (c.type == "text") {
                 let tc = c;
                 //TODO: set correct time text here & mention the possibility to !tip
-                tc.send(`This session has ended. This channel will self-destruct in 10 seconds.\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
+                tc.send(`This session has ended. This channel will self-destruct in 30 seconds.\nThis is the last chance for the host to use \`${Config.prefix}${tip_1.tip.name}\` for this session.\n\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
                 for (let userInSession of this.sessionPlayers.get(session.id).values()) {
@@ -214,7 +215,7 @@ class SessionManager {
         //finalise
         this.updateCategoryName(session.guild);
         //TODO: set correct time.
-        setTimeout(this.destroySession.bind(this), 10000, session);
+        setTimeout(this.destroySession.bind(this), 30000, session);
     }
     destroySession(session) {
         //remove session channels

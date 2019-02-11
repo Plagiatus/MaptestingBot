@@ -7,6 +7,7 @@ import { debug } from "util";
 import { ECANCELED } from "constants";
 import { register } from "./commands/register";
 import { kick } from "./commands/kick";
+import { tip } from "./commands/tip";
 
 //TODO: Rewrite this to be async. no need to use .then() all the time.
 
@@ -235,7 +236,7 @@ export class SessionManager {
             if (c.type == "text") {
                 let tc: Discord.TextChannel = <Discord.TextChannel>c;
                 //TODO: set correct time text here & mention the possibility to !tip
-                tc.send(`This session has ended. This channel will self-destruct in 10 seconds.\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
+                tc.send(`This session has ended. This channel will self-destruct in 30 seconds.\nThis is the last chance for the host to use \`${Config.prefix}${tip.name}\` for this session.\n\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
 
@@ -258,7 +259,7 @@ export class SessionManager {
         this.updateCategoryName(session.guild);
 
         //TODO: set correct time.
-        setTimeout(this.destroySession.bind(this), 10000, session);
+        setTimeout(this.destroySession.bind(this), 30000, session);
     }
 
     destroySession(session: TestingSession) {
