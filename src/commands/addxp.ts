@@ -25,16 +25,17 @@ export let addxp: Command = {
             return true;
         }
         let exp: number = parseInt(args[args.length-1]);
-        let gm: GuildMember =message.mentions.members.first();
+        let gm: GuildMember = message.mentions.members.first();
         db.getUser(gm.id, mu => {
             if(!mu.experience) mu.experience = 0;
             mu.experience += exp;
             if(mu.experience < 0){
                 mu.experience = 0;
             }
-            message.reply(`Set the xp level of ${gm.displayName} to ${mu.experience}.`);
-            Utils.setLevelRole(gm, Utils.getLevelFromXP(mu.experience));
-            db.insertUser(mu);
+            message.reply(`Set the xp level of ${gm.displayName} to ${mu.experience}.`).then(() => {
+                Utils.setLevelRole(gm, Utils.getLevelFromXP(mu.experience));
+                db.insertUser(mu);
+            });
             return true;
         });
     }

@@ -7,20 +7,25 @@ exports.test = {
     description: "Just a test command.",
     usage: "...idk?",
     globalCooldown: 0,
-    individualCooldown: 0,
+    individualCooldown: 30,
     guildOnly: true,
     grantedOnly: false,
     needsArgs: false,
     hidden: true,
     channel: ["bot"],
     execute: function test(message, args) {
-        main_1.db.getUser(message.author.id, mu => {
-            mu.lastPing = 0;
-            main_1.db.insertUser(mu);
+        main_1.db.getReports().then(r => {
+            console.log(r);
+        }).catch(e => {
+            console.log(e);
         });
         return true;
     }
 };
+// db.getUser(message.author.id, mu => {
+//    mu.lastPing = 0;
+//    db.insertUser(mu);
+// });
 // let session: TestingSession = {
 //     endTimestamp: Infinity,
 //     hostID: message.author.id,

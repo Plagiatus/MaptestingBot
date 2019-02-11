@@ -16,7 +16,7 @@ export let startsession: Command = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message: Message, args: string[]): boolean {
-        data.checkWaitingSeasons();
+        data.checkWaitingSessions();
         if (data.waitingSessions.some((s) => {
             return s.hostID == message.author.id
         })) {

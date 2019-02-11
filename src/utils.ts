@@ -1,10 +1,11 @@
-import { Message, Guild, RichEmbed, User, GuildMember, TextChannel } from "discord.js";
+import { Message, Guild, RichEmbed, User, GuildMember, TextChannel, MessageEmbed } from "discord.js";
 import { Command, commands } from "./commands/command";
 import * as Config from "./config.json";
 import { Database } from "./database";
-import { db, data } from "./main";
+import { db, data, sessionManager } from "./main";
 import { MongoClient } from "mongodb";
 import { Session } from "inspector";
+import { stringify } from "querystring";
 
 export class Utils {
     public static removeMessage(message: Message, delay: number = 0) {
@@ -52,13 +53,18 @@ export class Utils {
             .addBlankField();
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
-        emb.addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
+            let testers: string = "noone yet";
+        if(sessionManager.sessionPlayers.get(session.id).size > 1) testers = "";
+        for(let p of sessionManager.sessionPlayers.get(session.id).values()){
+            if(p.user.id != session.hostID){
+                testers += `${p.user}\n`;
+            }
+        }
+        emb.addField(`😃 Participants ${sessionManager.sessionPlayers.get(session.id).size - 1}/${session.maxParticipants}`, testers, true)
             .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
             .setFooter(`${version} ${session.platform == "java" ? session.version : ""}`);
         return emb;
-
-
     }
 
     public static SessionToSessionEmbed(session: TestingSession, author: User, mu: MongoUser): RichEmbed {
@@ -92,19 +98,24 @@ export class Utils {
             .setTitle("A tester joined the session")
             .addField("Welcome", `${data.usedEmojis.get(user.guild.id).get("joined")} ${user} joined.`);
         if (type == "java")
-            emb.addField("Username", `\`${mu.mcJavaIGN}\``, true);
+            emb.addField("Java Username", `\`${mu.mcJavaIGN}\``, true);
         else
-            emb.addField("Username", `\`${mu.mcBedrockIGN}\``, true);
+            emb.addField("Bedrock Username", `\`${mu.mcBedrockIGN}\``, true);
         emb.addField("Level", this.getLevelFromXP(mu.experience), true);
 
         return emb;
     }
 
-    public static LeftEmbed(user: GuildMember): RichEmbed {
+    public static LeftEmbed(user: GuildMember, kicked: boolean = false): RichEmbed {
         let emb: RichEmbed = new RichEmbed()
-            .setColor("#f44242")
-            .setTitle("A tester left the session")
-            .addField("Bye Bye", `${data.usedEmojis.get(user.guild.id).get("left")} ${user} left. :wave:`);
+            .setColor("#f44242");
+            if(kicked){
+                emb.setTitle("Kicked from the session")
+                .addField("Get out of here", `${data.usedEmojis.get(user.guild.id).get("left")} ${user} got kicked. :boot:`);
+            } else {
+                emb.setTitle("A tester left the session")
+                .addField("Bye Bye", `${data.usedEmojis.get(user.guild.id).get("left")} ${user} left. :wave:`);
+            }
         return emb;
     }
 
@@ -125,7 +136,7 @@ export class Utils {
         return Math.floor(xp);
     }
 
-    public static handleSessionOverUserUpdates(session: TestingSession, uis: UserInSession) {
+    public static handleSessionLeavingUserXP(session: TestingSession, uis: UserInSession) {
         db.getUser(uis.user.id, mu => {
             let minutes = (Date.now() - uis.joined) / 60000;
             if (mu.discordID == session.hostID) {
@@ -134,7 +145,7 @@ export class Utils {
                 let level = Utils.getLevelFromXP(mu.experience);
                 mu.experience += Utils.minutesToXP(minutes, "hosted");
                 if (Utils.getLevelFromXP(mu.experience) > level) {
-                    this.handleLevelup(mu,session.guild);
+                    this.handleLevelup(mu, session.guild);
                 }
                 else {
                     db.insertUser(mu);
@@ -145,7 +156,7 @@ export class Utils {
                 let level = Utils.getLevelFromXP(mu.experience);
                 mu.experience += Utils.minutesToXP(minutes, "joined");
                 if (Utils.getLevelFromXP(mu.experience) > level) {
-                    this.handleLevelup(mu,session.guild);
+                    this.handleLevelup(mu, session.guild);
                 }
                 else {
                     db.insertUser(mu);
@@ -154,9 +165,12 @@ export class Utils {
         });
     }
 
-    public static setLevelRole(gm: GuildMember, level: number){
-        gm.removeRoles(Array.from(data.levelRoles.get(gm.guild.id).values()));
-        gm.setRoles([data.levelRoles.get(gm.guild.id).get(level)]);
+    public static setLevelRole(gm: GuildMember, level: number) {
+        gm.removeRoles(Array.from(data.levelRoles.get(gm.guild.id).values())).then(() => {
+            if (level > 0) {
+                gm.addRole(data.levelRoles.get(gm.guild.id).get(level));
+            }
+        });
     }
 
     public static handleLevelup(mu: MongoUser, guild: Guild) {
@@ -170,8 +184,8 @@ export class Utils {
             .setTitle("LEVELUP!")
             .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`)
             .setColor(this.getLevelColor(newLvl));
-        for(let c of guild.channels.values()){
-            if(c.name.startsWith("bot") && c.type == "text"){
+        for (let c of guild.channels.values()) {
+            if (c.name.startsWith("bot") && c.type == "text") {
                 (<TextChannel>c).send(emb);
             }
         }
@@ -252,4 +266,22 @@ export interface TestingSession {
 export interface UserInSession {
     joined: number,
     user: GuildMember
+}
+
+export interface Report {
+    uID: string;
+    username: string,
+    reasons: DateReason[]
+}
+
+export interface Kicks {
+    uID: string;
+    username: string;
+    reasons: DateReason[];
+}
+
+interface DateReason {
+    reporter: string;
+    date: Date;
+    reason: string;
 }

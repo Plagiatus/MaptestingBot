@@ -14,6 +14,8 @@ import { addxp } from "./addxp";
 import { register } from "./register";
 import { mute } from "./mute";
 import { caniping } from "./caniping";
+import { report } from "./report";
+import { kick } from "./kick";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -33,7 +35,7 @@ export class Command {
     globalCooldown: number;
     individualCooldown: number;
     hidden: boolean;
-    channel: ("all"|"session"|"nonSession"|"bot")[];
+    channel: ("all" | "session" | "nonSession" | "bot")[];
 
     //the actual code to run when this command is called.
     execute: CommandHandler;
@@ -47,10 +49,11 @@ export let commands: Map<string, Command> = new Map<string, Command>();
 commands.set(help.name, help);
 commands.set(ping.name, ping);
 commands.set(test.name, test);
-commands.set(demote.name, demote);
-commands.set(promote.name, promote);
+// commands.set(demote.name, demote);
+// commands.set(promote.name, promote);
 commands.set(stats.name, stats);
 commands.set(addxp.name, addxp);
+commands.set(report.name, report);
 
 //session
 commands.set(startsession.name, startsession);
@@ -59,6 +62,7 @@ commands.set(tip.name, tip);
 commands.set(leave.name, leave);
 commands.set(register.name, register);
 commands.set(mute.name, mute);
+commands.set(kick.name, kick);
 commands.set(caniping.name, caniping);
 
 //jokes

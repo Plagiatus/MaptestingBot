@@ -12,20 +12,28 @@ export let test: Command = {
     description: "Just a test command.",
     usage: "...idk?",
     globalCooldown: 0,
-    individualCooldown: 0,
+    individualCooldown: 30,
     guildOnly: true,
     grantedOnly: false,
     needsArgs: false,
     hidden: true,
     channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
-        db.getUser(message.author.id, mu => {
-           mu.lastPing = 0;
-           db.insertUser(mu);
+        db.getReports().then(r => {
+            console.log(r);
+        }).catch( e => {
+            console.log(e);
         });
         return true;
     }
 }
+
+
+
+// db.getUser(message.author.id, mu => {
+//    mu.lastPing = 0;
+//    db.insertUser(mu);
+// });
 
 // let session: TestingSession = {
 //     endTimestamp: Infinity,

@@ -1,7 +1,10 @@
 import * as Mongo from "mongodb";
 import * as SConfig from "./secretconfig.json"
-import { MongoUser } from "./utils.js";
+import { MongoUser, Report } from "./utils.js";
 import { connect } from "net";
+import { User } from "discord.js";
+import { report } from "./commands/report.js";
+import { resolve } from "url";
 
 
 export class Database {
@@ -11,7 +14,8 @@ export class Database {
 
     db: Mongo.Db;
     users: Mongo.Collection;
-    permittedUsers: Mongo.Collection;
+    reports: Mongo.Collection;
+    kicks: Mongo.Collection;
     starting: boolean = false;
     started: boolean = false;
 
@@ -35,7 +39,8 @@ export class Database {
                     console.info("[DATABASE] connected");
                     this.db = _db.db(this.databaseName);
                     this.users = this.db.collection("users");
-                    this.permittedUsers = this.db.collection("permitted");
+                    this.reports = this.db.collection("reports");
+                    this.kicks = this.db.collection("kicks");
                     this.started = true;
                     callback();
                 }
@@ -82,36 +87,82 @@ export class Database {
         });
     }
 
-    loadPermissions(callback: Function) {
-
-    }
-
-    getPermittedUsers(guildID: string, callback) {
-        let c: Mongo.Cursor = this.permittedUsers.find({ "guildID": guildID });
-        c.toArray((_e, arr) => {
-            if(_e) console.log(_e);
-            else callback(arr);
-        });
-    }
-
-    promoteUser(guildID: string, userID: string){
-        // try insertion then activate callback "handleInsert"
-        this.permittedUsers.findOne({"guildID":guildID,"userID":userID}).then(result => {
-
-            //found object, so we need to update it.
+    kick(reporter: User, user: User, reason: string) {
+        console.log(`[DATABASE] ${reporter.tag} kicked ${user.tag} for ${reason}`);
+        this.kicks.find({"uID": user.id }).limit(1).next((_err, result) => {
+            let r: Report;
             if (result) {
-                // this.permittedUsers.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
-            }
-            //haven't found object, so we need to create a new one.
-            else {
-                this.permittedUsers.insertOne({"guildID":guildID,"userID":userID});
+                r = <Report>result;
+                r.reasons.push({reporter: reporter.tag, reason: reason, date: new Date(Date.now())});
+                this.kicks.findOneAndUpdate({"uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
+            } else {
+                r = {
+                    uID: user.id,
+                    username: user.tag,
+                    reasons: [{reporter: reporter.tag, reason: reason, date: new Date(Date.now())}]
+                }
+                this.kicks.insertOne(r);
             }
         });
     }
 
-    demoteUser(guildID: string, userID: string){
-         this.permittedUsers.findOneAndDelete({"guildID":guildID,"userID":userID});
+    report(reporter: User, user: User, reason: string) {
+        console.log(`[DATABASE] ${reporter.tag} reported ${user.tag} for ${reason}`);
+        this.reports.find({"uID": user.id }).limit(1).next((_err, result) => {
+            let r: Report;
+            if (result) {
+                r = <Report>result;
+                r.reasons.push({reporter: reporter.tag, reason: reason, date: new Date(Date.now())});
+                this.reports.findOneAndUpdate({"uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
+            } else {
+                r = {
+                    uID: user.id,
+                    username: user.tag,
+                    reasons: [{reporter: reporter.tag, reason: reason, date: new Date(Date.now())}]
+                }
+                this.reports.insertOne(r);
+            }
+        });
     }
+
+    async getReports(user?: User): Promise<Report[]> {
+        let reportArray: Report[] = [];
+        if (user) {
+            reportArray = await this.reports.find({ "uID": user.id }).limit(1).toArray();
+        } else {
+            reportArray = await this.reports.find().toArray();
+        }
+        return reportArray;
+    }
+
+    // getPermittedUsers(guildID: string, callback) {
+    //     let c: Mongo.Cursor = this.permittedUsers.find({ "guildID": guildID });
+    //     c.toArray((_e, arr) => {
+    //         if(_e) console.log(_e);
+    //         else callback(arr);
+    //     });
+    // }
+
+    // promoteUser(guildID: string, userID: string){
+    //     // try insertion then activate callback "handleInsert"
+    //     this.permittedUsers.findOne({"guildID":guildID,"userID":userID}).then(result => {
+
+    //         //found object, so we need to update it.
+    //         if (result) {
+    //             // this.permittedUsers.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+    //         }
+    //         //haven't found object, so we need to create a new one.
+    //         else {
+    //             this.permittedUsers.insertOne({"guildID":guildID,"userID":userID});
+    //         }
+    //     });
+    // }
+
+    // demoteUser(guildID: string, userID: string){
+    //      this.permittedUsers.findOneAndDelete({"guildID":guildID,"userID":userID});
+    // }
+
+
 }
 
 

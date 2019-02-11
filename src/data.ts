@@ -16,13 +16,13 @@ export class Data {
         this.initializePermittedUsers();
         this.waitingSessions = [];
         this.runningSessions = [];
-        setInterval(this.checkWaitingSeasons.bind(this), 60000)
+        setInterval(this.checkWaitingSessions.bind(this), 60000)
         this.initializeEmojis();
         this.initializeMutedRoles();
         this.initializelevelRoles();
     }
 
-    checkWaitingSeasons() {
+    checkWaitingSessions() {
         for (let i: number = 0; i < this.waitingSessions.length; i++) {
             if (this.waitingSessions[i].setupTimestamp < Date.now() - 600000) {
                 console.log(`[DATAHANDLER] Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`)
@@ -150,29 +150,29 @@ export class Data {
         return false;
     }
 
-    promoteUser(guildID: string, userID: string): boolean {
-        db.promoteUser(guildID, userID);
-        if (!this.permittedUsers.has(guildID)) {
-            this.permittedUsers.set(guildID, []);
-        }
-        if (this.permittedUsers.get(guildID).indexOf(userID) > -1) {
-            return false;
-        }
-        this.permittedUsers.get(guildID).push(userID);
-        return true;
-    }
+    // promoteUser(guildID: string, userID: string): boolean {
+    //     db.promoteUser(guildID, userID);
+    //     if (!this.permittedUsers.has(guildID)) {
+    //         this.permittedUsers.set(guildID, []);
+    //     }
+    //     if (this.permittedUsers.get(guildID).indexOf(userID) > -1) {
+    //         return false;
+    //     }
+    //     this.permittedUsers.get(guildID).push(userID);
+    //     return true;
+    // }
 
-    demoteUser(guildID: string, userID: string): boolean {
-        db.demoteUser(guildID, userID);
-        if (!this.permittedUsers.has(guildID)) {
-            this.permittedUsers.set(guildID, []);
-            return false;
-        }
-        if (this.permittedUsers.get(guildID).indexOf(userID) > -1) {
-            this.permittedUsers.get(guildID).splice(this.permittedUsers.get(guildID).indexOf(userID), 1);
-            return true;
-        }
-        return false;
+    // demoteUser(guildID: string, userID: string): boolean {
+    //     db.demoteUser(guildID, userID);
+    //     if (!this.permittedUsers.has(guildID)) {
+    //         this.permittedUsers.set(guildID, []);
+    //         return false;
+    //     }
+    //     if (this.permittedUsers.get(guildID).indexOf(userID) > -1) {
+    //         this.permittedUsers.get(guildID).splice(this.permittedUsers.get(guildID).indexOf(userID), 1);
+    //         return true;
+    //     }
+    //     return false;
 
-    }
+    // }
 }

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const main_1 = require("../main");
-const utils_1 = require("../utils");
 exports.leave = {
     name: "leave",
     aliases: ["l"],
@@ -28,12 +27,8 @@ exports.leave = {
             }
         }
         //user is able to leave
-        message.channel.send(utils_1.Utils.LeftEmbed(message.guild.members.get(message.author.id)));
-        message.guild.members.get(message.author.id).removeRole(main_1.sessionManager.sessionRoles.get(sessionID));
+        main_1.sessionManager.leaveSession(main_1.data.runningSessions.find(s => { return s.id == sessionID; }), message.guild.members.get(message.author.id));
         message.delete();
-        // console.log((Date.now() - sessionManager.sessionPlayers.get(sessionID).get(message.author.id).joined) / 1000, "seconds");
-        utils_1.Utils.handleSessionOverUserUpdates(main_1.data.runningSessions.find((s) => { return s.id == sessionID; }), main_1.sessionManager.sessionPlayers.get(sessionID).get(message.author.id));
-        main_1.sessionManager.sessionPlayers.get(sessionID).delete(message.author.id);
         return true;
     }
 };

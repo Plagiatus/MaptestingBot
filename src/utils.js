@@ -45,7 +45,15 @@ class Utils {
             .addBlankField();
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
-        emb.addField(`😃 Participants 0/${session.maxParticipants}`, "noone yet", true)
+        let testers = "noone yet";
+        if (main_1.sessionManager.sessionPlayers.get(session.id).size > 1)
+            testers = "";
+        for (let p of main_1.sessionManager.sessionPlayers.get(session.id).values()) {
+            if (p.user.id != session.hostID) {
+                testers += `${p.user}\n`;
+            }
+        }
+        emb.addField(`😃 Participants ${main_1.sessionManager.sessionPlayers.get(session.id).size - 1}/${session.maxParticipants}`, testers, true)
             .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
             .setFooter(`${version} ${session.platform == "java" ? session.version : ""}`);
@@ -79,17 +87,23 @@ class Utils {
             .setTitle("A tester joined the session")
             .addField("Welcome", `${main_1.data.usedEmojis.get(user.guild.id).get("joined")} ${user} joined.`);
         if (type == "java")
-            emb.addField("Username", `\`${mu.mcJavaIGN}\``, true);
+            emb.addField("Java Username", `\`${mu.mcJavaIGN}\``, true);
         else
-            emb.addField("Username", `\`${mu.mcBedrockIGN}\``, true);
+            emb.addField("Bedrock Username", `\`${mu.mcBedrockIGN}\``, true);
         emb.addField("Level", this.getLevelFromXP(mu.experience), true);
         return emb;
     }
-    static LeftEmbed(user) {
+    static LeftEmbed(user, kicked = false) {
         let emb = new discord_js_1.RichEmbed()
-            .setColor("#f44242")
-            .setTitle("A tester left the session")
-            .addField("Bye Bye", `${main_1.data.usedEmojis.get(user.guild.id).get("left")} ${user} left. :wave:`);
+            .setColor("#f44242");
+        if (kicked) {
+            emb.setTitle("Kicked from the session")
+                .addField("Get out of here", `${main_1.data.usedEmojis.get(user.guild.id).get("left")} ${user} got kicked. :boot:`);
+        }
+        else {
+            emb.setTitle("A tester left the session")
+                .addField("Bye Bye", `${main_1.data.usedEmojis.get(user.guild.id).get("left")} ${user} left. :wave:`);
+        }
         return emb;
     }
     static minutesToXP(minutes, hostedOrJoined) {
@@ -108,7 +122,7 @@ class Utils {
         }
         return Math.floor(xp);
     }
-    static handleSessionOverUserUpdates(session, uis) {
+    static handleSessionLeavingUserXP(session, uis) {
         main_1.db.getUser(uis.user.id, mu => {
             let minutes = (Date.now() - uis.joined) / 60000;
             if (mu.discordID == session.hostID) {
@@ -138,8 +152,11 @@ class Utils {
         });
     }
     static setLevelRole(gm, level) {
-        gm.removeRoles(Array.from(main_1.data.levelRoles.get(gm.guild.id).values()));
-        gm.setRoles([main_1.data.levelRoles.get(gm.guild.id).get(level)]);
+        gm.removeRoles(Array.from(main_1.data.levelRoles.get(gm.guild.id).values())).then(() => {
+            if (level > 0) {
+                gm.addRole(main_1.data.levelRoles.get(gm.guild.id).get(level));
+            }
+        });
     }
     static handleLevelup(mu, guild) {
         let newLvl = Utils.getLevelFromXP(mu.experience);

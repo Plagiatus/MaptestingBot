@@ -1,7 +1,8 @@
 import { Command } from "./command";
 import { Message, TextChannel } from "discord.js";
 import { data, sessionManager } from "../main";
-import { Utils } from "../utils";
+import { Utils, TestingSession } from "../utils";
+import { MemoryCookieStore } from "tough-cookie";
 
 export let leave: Command = {
     name: "leave",
@@ -31,13 +32,9 @@ export let leave: Command = {
         }
 
         //user is able to leave
-        message.channel.send(Utils.LeftEmbed(message.guild.members.get(message.author.id)));
-        message.guild.members.get(message.author.id).removeRole(sessionManager.sessionRoles.get(sessionID));
-        message.delete();
+        sessionManager.leaveSession(data.runningSessions.find(s => {return s.id == sessionID}), message.guild.members.get(message.author.id));
 
-        // console.log((Date.now() - sessionManager.sessionPlayers.get(sessionID).get(message.author.id).joined) / 1000, "seconds");
-        Utils.handleSessionOverUserUpdates(data.runningSessions.find((s) => { return s.id == sessionID }), sessionManager.sessionPlayers.get(sessionID).get(message.author.id));
-        sessionManager.sessionPlayers.get(sessionID).delete(message.author.id);
+        message.delete();
 
         return true;
     }

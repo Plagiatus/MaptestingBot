@@ -70,7 +70,12 @@ function messageHandler(message: Discord.Message) {
                         (<Discord.Message>m).delete(5000);
                     });
                 }
-                return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                if (command.channel.some(v => { return v == "session" })) {
+                    return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                        (<Discord.Message>m).delete(5000);
+                    });
+                }
+                return message.channel.send("This command cannot be executed in this channel.").then(m => {
                     (<Discord.Message>m).delete(5000);
                 });
             }
@@ -128,7 +133,7 @@ function messageHandler(message: Discord.Message) {
             timestamps.delete(message.author.id);
         }
         else {
-            return message.reply(`this command is on cooldown. Please wait ${((timestamps.get(message.author.id) - Date.now()) / 1000).toFixed(1)} seconds.`).then(
+            return message.reply(`this command is on cooldown for you. Please wait ${((timestamps.get(message.author.id) - Date.now()) / 1000).toFixed(1)} seconds.`).then(
                 (messageSent) => {
                     if (messageSent instanceof Discord.Message) {
                         messageSent.delete(5000);
@@ -137,16 +142,18 @@ function messageHandler(message: Discord.Message) {
             );
         }
     }
-    else if (command.individualCooldown > 0) {
-        timestamps.set(message.author.id, Date.now() + command.individualCooldown * 1000);
-    }
-
-
     try {
-        command.execute(message, args);
+        let commandShouldGoOnCooldown: boolean = command.execute(message, args);
+        if (command.individualCooldown > 0) {
+            if (commandShouldGoOnCooldown)
+                timestamps.set(message.author.id, Date.now() + command.individualCooldown * 1000);
+        }
     } catch (error) {
         console.error(error);
     }
+
+
+
 }
 
 

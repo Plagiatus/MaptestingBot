@@ -66,7 +66,7 @@ class SessionManager {
                                                         return;
                                                     }
                                                     //is session full?
-                                                    if (this.sessionRoles.get(session.id).members.size >= session.maxParticipants + 1) //+1 because host doesn't count
+                                                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants) //+1 because host doesn't count
                                                      {
                                                         this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
                                                         return;
@@ -84,6 +84,7 @@ class SessionManager {
                                                         for (let c of this.sessionChannels.get(session.id).children.values()) {
                                                             if (c.type == "text") {
                                                                 main_1.db.getUser(reactedUser.id, mu => {
+                                                                    this.sessionMessages.get(session.id).get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(session, author, mu));
                                                                     c.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
                                                                 });
                                                             }
@@ -178,17 +179,28 @@ class SessionManager {
             });
         });
     }
+    leaveSession(session, member, kicked = false) {
+        this.sessionMessages.get(session.id).get("sessionInfo").channel.send(utils_1.Utils.LeftEmbed(member, kicked));
+        member.removeRole(this.sessionRoles.get(session.id));
+        if (!kicked)
+            utils_1.Utils.handleSessionLeavingUserXP(session, this.sessionPlayers.get(session.id).get(member.id));
+        this.sessionPlayers.get(session.id).get(member.id);
+        this.sessionPlayers.get(session.id).delete(member.id);
+        main_1.db.getUser(member.id, mu => {
+            this.sessionMessages.get(session.id).get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(session, member.user, mu));
+        });
+    }
     endSession(session) {
         let sessionCategoryChannel = this.sessionChannels.get(session.id);
         for (let c of sessionCategoryChannel.children.values()) {
             if (c.type == "text") {
                 let tc = c;
-                //TODO: set correct time text here
+                //TODO: set correct time text here & mention the possibility to !tip
                 tc.send(`This session has ended. This channel will self-destruct in 10 seconds.\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
                 for (let userInSession of this.sessionPlayers.get(session.id).values()) {
-                    utils_1.Utils.handleSessionOverUserUpdates(session, userInSession);
+                    utils_1.Utils.handleSessionLeavingUserXP(session, userInSession);
                 }
             }
         }

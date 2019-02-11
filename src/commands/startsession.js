@@ -14,7 +14,7 @@ exports.startsession = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message, args) {
-        main_1.data.checkWaitingSeasons();
+        main_1.data.checkWaitingSessions();
         if (main_1.data.waitingSessions.some((s) => {
             return s.hostID == message.author.id;
         })) {

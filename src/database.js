@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Mongo = require("mongodb");
 const SConfig = require("./secretconfig.json");
@@ -24,7 +32,8 @@ class Database {
                     console.info("[DATABASE] connected");
                     this.db = _db.db(this.databaseName);
                     this.users = this.db.collection("users");
-                    this.permittedUsers = this.db.collection("permitted");
+                    this.reports = this.db.collection("reports");
+                    this.kicks = this.db.collection("kicks");
                     this.started = true;
                     callback();
                 }
@@ -68,32 +77,55 @@ class Database {
             }
         });
     }
-    loadPermissions(callback) {
-    }
-    getPermittedUsers(guildID, callback) {
-        let c = this.permittedUsers.find({ "guildID": guildID });
-        c.toArray((_e, arr) => {
-            if (_e)
-                console.log(_e);
-            else
-                callback(arr);
-        });
-    }
-    promoteUser(guildID, userID) {
-        // try insertion then activate callback "handleInsert"
-        this.permittedUsers.findOne({ "guildID": guildID, "userID": userID }).then(result => {
-            //found object, so we need to update it.
+    kick(reporter, user, reason) {
+        console.log(`[DATABASE] ${reporter.tag} kicked ${user.tag} for ${reason}`);
+        this.kicks.find({ "uID": user.id }).limit(1).next((_err, result) => {
+            let r;
             if (result) {
-                // this.permittedUsers.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+                r = result;
+                r.reasons.push({ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) });
+                this.kicks.findOneAndUpdate({ "uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
             }
-            //haven't found object, so we need to create a new one.
             else {
-                this.permittedUsers.insertOne({ "guildID": guildID, "userID": userID });
+                r = {
+                    uID: user.id,
+                    username: user.tag,
+                    reasons: [{ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) }]
+                };
+                this.kicks.insertOne(r);
             }
         });
     }
-    demoteUser(guildID, userID) {
-        this.permittedUsers.findOneAndDelete({ "guildID": guildID, "userID": userID });
+    report(reporter, user, reason) {
+        console.log(`[DATABASE] ${reporter.tag} reported ${user.tag} for ${reason}`);
+        this.reports.find({ "uID": user.id }).limit(1).next((_err, result) => {
+            let r;
+            if (result) {
+                r = result;
+                r.reasons.push({ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) });
+                this.reports.findOneAndUpdate({ "uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
+            }
+            else {
+                r = {
+                    uID: user.id,
+                    username: user.tag,
+                    reasons: [{ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) }]
+                };
+                this.reports.insertOne(r);
+            }
+        });
+    }
+    getReports(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let reportArray = [];
+            if (user) {
+                reportArray = yield this.reports.find({ "uID": user.id }).limit(1).toArray();
+            }
+            else {
+                reportArray = yield this.reports.find().toArray();
+            }
+            return reportArray;
+        });
     }
 }
 exports.Database = Database;

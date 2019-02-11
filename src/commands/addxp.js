@@ -32,9 +32,10 @@ exports.addxp = {
             if (mu.experience < 0) {
                 mu.experience = 0;
             }
-            message.reply(`Set the xp level of ${gm.displayName} to ${mu.experience}.`);
-            utils_1.Utils.setLevelRole(gm, utils_1.Utils.getLevelFromXP(mu.experience));
-            main_1.db.insertUser(mu);
+            message.reply(`Set the xp level of ${gm.displayName} to ${mu.experience}.`).then(() => {
+                utils_1.Utils.setLevelRole(gm, utils_1.Utils.getLevelFromXP(mu.experience));
+                main_1.db.insertUser(mu);
+            });
             return true;
         });
     }
