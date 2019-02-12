@@ -218,7 +218,7 @@ class Utils {
     static getSessionFromUserId(_userID) {
         for (let [key, value] of main_1.sessionManager.sessionPlayers.entries()) {
             if (value.has(_userID)) {
-                return main_1.data.runningSessions.find(rs => {
+                return main_1.sessionManager.runningSessions.find(rs => {
                     return rs.id == key;
                 });
             }

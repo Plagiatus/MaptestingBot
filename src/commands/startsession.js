@@ -14,14 +14,14 @@ exports.startsession = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message, args) {
-        main_1.data.checkWaitingSessions();
-        if (main_1.data.waitingSessions.some((s) => {
+        main_1.sessionManager.checkWaitingSessions();
+        if (main_1.sessionManager.waitingSessions.some((s) => {
             return s.hostID == message.author.id;
         })) {
             message.reply("you've already have a session pending. Please use that one.");
             return true;
         }
-        if (main_1.data.runningSessions.some((s) => {
+        if (main_1.sessionManager.runningSessions.some((s) => {
             return s.hostID == message.author.id;
         })) {
             message.reply("you already have a session running. You can only have one session running at a time.");
@@ -60,7 +60,7 @@ exports.startsession = {
         message.author.send(`Session preparations started. Set up your session here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}\n_This link is valid for 10 minutes_.`)
             .then(() => {
             message.reply("i've sent you a DM with the link to set up your session.");
-            main_1.data.waitingSessions.push(session);
+            main_1.sessionManager.waitingSessions.push(session);
             console.debug(`[STARTSESSION] preparing session #${session.id}`);
         })
             .catch(error => {

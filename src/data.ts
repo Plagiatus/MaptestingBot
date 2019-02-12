@@ -1,36 +1,26 @@
 import { stringify } from "querystring";
 import { Client, Role, Emoji } from "discord.js";
-import { client, db, data } from "./main";
+import { client, db, data, sessionManager } from "./main";
 import { TestingSession } from "./utils";
 
 export class Data {
     permittedUsers: Map<string, string[]>;
     disableNotificationsRole: Map<string, Role>;
-    waitingSessions: TestingSession[];
-    runningSessions: TestingSession[];
     usedEmojis: Map<string, Map<string, Emoji>>;
     levelRoles: Map<string, Map<number, Role>>;
-
+    intervalID;
 
     constructor() {
         this.initializePermittedUsers();
-        this.waitingSessions = [];
-        this.runningSessions = [];
-        setInterval(this.checkWaitingSessions.bind(this), 60000)
         this.initializeEmojis();
         this.initializeMutedRoles();
         this.initializelevelRoles();
     }
 
-    checkWaitingSessions() {
-        for (let i: number = 0; i < this.waitingSessions.length; i++) {
-            if (this.waitingSessions[i].setupTimestamp < Date.now() - 600000) {
-                console.log(`[DATAHANDLER] Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`)
-                this.waitingSessions.splice(i, 1);
-                i--;
-            }
-        }
+    destructor(){
+
     }
+
 
     private initializelevelRoles() {
         this.levelRoles = new Map<string, Map<number, Role>>();

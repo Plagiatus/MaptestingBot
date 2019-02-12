@@ -4,21 +4,11 @@ const main_1 = require("./main");
 class Data {
     constructor() {
         this.initializePermittedUsers();
-        this.waitingSessions = [];
-        this.runningSessions = [];
-        setInterval(this.checkWaitingSessions.bind(this), 60000);
         this.initializeEmojis();
         this.initializeMutedRoles();
         this.initializelevelRoles();
     }
-    checkWaitingSessions() {
-        for (let i = 0; i < this.waitingSessions.length; i++) {
-            if (this.waitingSessions[i].setupTimestamp < Date.now() - 600000) {
-                console.log(`[DATAHANDLER] Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`);
-                this.waitingSessions.splice(i, 1);
-                i--;
-            }
-        }
+    destructor() {
     }
     initializelevelRoles() {
         this.levelRoles = new Map();

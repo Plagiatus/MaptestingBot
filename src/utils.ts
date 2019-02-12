@@ -239,7 +239,7 @@ export class Utils {
     public static getSessionFromUserId(_userID: string): TestingSession {
         for (let [key, value] of sessionManager.sessionPlayers.entries()) {
             if (value.has(_userID)) {
-                return data.runningSessions.find(rs => {
+                return sessionManager.runningSessions.find(rs => {
                     return rs.id == key
                 });
             }

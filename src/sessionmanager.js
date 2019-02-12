@@ -7,6 +7,8 @@ const register_1 = require("./commands/register");
 const tip_1 = require("./commands/tip");
 class SessionManager {
     constructor() {
+        this.waitingSessions = [];
+        this.runningSessions = [];
         this.sessionChannels = new Map();
         this.listing = new Map();
         for (let g of main_1.client.guilds.values()) {
@@ -20,20 +22,21 @@ class SessionManager {
         this.sessionRoles = new Map();
         this.sessionPlayers = new Map();
         this.playersOffline = new Map();
-        setInterval(this.checkOfflinePlayers.bind(this), 10000);
+        setInterval(this.checkOfflinePlayers.bind(this), 30000);
+        setInterval(this.checkWaitingSessions.bind(this), 60000);
     }
     startNew(session) {
         //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
         console.log(`[SESSIONMANAGER] [${session.id}] Start`);
-        for (let i = 0; i < main_1.data.waitingSessions.length; i++) {
-            if (main_1.data.waitingSessions[i].id == session.id) {
-                main_1.data.waitingSessions.splice(i, 1);
+        for (let i = 0; i < this.waitingSessions.length; i++) {
+            if (this.waitingSessions[i].id == session.id) {
+                this.waitingSessions.splice(i, 1);
                 i--;
             }
         }
         if (session.maxParticipants <= 0)
             session.maxParticipants = Infinity;
-        main_1.data.runningSessions.push(session);
+        this.runningSessions.push(session);
         this.updateCategoryName(session.guild);
         this.sessionMessages.set(session.id, new Map());
         this.sessionPlayers.set(session.id, new Map());
@@ -230,7 +233,7 @@ class SessionManager {
         this.sessionMessages.get(session.id).get("listingPost").delete();
         this.sessionMessages.delete(session.id);
         //remove session from saved list
-        main_1.data.runningSessions.splice(main_1.data.runningSessions.indexOf(session), 1);
+        this.runningSessions.splice(this.runningSessions.indexOf(session), 1);
         //finalise
         this.updateCategoryName(session.guild);
         //TODO: set correct time.
@@ -257,11 +260,11 @@ class SessionManager {
     }
     updateCategoryName(guild) {
         let newName = "ERROR";
-        if (main_1.data.runningSessions.length <= 0) {
+        if (this.runningSessions.length <= 0) {
             newName = "🔴 no active session";
         }
         else {
-            newName = `🔵 ${main_1.data.runningSessions.length} active session${main_1.data.runningSessions.length > 1 ? "s" : ""}`;
+            newName = `🔵 ${this.runningSessions.length} active session${this.runningSessions.length > 1 ? "s" : ""}`;
         }
         this.listing.get(guild.id).parent.setName(newName);
     }
@@ -270,7 +273,7 @@ class SessionManager {
             return;
         for (let player of this.playersOffline.keys()) {
             if (this.playersOffline.get(player).timestamp < Date.now() - 120000) {
-                let session = main_1.data.runningSessions.find(s => { return s.hostID == player; });
+                let session = this.runningSessions.find(s => { return s.hostID == player; });
                 if (session) {
                     //host
                     this.endSession(session);
@@ -282,6 +285,15 @@ class SessionManager {
                         this.leaveSession(session, this.playersOffline.get(player).user);
                 }
                 this.playersOffline.delete(player);
+            }
+        }
+    }
+    checkWaitingSessions() {
+        for (let i = 0; i < this.waitingSessions.length; i++) {
+            if (this.waitingSessions[i].setupTimestamp < Date.now() - 600000) {
+                console.log(`[DATAHANDLER] Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`);
+                this.waitingSessions.splice(i, 1);
+                i--;
             }
         }
     }

@@ -20,8 +20,12 @@ export class SessionManager {
     sessionRoles: Map<number, Discord.Role>;
     sessionPlayers: Map<number, Map<string, UserInSession>>;
     playersOffline: Map<string, UserInSession>;
-
+    waitingSessions: TestingSession[];
+    runningSessions: TestingSession[];
+    
     constructor() {
+        this.waitingSessions = [];
+        this.runningSessions = [];
         this.sessionChannels = new Map<number, Discord.CategoryChannel>();
         this.listing = new Map<string, Discord.TextChannel>();
         for (let g of client.guilds.values()) {
@@ -35,21 +39,22 @@ export class SessionManager {
         this.sessionRoles = new Map<number, Discord.Role>();
         this.sessionPlayers = new Map<number, Map<string, UserInSession>>();
         this.playersOffline = new Map<string, UserInSession>();
-        setInterval(this.checkOfflinePlayers.bind(this), 10000);
+        setInterval(this.checkOfflinePlayers.bind(this), 30000);
+        setInterval(this.checkWaitingSessions.bind(this), 60000)
     }
 
     startNew(session: TestingSession) {
         //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
         console.log(`[SESSIONMANAGER] [${session.id}] Start`);
-        for (let i: number = 0; i < data.waitingSessions.length; i++) {
-            if (data.waitingSessions[i].id == session.id) {
-                data.waitingSessions.splice(i, 1);
+        for (let i: number = 0; i < this.waitingSessions.length; i++) {
+            if (this.waitingSessions[i].id == session.id) {
+                this.waitingSessions.splice(i, 1);
                 i--;
             }
         }
         if (session.maxParticipants <= 0)
             session.maxParticipants = Infinity;
-        data.runningSessions.push(session);
+        this.runningSessions.push(session);
 
         this.updateCategoryName(session.guild);
 
@@ -273,7 +278,7 @@ export class SessionManager {
         this.sessionMessages.delete(session.id);
 
         //remove session from saved list
-        data.runningSessions.splice(data.runningSessions.indexOf(session), 1);
+        this.runningSessions.splice(this.runningSessions.indexOf(session), 1);
 
         //finalise
         this.updateCategoryName(session.guild);
@@ -305,10 +310,10 @@ export class SessionManager {
 
     updateCategoryName(guild: Discord.Guild) {
         let newName: string = "ERROR";
-        if (data.runningSessions.length <= 0) {
+        if (this.runningSessions.length <= 0) {
             newName = "🔴 no active session";
         } else {
-            newName = `🔵 ${data.runningSessions.length} active session${data.runningSessions.length > 1 ? "s" : ""}`;
+            newName = `🔵 ${this.runningSessions.length} active session${this.runningSessions.length > 1 ? "s" : ""}`;
         }
         this.listing.get(guild.id).parent.setName(newName);
     }
@@ -317,7 +322,7 @@ export class SessionManager {
         if (this.playersOffline.size == 0) return;
         for (let player of this.playersOffline.keys()) {
             if (this.playersOffline.get(player).timestamp < Date.now() - 120000) {
-                let session: TestingSession = data.runningSessions.find(s => { return s.hostID == player });
+                let session: TestingSession = this.runningSessions.find(s => { return s.hostID == player });
                 if (session) {
                     //host
                     this.endSession(session);
@@ -328,6 +333,17 @@ export class SessionManager {
                         this.leaveSession(session, this.playersOffline.get(player).user);
                 }
                 this.playersOffline.delete(player);
+            }
+        }
+    }
+
+    
+    checkWaitingSessions() {
+        for (let i: number = 0; i < this.waitingSessions.length; i++) {
+            if (this.waitingSessions[i].setupTimestamp < Date.now() - 600000) {
+                console.log(`[DATAHANDLER] Session #${this.waitingSessions[i].id} has been removed for being idle for too long.`)
+                this.waitingSessions.splice(i, 1);
+                i--;
             }
         }
     }

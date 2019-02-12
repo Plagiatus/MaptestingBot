@@ -19,8 +19,18 @@ function dbready() {
 }
 exports.client.once('ready', () => {
     console.debug('[MAIN] Client connected. Ready to Go!');
-    exports.data = new data_js_1.Data();
     exports.sessionManager = new sessionmanager_js_1.SessionManager();
+    exports.data = new data_js_1.Data();
+});
+exports.client.on("guildCreate", (g) => {
+    console.log(`Joined new Guild: ${g.name}`);
+    clearInterval(exports.data.intervalID);
+    exports.data = new data_js_1.Data();
+});
+exports.client.on("guildDelete", (g) => {
+    console.log(`Left Guild: ${g.name}`);
+    clearInterval(exports.data.intervalID);
+    exports.data = new data_js_1.Data();
 });
 // handle 'error' events properly
 exports.client.on('error', console.error);

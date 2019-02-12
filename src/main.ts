@@ -26,8 +26,20 @@ function dbready() {
 
 client.once('ready', () => {
     console.debug('[MAIN] Client connected. Ready to Go!');
-    data = new Data();
     sessionManager = new SessionManager();
+    data = new Data();
+});
+
+client.on("guildCreate", (g) => {
+    console.log(`Joined new Guild: ${g.name}`);
+    clearInterval(data.intervalID);
+    data = new Data();
+});
+
+client.on("guildDelete", (g) => {
+    console.log(`Left Guild: ${g.name}`);
+    clearInterval(data.intervalID);
+    data = new Data();
 });
 
 // handle 'error' events properly
