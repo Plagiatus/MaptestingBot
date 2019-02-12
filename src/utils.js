@@ -130,7 +130,7 @@ class Utils {
     }
     static handleSessionLeavingUserXP(session, uis) {
         main_1.db.getUser(uis.user.id, mu => {
-            let minutes = (Date.now() - uis.joined) / 60000;
+            let minutes = (Date.now() - uis.timestamp) / 60000;
             if (mu.discordID == session.hostID) {
                 mu.hostedSessionsDuration += minutes;
                 mu.sessionsHosted += 1;
@@ -214,6 +214,15 @@ class Utils {
                 break;
         }
         return comp;
+    }
+    static getSessionFromUserId(_userID) {
+        for (let [key, value] of main_1.sessionManager.sessionPlayers.entries()) {
+            if (value.has(_userID)) {
+                return main_1.data.runningSessions.find(rs => {
+                    return rs.id == key;
+                });
+            }
+        }
     }
 }
 exports.Utils = Utils;

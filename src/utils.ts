@@ -36,7 +36,7 @@ export class Utils {
     }
 
     public static getCategoryColor(category: string): string {
-        for(let c in Config.sessionCategories) {
+        for (let c in Config.sessionCategories) {
             if (c == category)
                 return Config.sessionCategories[c].color;
         }
@@ -60,10 +60,10 @@ export class Utils {
             .addBlankField();
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
-            let testers: string = "noone yet";
-        if(sessionManager.sessionPlayers.get(session.id).size > 1) testers = "";
-        for(let p of sessionManager.sessionPlayers.get(session.id).values()){
-            if(p.user.id != session.hostID){
+        let testers: string = "noone yet";
+        if (sessionManager.sessionPlayers.get(session.id).size > 1) testers = "";
+        for (let p of sessionManager.sessionPlayers.get(session.id).values()) {
+            if (p.user.id != session.hostID) {
                 testers += `${p.user}\n`;
             }
         }
@@ -116,13 +116,13 @@ export class Utils {
     public static LeftEmbed(user: GuildMember, kicked: boolean = false): RichEmbed {
         let emb: RichEmbed = new RichEmbed()
             .setColor("#f44242");
-            if(kicked){
-                emb.setTitle("Kicked from the session")
+        if (kicked) {
+            emb.setTitle("Kicked from the session")
                 .addField("Get out of here", `${data.usedEmojis.get(user.guild.id).get("left")} ${user} got kicked. :boot:`);
-            } else {
-                emb.setTitle("A tester left the session")
+        } else {
+            emb.setTitle("A tester left the session")
                 .addField("Bye Bye", `${data.usedEmojis.get(user.guild.id).get("left")} ${user} left. :wave:`);
-            }
+        }
         return emb;
     }
 
@@ -145,7 +145,7 @@ export class Utils {
 
     public static handleSessionLeavingUserXP(session: TestingSession, uis: UserInSession) {
         db.getUser(uis.user.id, mu => {
-            let minutes = (Date.now() - uis.joined) / 60000;
+            let minutes = (Date.now() - uis.timestamp) / 60000;
             if (mu.discordID == session.hostID) {
                 mu.hostedSessionsDuration += minutes;
                 mu.sessionsHosted += 1;
@@ -235,7 +235,18 @@ export class Utils {
         }
         return comp;
     }
+
+    public static getSessionFromUserId(_userID: string): TestingSession {
+        for (let [key, value] of sessionManager.sessionPlayers.entries()) {
+            if (value.has(_userID)) {
+                return data.runningSessions.find(rs => {
+                    return rs.id == key
+                });
+            }
+        }
+    }
 }
+        
 
 export interface MongoUser {
     discordID: string;
@@ -271,7 +282,7 @@ export interface TestingSession {
 }
 
 export interface UserInSession {
-    joined: number,
+    timestamp: number,
     user: GuildMember
 }
 

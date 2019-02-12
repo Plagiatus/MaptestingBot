@@ -19,6 +19,8 @@ class SessionManager {
         this.sessionMessages = new Map();
         this.sessionRoles = new Map();
         this.sessionPlayers = new Map();
+        this.playersOffline = new Map();
+        setInterval(this.checkOfflinePlayers.bind(this), 10000);
     }
     startNew(session) {
         //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
@@ -36,7 +38,7 @@ class SessionManager {
         this.sessionMessages.set(session.id, new Map());
         this.sessionPlayers.set(session.id, new Map());
         session.guild.fetchMember(session.hostID).then(hostGuildMember => {
-            this.sessionPlayers.get(session.id).set(hostGuildMember.id, { joined: Date.now(), user: hostGuildMember });
+            this.sessionPlayers.get(session.id).set(hostGuildMember.id, { timestamp: Date.now(), user: hostGuildMember });
             let author = hostGuildMember.user;
             main_1.db.getUser(author.id, mu => {
                 let listingPreContent = `${hostGuildMember} ist hosting a testingsession, testing ${session.mapTitle}.`;
@@ -63,13 +65,18 @@ class SessionManager {
                                             collected.remove(reactedUser);
                                             session.guild.fetchMember(reactedUser.id).then(reactedGuildUser => {
                                                 main_1.db.getUser(reactedGuildUser.id, reacedMongoUser => {
+                                                    //are they offline?
+                                                    if (reactedGuildUser.presence.status == "offline") {
+                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
+                                                        return;
+                                                    }
+                                                    //did they set their username?
                                                     if ((!reacedMongoUser.mcJavaIGN && session.platform == "java") || (!reacedMongoUser.mcBedrockIGN && session.platform == "bedrock")) {
                                                         this.sessionMessages.get(session.id).get("listingPost").edit(`❓ ${reactedGuildUser} you don't have your username set for this platform. Please use ${Config.prefix}${register_1.register.name} in a bot channel first.`);
                                                         return;
                                                     }
                                                     //is session full?
-                                                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants) //+1 because host doesn't count
-                                                     {
+                                                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants) {
                                                         this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
                                                         return;
                                                     }
@@ -82,7 +89,7 @@ class SessionManager {
                                                     }
                                                     reactedGuildUser.addRole(this.sessionRoles.get(session.id));
                                                     this.sessionMessages.get(session.id).get("listingPost").edit(`${main_1.data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
-                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
+                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { timestamp: Date.now(), user: reactedGuildUser });
                                                     //send message to session text channel
                                                     for (let c of this.sessionChannels.get(session.id).children.values()) {
                                                         if (c.type == "text") {
@@ -103,8 +110,9 @@ class SessionManager {
                 });
                 //session channels & messages
                 let sessionRole;
-                session.guild.createRole({ name: `session-${session.id}`, color: "#0eb711", mentionable: true }).then(r => {
+                session.guild.createRole({ name: `session-${session.id}`, color: "#C27C0E", mentionable: true, hoist: true }).then(r => {
                     sessionRole = r;
+                    sessionRole.setPosition(main_1.data.levelRoles.get(session.guild.id).get(4).position + 1);
                     this.sessionRoles.set(session.id, r);
                     hostGuildMember.addRole(r);
                     //create overarching Category
@@ -194,6 +202,7 @@ class SessionManager {
             utils_1.Utils.handleSessionLeavingUserXP(session, this.sessionPlayers.get(session.id).get(member.id));
         this.sessionPlayers.get(session.id).get(member.id);
         this.sessionPlayers.get(session.id).delete(member.id);
+        this.playersOffline.delete(member.id);
         main_1.db.getUser(member.id, mu => {
             this.sessionMessages.get(session.id).get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(session, member.user, mu));
         });
@@ -255,6 +264,26 @@ class SessionManager {
             newName = `🔵 ${main_1.data.runningSessions.length} active session${main_1.data.runningSessions.length > 1 ? "s" : ""}`;
         }
         this.listing.get(guild.id).parent.setName(newName);
+    }
+    checkOfflinePlayers() {
+        if (this.playersOffline.size == 0)
+            return;
+        for (let player of this.playersOffline.keys()) {
+            if (this.playersOffline.get(player).timestamp < Date.now() - 120000) {
+                let session = main_1.data.runningSessions.find(s => { return s.hostID == player; });
+                if (session) {
+                    //host
+                    this.endSession(session);
+                }
+                else {
+                    //not the host
+                    session = utils_1.Utils.getSessionFromUserId(this.playersOffline.get(player).user.id);
+                    if (session)
+                        this.leaveSession(session, this.playersOffline.get(player).user);
+                }
+                this.playersOffline.delete(player);
+            }
+        }
     }
 }
 exports.SessionManager = SessionManager;

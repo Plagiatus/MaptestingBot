@@ -19,6 +19,7 @@ export class SessionManager {
     sessionMessages: Map<number, Map<sessionMessageTypes, Discord.Message>>;
     sessionRoles: Map<number, Discord.Role>;
     sessionPlayers: Map<number, Map<string, UserInSession>>;
+    playersOffline: Map<string, UserInSession>;
 
     constructor() {
         this.sessionChannels = new Map<number, Discord.CategoryChannel>();
@@ -33,6 +34,8 @@ export class SessionManager {
         this.sessionMessages = new Map<number, Map<sessionMessageTypes, Discord.Message>>();
         this.sessionRoles = new Map<number, Discord.Role>();
         this.sessionPlayers = new Map<number, Map<string, UserInSession>>();
+        this.playersOffline = new Map<string, UserInSession>();
+        setInterval(this.checkOfflinePlayers.bind(this), 10000);
     }
 
     startNew(session: TestingSession) {
@@ -54,7 +57,7 @@ export class SessionManager {
         this.sessionPlayers.set(session.id, new Map<string, UserInSession>());
 
         session.guild.fetchMember(session.hostID).then(hostGuildMember => {
-            this.sessionPlayers.get(session.id).set(hostGuildMember.id, { joined: Date.now(), user: hostGuildMember });
+            this.sessionPlayers.get(session.id).set(hostGuildMember.id, { timestamp: Date.now(), user: hostGuildMember });
             let author: Discord.User = hostGuildMember.user;
             db.getUser(author.id, mu => {
                 let listingPreContent: string = `${hostGuildMember} ist hosting a testingsession, testing ${session.mapTitle}.`;
@@ -86,19 +89,25 @@ export class SessionManager {
                                                         session.guild.fetchMember(reactedUser.id).then(
                                                             reactedGuildUser => {
                                                                 db.getUser(reactedGuildUser.id, reacedMongoUser => {
+                                                                    //are they offline?
+                                                                    if (reactedGuildUser.presence.status == "offline") {
+                                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
+                                                                        return;
+                                                                    }
+
+                                                                    //did they set their username?
                                                                     if ((!reacedMongoUser.mcJavaIGN && session.platform == "java") || (!reacedMongoUser.mcBedrockIGN && session.platform == "bedrock")) {
                                                                         this.sessionMessages.get(session.id).get("listingPost").edit(`❓ ${reactedGuildUser} you don't have your username set for this platform. Please use ${Config.prefix}${register.name} in a bot channel first.`);
                                                                         return;
                                                                     }
 
                                                                     //is session full?
-                                                                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants)   //+1 because host doesn't count
-                                                                    {
+                                                                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants) {
                                                                         this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
                                                                         return;
                                                                     }
                                                                     //is user in a session already?
-                                                                    for (let role of this.sessionRoles.values()){
+                                                                    for (let role of this.sessionRoles.values()) {
                                                                         if (reactedGuildUser.roles.has(role.id)) {
                                                                             this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
                                                                             return;
@@ -106,7 +115,7 @@ export class SessionManager {
                                                                     }
                                                                     reactedGuildUser.addRole(this.sessionRoles.get(session.id));
                                                                     this.sessionMessages.get(session.id).get("listingPost").edit(`${data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
-                                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
+                                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { timestamp: Date.now(), user: reactedGuildUser });
                                                                     //send message to session text channel
 
                                                                     for (let c of this.sessionChannels.get(session.id).children.values()) {
@@ -134,8 +143,9 @@ export class SessionManager {
 
                 //session channels & messages
                 let sessionRole: Discord.Role;
-                session.guild.createRole({ name: `session-${session.id}`, color: "#0eb711", mentionable: true }).then(r => {
+                session.guild.createRole({ name: `session-${session.id}`, color: "#C27C0E", mentionable: true, hoist: true }).then(r => {
                     sessionRole = r;
+                    sessionRole.setPosition(data.levelRoles.get(session.guild.id).get(4).position + 1);
                     this.sessionRoles.set(session.id, r);
                     hostGuildMember.addRole(r);
 
@@ -180,8 +190,8 @@ export class SessionManager {
                                         rc.on("collect", (collected) => {
                                             let modEnds: boolean = false;
 
-                                            for(let modID of data.permittedUsers.get(session.guild.id)){
-                                                if(collected.users.has(modID)) modEnds = true;
+                                            for (let modID of data.permittedUsers.get(session.guild.id)) {
+                                                if (collected.users.has(modID)) modEnds = true;
                                             }
 
                                             if ((collected.users.has(session.hostID) || modEnds) && session.state == "running") {
@@ -233,6 +243,7 @@ export class SessionManager {
             Utils.handleSessionLeavingUserXP(session, this.sessionPlayers.get(session.id).get(member.id));
         this.sessionPlayers.get(session.id).get(member.id);
         this.sessionPlayers.get(session.id).delete(member.id);
+        this.playersOffline.delete(member.id);
         db.getUser(member.id, mu => {
             this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, member.user, mu));
         });
@@ -244,7 +255,7 @@ export class SessionManager {
             if (c.type == "text") {
                 let tc: Discord.TextChannel = <Discord.TextChannel>c;
                 //TODO: set correct time text here & mention the possibility to !tip
-                if(byMod) tc.send(`This session has been ended by a mod. This channel will be removed in 10 seconds.\nThank you for playing.\n${this.sessionRoles.get(session.id)}`);
+                if (byMod) tc.send(`This session has been ended by a mod. This channel will be removed in 10 seconds.\nThank you for playing.\n${this.sessionRoles.get(session.id)}`);
                 else tc.send(`This session has ended. This channel will self-destruct in 30 seconds.\nThis is the last chance for the host to use \`${Config.prefix}${tip.name}\` for this session.\n\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
@@ -268,7 +279,7 @@ export class SessionManager {
         this.updateCategoryName(session.guild);
 
         //TODO: set correct time.
-        if(byMod) setTimeout(this.destroySession.bind(this), 10000, session);
+        if (byMod) setTimeout(this.destroySession.bind(this), 10000, session);
         else setTimeout(this.destroySession.bind(this), 30000, session);
     }
 
@@ -300,5 +311,24 @@ export class SessionManager {
             newName = `🔵 ${data.runningSessions.length} active session${data.runningSessions.length > 1 ? "s" : ""}`;
         }
         this.listing.get(guild.id).parent.setName(newName);
+    }
+
+    checkOfflinePlayers() {
+        if (this.playersOffline.size == 0) return;
+        for (let player of this.playersOffline.keys()) {
+            if (this.playersOffline.get(player).timestamp < Date.now() - 120000) {
+                let session: TestingSession = data.runningSessions.find(s => { return s.hostID == player });
+                if (session) {
+                    //host
+                    this.endSession(session);
+                } else {
+                    //not the host
+                    session = Utils.getSessionFromUserId(this.playersOffline.get(player).user.id)
+                    if (session)
+                        this.leaveSession(session, this.playersOffline.get(player).user);
+                }
+                this.playersOffline.delete(player);
+            }
+        }
     }
 }

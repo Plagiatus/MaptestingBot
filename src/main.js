@@ -22,7 +22,10 @@ exports.client.once('ready', () => {
     exports.data = new data_js_1.Data();
     exports.sessionManager = new sessionmanager_js_1.SessionManager();
 });
+// handle 'error' events properly
+exports.client.on('error', console.error);
 exports.client.on("message", messageHandler);
+exports.client.on("presenceUpdate", handlePresenceUpdate);
 function messageHandler(message) {
     if (!message.content.startsWith(Config.prefix) || message.author.bot)
         return;
@@ -128,5 +131,22 @@ function messageHandler(message) {
         console.error(error);
     }
 }
-// handle 'error' events properly
-exports.client.on('error', console.error);
+function handlePresenceUpdate(oldMember, newMember) {
+    if (oldMember.presence.status == newMember.presence.status)
+        return;
+    if (newMember.presence.status == "offline") {
+        for (let s of exports.sessionManager.sessionPlayers.keys()) {
+            if (exports.sessionManager.sessionPlayers.get(s).has(newMember.id)) {
+                newMember.send("You've gone offline while in a session. You will be removed from the session in 2 minutes if you don't come back online.\nIf you are the host, the session will be ended in 2 minutes.");
+                exports.sessionManager.playersOffline.set(newMember.id, { timestamp: Date.now(), user: newMember });
+            }
+        }
+    }
+    else {
+        for (let s of exports.sessionManager.playersOffline.keys()) {
+            if (s == newMember.id) {
+                exports.sessionManager.playersOffline.delete(s);
+            }
+        }
+    }
+}

@@ -30,10 +30,12 @@ client.once('ready', () => {
     sessionManager = new SessionManager();
 });
 
+// handle 'error' events properly
+client.on('error', console.error);
 
 client.on("message", messageHandler);
 
-
+client.on("presenceUpdate", handlePresenceUpdate);
 
 function messageHandler(message: Discord.Message) {
     if (!message.content.startsWith(Config.prefix) || message.author.bot) return;
@@ -157,5 +159,22 @@ function messageHandler(message: Discord.Message) {
 }
 
 
-// handle 'error' events properly
-client.on('error', console.error);
+function handlePresenceUpdate(oldMember:Discord.GuildMember, newMember:Discord.GuildMember) {
+    if (oldMember.presence.status == newMember.presence.status) return;
+
+    if (newMember.presence.status == "offline") {
+        for (let s of sessionManager.sessionPlayers.keys()) {
+            if (sessionManager.sessionPlayers.get(s).has(newMember.id)) {
+                newMember.send("You've gone offline while in a session. You will be removed from the session in 2 minutes if you don't come back online.\nIf you are the host, the session will be ended in 2 minutes.");
+                sessionManager.playersOffline.set(newMember.id,{timestamp: Date.now(), user: newMember});
+            }
+        }
+    } else {
+        for(let s of sessionManager.playersOffline.keys()){
+            if(s == newMember.id){
+                sessionManager.playersOffline.delete(s);
+            }
+        }
+    }
+
+}
