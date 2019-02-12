@@ -156,6 +156,7 @@ class SessionManager {
                                             rc.stop();
                                         }
                                     });
+                                    category.setPosition(this.listing.get(session.guild.id).position - 1);
                                 });
                             });
                             textchannel.send(utils_1.Utils.SessionToSessionEmbed(session, author, mu)).then(m => {

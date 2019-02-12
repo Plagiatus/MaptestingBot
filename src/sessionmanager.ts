@@ -189,7 +189,8 @@ export class SessionManager {
                                                 this.endSession(session, modEnds && !collected.users.has(session.hostID));
                                                 rc.stop();
                                             }
-                                        })
+                                        });
+                                        category.setPosition(this.listing.get(session.guild.id).position - 1);
                                     });
                                 }
                             );
