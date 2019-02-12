@@ -23,6 +23,7 @@ declare module "*.json" {
     const sessionCategories: {
         [key: string]: {
             img:string;
+            color: string;
         }
     }
     // export default token;

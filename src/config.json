@@ -67,19 +67,24 @@
     "pingWaitTime": 360,
     "sessionCategories": {
         "minigame": {
-            "img": "https://i.imgur.com/Og0Bgkg.png"
+            "img": "https://i.imgur.com/Og0Bgkg.png",
+            "color": "#45D856"
         },
         "adventure": {
-            "img": "https://i.imgur.com/cpzpXKi.png"
+            "img": "https://i.imgur.com/cpzpXKi.png",
+            "color": "#AF0000"
         },
         "stream": {
-            "img": "https://i.imgur.com/ZP0w2rK.png"
+            "img": "https://i.imgur.com/ZP0w2rK.png",
+            "color": "#7149FF"
         },
         "datapack": {
-            "img": "https://i.imgur.com/Og0Bgkg.png"
+            "img": "https://i.imgur.com/Og0Bgkg.png",
+            "color": "#F4662E"
         },
         "other": {
-            "img": "https://i.imgur.com/Og0Bgkg.png"
+            "img": "https://i.imgur.com/Og0Bgkg.png",
+            "color": "#00D8D8"
         }
     }
 }

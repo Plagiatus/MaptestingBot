@@ -35,6 +35,13 @@ export class Utils {
         return Config.xpSettings.levels[level].color;
     }
 
+    public static getCategoryColor(category: string): string {
+        for(let c in Config.sessionCategories) {
+            if (c == category)
+                return Config.sessionCategories[c].color;
+        }
+    }
+
     public static getPingCooldown(level: number): number {
         return Config.xpSettings.levels[level].pingcooldown * 60 * 60 * 1000;
     }
@@ -48,7 +55,7 @@ export class Utils {
         let emb: RichEmbed = new RichEmbed()
             .setAuthor(author.username, author.avatarURL)
             .setTitle("🌍 " + session.mapTitle)
-            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .setColor(this.getCategoryColor(session.category))
             .addField("💬 Description", session.mapDescription)
             .addBlankField();
         if (session.additionalInfo != "")
