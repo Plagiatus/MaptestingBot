@@ -1,8 +1,8 @@
-import { Command, commands } from "./command";
+import { Command } from "./command";
 import { Message } from "discord.js";
 import * as SConfig from "../secretconfig.json";
 import * as Config from "../config.json";
-import { db, sessionManager, data } from "../main";
+import { db } from "../main";
 import { MongoUser } from "../utils";
 import request = require("request");
 

@@ -1,4 +1,4 @@
-import { Command, commands } from "./command";
+import { Command } from "./command";
 import { Message } from "discord.js";
 
 export let ping: Command = {

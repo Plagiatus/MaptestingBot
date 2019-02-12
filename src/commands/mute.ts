@@ -1,4 +1,4 @@
-import { Command, commands } from "./command";
+import { Command} from "./command";
 import { Message, GuildMember, Role } from "discord.js";
 import { data, db } from "../main";
 

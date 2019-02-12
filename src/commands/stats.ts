@@ -1,6 +1,5 @@
-import { Database } from "../Database";
 import { Command } from "./command";
-import { Message, RichEmbed, Util } from "discord.js";
+import { Message, RichEmbed } from "discord.js";
 import { MongoUser, Utils } from "../utils";
 import { db } from "../main";
 

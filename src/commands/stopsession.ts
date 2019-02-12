@@ -1,6 +1,6 @@
-import { Command, commands } from "./command";
+import { Command } from "./command";
 import { Message, TextChannel } from "discord.js";
-import { data, sessionManager } from "../main";
+import { sessionManager } from "../main";
 
 export let stopsession: Command = {
     name : "stopsession",
@@ -20,7 +20,7 @@ export let stopsession: Command = {
             return true;
         }
         let sessionID: number = parseInt((<TextChannel>message.channel).parent.name.split("#")[1]);
-        for(let s of data.runningSessions){
+        for(let s of sessionManager.runningSessions){
             if(s.id == sessionID && s.hostID == message.author.id){
                 sessionManager.endSession(s);
                 return true;

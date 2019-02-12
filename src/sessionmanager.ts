@@ -2,11 +2,7 @@ import * as Discord from "discord.js";
 import { TestingSession, Utils, UserInSession } from "./utils";
 import { data, db, client } from "./main";
 import * as Config from "./config.json";
-import { stringify } from "querystring";
-import { debug } from "util";
-import { ECANCELED } from "constants";
 import { register } from "./commands/register";
-import { kick } from "./commands/kick";
 import { tip } from "./commands/tip";
 
 //TODO: Rewrite this to be async. no need to use .then() all the time.

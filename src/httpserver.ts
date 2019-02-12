@@ -1,9 +1,7 @@
 import * as Http from "http";
 import * as Url from "url";
-import { TestingSession, Utils } from "./utils";
-import { test } from "./commands/test";
-import { data, client, sessionManager } from "./main";
-import { Guild } from "discord.js";
+import { TestingSession} from "./utils";
+import { sessionManager } from "./main";
 import * as request from "request";
 
 export class SessionStarter {

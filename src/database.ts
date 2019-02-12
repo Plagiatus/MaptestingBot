@@ -1,10 +1,7 @@
 import * as Mongo from "mongodb";
 import * as SConfig from "./secretconfig.json"
 import { MongoUser, Report } from "./utils.js";
-import { connect } from "net";
 import { User } from "discord.js";
-import { report } from "./commands/report.js";
-import { resolve } from "url";
 
 
 export class Database {

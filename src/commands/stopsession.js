@@ -19,7 +19,7 @@ exports.stopsession = {
             return true;
         }
         let sessionID = parseInt(message.channel.parent.name.split("#")[1]);
-        for (let s of main_1.data.runningSessions) {
+        for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 main_1.sessionManager.endSession(s);
                 return true;

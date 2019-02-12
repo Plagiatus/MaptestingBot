@@ -1,5 +1,5 @@
 import { Command } from "./command";
-import { Message, MessageAttachment } from "discord.js";
+import { Message } from "discord.js";
 import { db } from "../main";
 
 

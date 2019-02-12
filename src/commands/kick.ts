@@ -1,9 +1,8 @@
 import { Command } from "./command";
 import { Message, TextChannel } from "discord.js";
-import { data, db, sessionManager } from "../main";
+import { db, sessionManager } from "../main";
 import { stopsession } from "./stopsession";
 import * as Config from "../config.json";
-import { Utils } from "../utils";
 
 
 export let kick: Command = {
@@ -36,12 +35,12 @@ export let kick: Command = {
             return false;
         }
         let sessionID: number = parseInt((<TextChannel>message.channel).parent.name.split("#")[1]);
-        for (let s of data.runningSessions) {
+        for (let s of sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 if (sessionManager.sessionPlayers.get(sessionID).has(message.mentions.members.first().id)) {
                     args.shift();
                     let reason: string = args.join(" ");
-                    sessionManager.leaveSession(data.runningSessions.find(s => {return s.id == sessionID}), message.mentions.members.first(), true);
+                    sessionManager.leaveSession(sessionManager.runningSessions.find(s => {return s.id == sessionID}), message.mentions.members.first(), true);
                     db.kick(message.author, message.mentions.members.first().user, reason);
                     return true;
                 } else {

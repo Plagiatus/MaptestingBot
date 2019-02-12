@@ -1,10 +1,6 @@
 import * as Http from "http";
-import * as Https from "https";
 import * as Url from "url";
-import * as fs from "fs";
 import * as request from "request";
-import { stringify } from "querystring";
-
 console.log("Server starting");
 
 let port: number = parseInt(process.env.PORT);

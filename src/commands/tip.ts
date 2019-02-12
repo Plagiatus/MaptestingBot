@@ -1,7 +1,6 @@
 import { Command } from "./command";
 import { Message, TextChannel } from "discord.js";
 import { data, db, sessionManager } from "../main";
-import { mute } from "./mute";
 import { Utils } from "../utils";
 
 
@@ -37,7 +36,7 @@ export let tip: Command = {
             return false;
         }
         let sessionID: number = parseInt((<TextChannel>message.channel).parent.name.split("#")[1]);
-        for (let s of data.runningSessions) {
+        for (let s of sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 if (sessionManager.sessionPlayers.get(sessionID).has(message.mentions.members.first().id)) {
                     db.getUser(message.author.id, mGive => {

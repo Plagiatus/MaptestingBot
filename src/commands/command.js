@@ -4,6 +4,8 @@ const ping_1 = require("./ping");
 const test_1 = require("./test");
 const help_1 = require("./help");
 const stats_1 = require("./stats");
+// import { promote } from "./promote";
+// import { demote } from "./demote";
 const bobdosomething_1 = require("./bobdosomething");
 const startsession_1 = require("./startsession");
 const tip_1 = require("./tip");

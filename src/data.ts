@@ -1,7 +1,5 @@
-import { stringify } from "querystring";
-import { Client, Role, Emoji } from "discord.js";
-import { client, db, data, sessionManager } from "./main";
-import { TestingSession } from "./utils";
+import { Role, Emoji } from "discord.js";
+import { client} from "./main";
 
 export class Data {
     permittedUsers: Map<string, string[]>;

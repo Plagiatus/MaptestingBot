@@ -1,7 +1,7 @@
 import { Command } from "./command";
 import { Message } from "discord.js";
 import { TestingSession } from "../utils";
-import { data, sessionManager, db } from "../main";
+import { sessionManager } from "../main";
 
 export let startsession: Command = {
     name: "startsession",

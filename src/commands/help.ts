@@ -1,4 +1,4 @@
-import { Message, TextChannel, CategoryChannel } from "discord.js";
+import { Message, TextChannel} from "discord.js";
 import { Command, commands } from "./command";
 import { prefix } from "../config.json"
 import { Utils } from "../utils";

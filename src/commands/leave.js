@@ -20,14 +20,14 @@ exports.leave = {
         }
         let sessionID = parseInt(message.channel.parent.name.split("#")[1]);
         //is user host?
-        for (let s of main_1.data.runningSessions) {
+        for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 message.reply(`you're the host of this session, you cannot leave it! If you want to end the session, use \`!stopsession\` instead.`);
                 return true;
             }
         }
         //user is able to leave
-        main_1.sessionManager.leaveSession(main_1.data.runningSessions.find(s => { return s.id == sessionID; }), message.guild.members.get(message.author.id));
+        main_1.sessionManager.leaveSession(main_1.sessionManager.runningSessions.find(s => { return s.id == sessionID; }), message.guild.members.get(message.author.id));
         message.delete();
         return true;
     }

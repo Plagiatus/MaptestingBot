@@ -1,11 +1,7 @@
 import { Message, Guild, RichEmbed, User, GuildMember, TextChannel, MessageEmbed } from "discord.js";
 import { Command, commands } from "./commands/command";
 import * as Config from "./config.json";
-import { Database } from "./database";
 import { db, data, sessionManager } from "./main";
-import { MongoClient } from "mongodb";
-import { Session } from "inspector";
-import { stringify } from "querystring";
 
 export class Utils {
     public static removeMessage(message: Message, delay: number = 0) {

@@ -33,12 +33,12 @@ exports.kick = {
             return false;
         }
         let sessionID = parseInt(message.channel.parent.name.split("#")[1]);
-        for (let s of main_1.data.runningSessions) {
+        for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 if (main_1.sessionManager.sessionPlayers.get(sessionID).has(message.mentions.members.first().id)) {
                     args.shift();
                     let reason = args.join(" ");
-                    main_1.sessionManager.leaveSession(main_1.data.runningSessions.find(s => { return s.id == sessionID; }), message.mentions.members.first(), true);
+                    main_1.sessionManager.leaveSession(main_1.sessionManager.runningSessions.find(s => { return s.id == sessionID; }), message.mentions.members.first(), true);
                     main_1.db.kick(message.author, message.mentions.members.first().user, reason);
                     return true;
                 }
