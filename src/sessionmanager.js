@@ -21,7 +21,9 @@ class SessionManager {
         this.sessionPlayers = new Map();
     }
     startNew(session) {
-        console.log(`[SESSIONMANAGER] [${session.id}] Starting`);
+        //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
+        //TODO: handle people going offline
+        console.log(`[SESSIONMANAGER] [${session.id}] Start`);
         for (let i = 0; i < main_1.data.waitingSessions.length; i++) {
             if (main_1.data.waitingSessions[i].id == session.id) {
                 main_1.data.waitingSessions.splice(i, 1);
@@ -73,24 +75,24 @@ class SessionManager {
                                                         return;
                                                     }
                                                     //is user in a session already?
-                                                    this.sessionRoles.forEach(role => {
+                                                    for (let role of this.sessionRoles.values()) {
                                                         if (reactedGuildUser.roles.has(role.id)) {
                                                             this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
                                                             return;
                                                         }
-                                                        reactedGuildUser.addRole(this.sessionRoles.get(session.id));
-                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`${main_1.data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
-                                                        this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
-                                                        //send message to session text channel
-                                                        for (let c of this.sessionChannels.get(session.id).children.values()) {
-                                                            if (c.type == "text") {
-                                                                main_1.db.getUser(reactedUser.id, mu => {
-                                                                    this.sessionMessages.get(session.id).get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(session, author, mu));
-                                                                    c.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
-                                                                });
-                                                            }
+                                                    }
+                                                    reactedGuildUser.addRole(this.sessionRoles.get(session.id));
+                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`${main_1.data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
+                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { joined: Date.now(), user: reactedGuildUser });
+                                                    //send message to session text channel
+                                                    for (let c of this.sessionChannels.get(session.id).children.values()) {
+                                                        if (c.type == "text") {
+                                                            main_1.db.getUser(reactedUser.id, mu => {
+                                                                this.sessionMessages.get(session.id).get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(session, author, mu));
+                                                                c.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
+                                                            });
                                                         }
-                                                    });
+                                                    }
                                                 });
                                             });
                                         }
@@ -144,8 +146,13 @@ class SessionManager {
                                 m.react("🛑").then(() => {
                                     let rc = m.createReactionCollector(m => { return m.emoji.name == "🛑"; });
                                     rc.on("collect", (collected) => {
-                                        if (collected.users.has(session.hostID) && session.state == "running") {
-                                            this.endSession(session);
+                                        let modEnds = false;
+                                        for (let modID of main_1.data.permittedUsers.get(session.guild.id)) {
+                                            if (collected.users.has(modID))
+                                                modEnds = true;
+                                        }
+                                        if ((collected.users.has(session.hostID) || modEnds) && session.state == "running") {
+                                            this.endSession(session, modEnds && !collected.users.has(session.hostID));
                                             rc.stop();
                                         }
                                     });
@@ -191,13 +198,16 @@ class SessionManager {
             this.sessionMessages.get(session.id).get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(session, member.user, mu));
         });
     }
-    endSession(session) {
+    endSession(session, byMod = false) {
         let sessionCategoryChannel = this.sessionChannels.get(session.id);
         for (let c of sessionCategoryChannel.children.values()) {
             if (c.type == "text") {
                 let tc = c;
                 //TODO: set correct time text here & mention the possibility to !tip
-                tc.send(`This session has ended. This channel will self-destruct in 30 seconds.\nThis is the last chance for the host to use \`${Config.prefix}${tip_1.tip.name}\` for this session.\n\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
+                if (byMod)
+                    tc.send(`This session has been ended by a mod. This channel will be removed in 10 seconds.\nThank you for playing.\n${this.sessionRoles.get(session.id)}`);
+                else
+                    tc.send(`This session has ended. This channel will self-destruct in 30 seconds.\nThis is the last chance for the host to use \`${Config.prefix}${tip_1.tip.name}\` for this session.\n\nThank you for playing and bye bye!\n${this.sessionRoles.get(session.id)}`);
                 console.log(`[SESSIONMANAGER] [${session.id}] Ending`);
                 session.state = "ending";
                 for (let userInSession of this.sessionPlayers.get(session.id).values()) {
@@ -215,7 +225,10 @@ class SessionManager {
         //finalise
         this.updateCategoryName(session.guild);
         //TODO: set correct time.
-        setTimeout(this.destroySession.bind(this), 30000, session);
+        if (byMod)
+            setTimeout(this.destroySession.bind(this), 10000, session);
+        else
+            setTimeout(this.destroySession.bind(this), 30000, session);
     }
     destroySession(session) {
         //remove session channels
