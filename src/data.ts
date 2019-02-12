@@ -122,7 +122,7 @@ export class Data {
         for (let g of client.guilds.values()) {
             this.permittedUsers.set(g.id, []);
             for (let m of g.members.values()) {
-                if (m.hasPermission(["MANAGE_CHANNELS", "MANAGE_MESSAGES"])) {
+                if (m.hasPermission(["MANAGE_CHANNELS", "MANAGE_MESSAGES"]) && !m.user.bot) {
                     this.permittedUsers.get(g.id).push(m.id);
                 }
             }
