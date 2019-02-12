@@ -22,7 +22,6 @@ class SessionManager {
     }
     startNew(session) {
         //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
-        //TODO: handle people going offline
         console.log(`[SESSIONMANAGER] [${session.id}] Start`);
         for (let i = 0; i < main_1.data.waitingSessions.length; i++) {
             if (main_1.data.waitingSessions[i].id == session.id) {

@@ -39,6 +39,20 @@ class SessionStarter {
         let newSession = JSON.parse(JSON.stringify(query.query));
         for (let s of main_1.data.waitingSessions.values()) {
             if (s.id == newSession.id) {
+                if (s.guild.members.get(s.hostID).presence.status == "offline") {
+                    console.log(`[HTTPSERVER] ${s.guild.members.get(s.hostID).user.tag} tried to start a session while offline.`);
+                    request.get("https://plagiatus.github.io/MaptestingBot/server/error.html", function (error, resp, body) {
+                        if (!error && resp.statusCode == 200) {
+                            let resp = body.toString();
+                            resp = resp.replace("None available. This probably is a bug.", "You are offline on discord. You can't start a session if you're offline.");
+                            respond(_response, resp);
+                        }
+                        else {
+                            respond(_response, `You are offline on discord. You can't start a session if you're offline.`);
+                        }
+                    });
+                    return;
+                }
                 console.log(`[HTTPSERVER] session with id ${sessionid} successfully recieved. starting...`);
                 request.get("https://plagiatus.github.io/MaptestingBot/server/success.html", function (error, resp, body) {
                     if (!error && resp.statusCode == 200) {

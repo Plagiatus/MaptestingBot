@@ -20,7 +20,7 @@ export let startsession: Command = {
         if (data.waitingSessions.some((s) => {
             return s.hostID == message.author.id
         })) {
-            message.reply("you've already created a session in the last 10 minutes. Please don't spam.");
+            message.reply("you've already have a session pending. Please use that one.");
             return true;
         }
         if (data.runningSessions.some((s) => {
@@ -32,8 +32,13 @@ export let startsession: Command = {
         for (let role of sessionManager.sessionRoles.values()) {
             if (message.member.roles.has(role.id)) {
                 message.reply("you already are in a session. You can only be in one session at a time.");
-                return true;
+                return false;
             }
+        }
+
+        if(message.author.presence.status == "offline"){
+            message.reply("you are marked as offline, that means you can't start a session. Only not-offline users can start a session.")
+            return false;
         }
 
         let session: TestingSession = {
