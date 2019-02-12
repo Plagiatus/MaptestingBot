@@ -48,6 +48,7 @@ class SessionStarter {
                         respond(_response, `Your session has been set up successfully. You can close this window now.<br><em>Please tell your Admin "TPDL0"</em>`);
                     }
                 });
+                newSession.ping = query.query["ping"] == "true" ? true : false;
                 let sess = {
                     additionalInfo: newSession.additionalInfo,
                     endTimestamp: Infinity,

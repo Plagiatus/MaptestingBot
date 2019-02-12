@@ -45,7 +45,7 @@ export class SessionStarter {
             });
             return;
         }
-        let newSession: TestingSession = JSON.parse(JSON.stringify(query.query));
+        let newSession: TestingSession = <TestingSession>JSON.parse(JSON.stringify(query.query));
         for (let s of data.waitingSessions.values()) {
             if (s.id == newSession.id) {
                 console.log(`[HTTPSERVER] session with id ${sessionid} successfully recieved. starting...`);
@@ -58,6 +58,7 @@ export class SessionStarter {
                     }
 
                 });
+                newSession.ping = query.query["ping"] == "true" ? true : false;
                 let sess: TestingSession = {
                     additionalInfo: newSession.additionalInfo,
                     endTimestamp: Infinity,
