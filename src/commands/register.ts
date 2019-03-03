@@ -28,7 +28,8 @@ export let register: Command = {
             message.reply(`the first argument must be either "Java" or "Bedrock".`);
             return true;
         }
-        let username: string = args.join(" ");
+		let username: string = args.join(" ");
+		
         db.getUser(message.author.id, (mu: MongoUser) => {
             if (platform == "java") {
                 request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
@@ -51,8 +52,8 @@ export let register: Command = {
                         db.insertUser(mu);
                         message.reply(`thank you. Set your Bedrock Username to \`${username}\``);
                     } else {
-                        message.reply(`couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request due to rate limitations. If you're sure that you spelled it correctly, please try again in an hour.`);
-                        console.log("[BEDROCK API] Error: ",resp.statusCode);
+                        message.reply(`couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request due to rate limitations. If you're sure that you spelled it correctly, please try again in an hour.\n_If this problem persists, please contact an Admin_`);
+                        console.log("[BEDROCK API] Error: ",resp.statusCode, resp.statusMessage);
                     }
                 }).setHeader("X-AUTH",SConfig.xboxtoken);
                 return true;
