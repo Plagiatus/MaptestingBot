@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
 const command_1 = require("./command");
 const config_json_1 = require("../config.json");
 const utils_1 = require("../utils");
@@ -18,7 +19,7 @@ exports.help = {
     execute: function test(message, args) {
         if (!args.length) {
             if (message.channel.type == "text") {
-                let response = "Available Commands in this channel:\n";
+                let response = "";
                 for (let c of command_1.commands.values()) {
                     if (!c.hidden)
                         if (message.channel.parent.name.startsWith("session") && c.channel.some(v => { return v == "session"; }))
@@ -27,17 +28,19 @@ exports.help = {
                             response += `${c.name}, `;
                 }
                 response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
-                message.reply(response);
+                let emb = new discord_js_1.RichEmbed().addField("Available Commands in this channel:", response);
+                message.channel.send(emb);
             }
             else {
-                let response = "Available Commands in this channel:\n";
+                let response = "";
                 for (let c of command_1.commands.values()) {
                     if (!c.hidden)
                         if (!c.guildOnly)
                             response += `${c.name}, `;
                 }
                 response += `\nFor detailed information, use ${config_json_1.prefix}${this.name} ${this.usage}.`;
-                message.reply(response);
+                let emb = new discord_js_1.RichEmbed().addField("Available Commands in this channel", response);
+                message.channel.send(emb);
             }
         }
         else {
@@ -49,12 +52,13 @@ exports.help = {
                 });
             }
             else {
-                let response = `***${command.name}***\n------------\n${command.description}\n`;
+                let response = `${command.description}\n`;
                 response += `_Usage:_ \`${config_json_1.prefix}${command.name} ${command.usage}\`\n`;
                 if (command.aliases.length > 0) {
                     response += `_Aliases:_ ${command.aliases}\n`;
                 }
-                message.channel.send(response);
+                let emb = new discord_js_1.RichEmbed().addField(command.name, response);
+                message.channel.send(emb);
             }
         }
         return true;
