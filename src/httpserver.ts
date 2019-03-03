@@ -44,7 +44,6 @@ export class SessionStarter {
             return;
         }
 		let newSession: TestingSession = <TestingSession>JSON.parse(JSON.stringify(query.query));
-		console.log(sessionManager.waitingSessions)
         for (let s of sessionManager.waitingSessions) {
             if (s.id == newSession.id) {
                 if (s.guild.members.get(s.hostID).presence.status == "offline") {
