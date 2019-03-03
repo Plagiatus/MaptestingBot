@@ -37,7 +37,8 @@ class SessionStarter {
             return;
         }
         let newSession = JSON.parse(JSON.stringify(query.query));
-        for (let s of main_1.sessionManager.waitingSessions.values()) {
+        console.log(main_1.sessionManager.waitingSessions);
+        for (let s of main_1.sessionManager.waitingSessions) {
             if (s.id == newSession.id) {
                 if (s.guild.members.get(s.hostID).presence.status == "offline") {
                     console.log(`[HTTPSERVER] ${s.guild.members.get(s.hostID).user.tag} tried to start a session while offline.`);
