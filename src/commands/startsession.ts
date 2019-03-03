@@ -16,6 +16,7 @@ export let startsession: Command = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message: Message, args: string[]): boolean {
+		//TODO: rework this so it doesn't start a session with DMs.
         sessionManager.checkWaitingSessions();
         if (sessionManager.waitingSessions.some((s) => {
             return s.hostID == message.author.id

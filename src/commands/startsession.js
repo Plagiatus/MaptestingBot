@@ -14,6 +14,7 @@ exports.startsession = {
     hidden: false,
     channel: ["bot"],
     execute: function ping(message, args) {
+        //TODO: rework this so it doesn't start a session with DMs.
         main_1.sessionManager.checkWaitingSessions();
         if (main_1.sessionManager.waitingSessions.some((s) => {
             return s.hostID == message.author.id;

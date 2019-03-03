@@ -40,7 +40,8 @@ export class SessionManager {
     }
 
     startNew(session: TestingSession) {
-        //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
+		//TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
+		//TODO: rework this so it doesn't start a session with DMs.
         console.log(`[SESSIONMANAGER] [${session.id}] Start`);
         for (let i: number = 0; i < this.waitingSessions.length; i++) {
             if (this.waitingSessions[i].id == session.id) {
@@ -246,7 +247,8 @@ export class SessionManager {
         this.sessionPlayers.get(session.id).delete(member.id);
         this.playersOffline.delete(member.id);
         db.getUser(member.id, mu => {
-            this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, member.user, mu));
+			this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, member.user, mu));
+			this.sessionMessages.get(session.id).get("listingPost").edit(`${data.usedEmojis.get(session.guild.id).get("left")} ${member} left the session.`)
         });
     }
 
@@ -274,7 +276,8 @@ export class SessionManager {
         this.sessionMessages.delete(session.id);
 
         //remove session from saved list
-        this.runningSessions.splice(this.runningSessions.indexOf(session), 1);
+		this.runningSessions.splice(this.runningSessions.indexOf(session), 1);
+		this.sessionPlayers.delete(session.id);
 
         //finalise
         this.updateCategoryName(session.guild);
