@@ -71,8 +71,9 @@ export class SessionManager {
                 }
                 //listing messages
                 this.listing.get(session.guild.id).send(listingPreContent).then(
-                    newListingPreMessage => {
-                        this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
+					newListingPreMessage => {
+						this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
+						this.listing.get(session.guild.id).overwritePermissions(session.guild.id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
                         this.sessionMessages.get(session.id).set("listingPre", <Discord.Message>newListingPreMessage);
                         this.listing.get(session.guild.id).send(Utils.SessionToListingEmbed(session, author, mu)).then(
                             newListingPostMessage => {
