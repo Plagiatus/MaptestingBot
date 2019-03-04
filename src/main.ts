@@ -115,7 +115,7 @@ function messageHandler(message: Discord.Message) {
 
     //are args needed & provided?
     if (command.needsArgs && args.length == 0) {
-        return message.reply(`you didn't provide any arguments.\nusage: !${command.name} ${command.usage}`);
+        return message.reply(`you didn't provide any arguments.\nusage: ${Config.prefix}${command.name} ${command.usage}`);
     }
 
     //is the command on global cooldown?

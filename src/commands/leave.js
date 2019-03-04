@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const main_1 = require("../main");
+const Config = require("../config.json");
 exports.leave = {
     name: "leave",
     aliases: ["l"],
@@ -22,7 +23,7 @@ exports.leave = {
         //is user host?
         for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
-                message.reply(`you're the host of this session, you cannot leave it! If you want to end the session, use \`!stopsession\` instead.`);
+                message.reply(`you're the host of this session, you cannot leave it! If you want to end the session, use \`${Config.prefix}stopsession\` instead.`);
                 return true;
             }
         }

@@ -1,6 +1,7 @@
 import { Command } from "./command";
 import { Message, TextChannel } from "discord.js";
 import { data, sessionManager } from "../main";
+import * as Config from "../config.json";
 
 export let leave: Command = {
     name: "leave",
@@ -24,7 +25,7 @@ export let leave: Command = {
         //is user host?
         for (let s of sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
-                message.reply(`you're the host of this session, you cannot leave it! If you want to end the session, use \`!stopsession\` instead.`);
+                message.reply(`you're the host of this session, you cannot leave it! If you want to end the session, use \`${Config.prefix}stopsession\` instead.`);
                 return true;
             }
         }
