@@ -14,13 +14,13 @@ export let mute: Command = {
     individualCooldown: 1,
     hidden: false,
     channel: ["bot"],
-    execute: function ping(message: Message, args: string[]): boolean {
+    execute: function mute(message: Message, args: string[]): boolean {
         let guildMember: GuildMember = message.guild.members.get(message.author.id);
         let disableRole: Role = data.disableNotificationsRole.get(message.guild.id);
         if (!guildMember.roles.has(disableRole.id)) {
             guildMember.addRole(disableRole.id);
             message.reply(`you have been muted.`);
-            db.getUser(message.author.id, mu => {
+            db.getUser(message.author.id).then(mu => {
                 mu.muted = Date.now();
                 db.insertUser(mu);
             });

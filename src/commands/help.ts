@@ -16,7 +16,7 @@ export let help: Command = {
     needsArgs: false,
     channel: ["bot", "session"],
     execute: function test(message: Message, args: string[]): boolean {
-
+        //TODO: make into embed maybe
         if (!args.length) {
             if (message.channel.type == "text") {
                 let response: string = "";

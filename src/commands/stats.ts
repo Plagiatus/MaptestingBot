@@ -16,7 +16,7 @@ export let stats: Command = {
     hidden: false,
     channel: ["bot"],
     execute: function test(message: Message, args: string[]): boolean {
-        db.getUser(message.author.id, callback);
+        db.getUser(message.author.id).then(callback);
         return true;
 
         function callback(mu: MongoUser) {

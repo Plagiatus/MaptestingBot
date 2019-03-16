@@ -1,10 +1,10 @@
-import { Command} from "./command";
+import { Command } from "./command";
 import { Message } from "discord.js";
 import { db } from "../main";
-import { Utils } from "../utils";
+import { Utils, MongoUser } from "../utils";
 
 export let caniping: Command = {
-    name : "caniping",
+    name: "caniping",
     aliases: ["cip"],
     description: "Allows you to check if (and if not, when) you can ping the next time.",
     usage: "",
@@ -13,17 +13,20 @@ export let caniping: Command = {
     grantedOnly: false,
     globalCooldown: 0,
     individualCooldown: 1,
-    hidden:false,
+    hidden: false,
     channel: ["bot"],
-    execute: function ping(message: Message, args: string[]): boolean{
-        db.getUser(message.author.id, mu => {
-            let timeLeft: number = Utils.getPingCooldown(Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
-            if(timeLeft < 0){
-                message.reply("you can ping at your next session.");
-            } else {
-                message.reply(`you can ping again in ${Math.floor(timeLeft / (60 * 60 * 1000))} hours and ${Math.floor(timeLeft / (60 * 1000) % 60)} minutes.`);
-            }
-        });
+    execute: function canIPing(message: Message, args: string[]): boolean {
+        canIPingWithUser(message);
         return true;
+    }
+}
+
+async function canIPingWithUser(message: Message) {
+    let mu: MongoUser = await db.getUser(message.author.id);
+    let timeLeft: number = Utils.getPingCooldown(Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
+    if (timeLeft < 0) {
+        message.reply("you can ping at your next session.");
+    } else {
+        message.reply(`you can ping again in ${Math.floor(timeLeft / (60 * 60 * 1000))} hours and ${Math.floor(timeLeft / (60 * 1000) % 60)} minutes.`);
     }
 }

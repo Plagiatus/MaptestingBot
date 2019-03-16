@@ -1,5 +1,5 @@
 import * as Discord from "discord.js";
-import { TestingSession, Utils, UserInSession } from "./utils";
+import { TestingSession, Utils, UserInSession, MongoUser } from "./utils";
 import { data, db, client } from "./main";
 import * as Config from "./config.json";
 import { register } from "./commands/register";
@@ -18,7 +18,7 @@ export class SessionManager {
     playersOffline: Map<string, UserInSession>;
     waitingSessions: TestingSession[];
     runningSessions: TestingSession[];
-    
+
     constructor() {
         this.waitingSessions = [];
         this.runningSessions = [];
@@ -39,9 +39,9 @@ export class SessionManager {
         setInterval(this.checkWaitingSessions.bind(this), 60000)
     }
 
-    startNew(session: TestingSession) {
-		//TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
-		//TODO: rework this so it doesn't start a session with DMs.
+    async startNew(session: TestingSession) {
+        //TODO: don't use DMs for starting a session, move channel and role creation to to setupSession
+        //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
         console.log(`[SESSIONMANAGER] [${session.id}] Start`);
         for (let i: number = 0; i < this.waitingSessions.length; i++) {
             if (this.waitingSessions[i].id == session.id) {
@@ -58,188 +58,162 @@ export class SessionManager {
         this.sessionMessages.set(session.id, new Map<sessionMessageTypes, Discord.Message>());
         this.sessionPlayers.set(session.id, new Map<string, UserInSession>());
 
-        session.guild.fetchMember(session.hostID).then(hostGuildMember => {
-            this.sessionPlayers.get(session.id).set(hostGuildMember.id, { timestamp: Date.now(), user: hostGuildMember });
-            let author: Discord.User = hostGuildMember.user;
-            db.getUser(author.id, mu => {
-                let listingPreContent: string = `${hostGuildMember} ist hosting a testingsession, testing ${session.mapTitle}.`;
-                if (session.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 60 * 60 * 1000) {
-                    listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
-                    mu.lastPing = Date.now();
-                    db.insertUser(mu);
-                    this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: false, READ_MESSAGES: false });
-                }
-                //listing messages
-                this.listing.get(session.guild.id).send(listingPreContent).then(
-					newListingPreMessage => {
-						this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
-						this.listing.get(session.guild.id).overwritePermissions(session.guild.id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
-                        this.sessionMessages.get(session.id).set("listingPre", <Discord.Message>newListingPreMessage);
-                        this.listing.get(session.guild.id).send(Utils.SessionToListingEmbed(session, author, mu)).then(
-                            newListingPostMessage => {
-                                this.sessionMessages.get(session.id).set("listingEntry", <Discord.Message>newListingPostMessage);
-                                this.listing.get(session.guild.id).send(`🌱 ${author} 🇭 created the session.`).then(
-                                    newListingPostMessage => {
-                                        this.sessionMessages.get(session.id).set("listingPost", <Discord.Message>newListingPostMessage);
+        let hostGuildMember: Discord.GuildMember = await session.guild.fetchMember(session.hostID);
+        this.sessionPlayers.get(session.id).set(hostGuildMember.id, { timestamp: Date.now(), user: hostGuildMember });
+        let author: Discord.User = hostGuildMember.user;
+        let mu: MongoUser = await db.getUser(author.id);
+        let listingPreContent: string = `${hostGuildMember} ist hosting a testingsession, testing ${session.mapTitle}.`;
+        if (session.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 60 * 60 * 1000) {
+            listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
+            mu.lastPing = Date.now();
+            db.insertUser(mu);
+            this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: false, READ_MESSAGES: false });
+        }
+        //listing messages
+        let newListingPreMessage: Discord.Message | Discord.Message[] = await this.listing.get(session.guild.id).send(listingPreContent);
+        this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
+        this.listing.get(session.guild.id).overwritePermissions(session.guild.id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
+        this.sessionMessages.get(session.id).set("listingPre", <Discord.Message>newListingPreMessage);
+        let newListingMessage: Discord.Message | Discord.Message[] = await this.listing.get(session.guild.id).send(Utils.SessionToListingEmbed(session, author, mu));
 
-                                        (<Discord.Message>newListingPostMessage).react(data.usedEmojis.get(session.guild.id).get("join")).then(() => {
-                                            let rc: Discord.ReactionCollector = (<Discord.Message>newListingPostMessage).createReactionCollector(m => { return m.emoji == data.usedEmojis.get(session.guild.id).get("join") }, { time: 18000000 });
-                                            rc.on("collect", collected => {
-                                                for (let reactedUser of collected.users.values()) {
-                                                    if (reactedUser.id != client.user.id) {
-                                                        //add users to session if they reaced
-                                                        collected.remove(reactedUser);
-                                                        session.guild.fetchMember(reactedUser.id).then(
-                                                            reactedGuildUser => {
-                                                                db.getUser(reactedGuildUser.id, reacedMongoUser => {
-                                                                    //are they offline?
-                                                                    if (reactedGuildUser.presence.status == "offline") {
-                                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
-                                                                        return;
-                                                                    }
+        this.sessionMessages.get(session.id).set("listingEntry", <Discord.Message>newListingMessage);
+        let newListingPostMessage: Discord.Message | Discord.Message[] = await this.listing.get(session.guild.id).send(`🌱 ${author} 🇭 created the session.`);
+        this.sessionMessages.get(session.id).set("listingPost", <Discord.Message>newListingPostMessage);
 
-                                                                    //did they set their username?
-                                                                    if ((!reacedMongoUser.mcJavaIGN && session.platform == "java") || (!reacedMongoUser.mcBedrockIGN && session.platform == "bedrock")) {
-                                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`❓ ${reactedGuildUser} you don't have your username set for this platform. Please use ${Config.prefix}${register.name} in a bot channel first.`);
-                                                                        return;
-                                                                    }
-
-                                                                    //is session full?
-                                                                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants) {
-                                                                        this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
-                                                                        return;
-                                                                    }
-                                                                    //is user in a session already?
-                                                                    for (let role of this.sessionRoles.values()) {
-                                                                        if (reactedGuildUser.roles.has(role.id)) {
-                                                                            this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
-                                                                            return;
-                                                                        }
-                                                                    }
-                                                                    reactedGuildUser.addRole(this.sessionRoles.get(session.id));
-                                                                    this.sessionMessages.get(session.id).get("listingPost").edit(`${data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
-                                                                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { timestamp: Date.now(), user: reactedGuildUser });
-                                                                    //send message to session text channel
-
-                                                                    for (let c of this.sessionChannels.get(session.id).children.values()) {
-                                                                        if (c.type == "text") {
-                                                                            db.getUser(reactedUser.id, mu => {
-                                                                                this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, author, mu));
-                                                                                (<Discord.TextChannel>c).send(Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
-                                                                            });
-                                                                        }
-                                                                    }
-                                                                });
-
-                                                            }
-                                                        );
-                                                    }
-                                                }
-                                            });
-                                        });
-                                    }
-                                )
-                            }
-                        );
+        //reaction collector
+        await (<Discord.Message>newListingPostMessage).react(data.usedEmojis.get(session.guild.id).get("join"));
+        let joinCollector: Discord.ReactionCollector = (<Discord.Message>newListingPostMessage).createReactionCollector(m => { return m.emoji == data.usedEmojis.get(session.guild.id).get("join") }, { time: 18000000 });
+        joinCollector.on("collect", handleCollection.bind(this));
+            async function handleCollection(collected: Discord.MessageReaction) {
+            for (let reactedUser of collected.users.values()) {
+                if (reactedUser.id != client.user.id) {
+                    //add users to session if they reacted
+                    collected.remove(reactedUser);
+                    let reactedGuildUser: Discord.GuildMember = await session.guild.fetchMember(reactedUser.id);
+                    let reacedMongoUser: MongoUser = await db.getUser(reactedGuildUser.id);
+                    //are they offline?
+                    if (reactedGuildUser.presence.status == "offline") {
+                        this.sessionMessages.get(session.id).get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
+                        return;
                     }
-                );
 
-                //session channels & messages
-                let sessionRole: Discord.Role;
-                session.guild.createRole({ name: `session-${session.id}`, color: "#C27C0E", mentionable: true, hoist: true }).then(r => {
-                    sessionRole = r;
-                    sessionRole.setPosition(data.levelRoles.get(session.guild.id).get(4).position + 1);
-                    this.sessionRoles.set(session.id, r);
-                    hostGuildMember.addRole(r);
+                    //did they set their username?
+                    if ((!reacedMongoUser.mcJavaIGN && session.platform == "java") || (!reacedMongoUser.mcBedrockIGN && session.platform == "bedrock")) {
+                        this.sessionMessages.get(session.id).get("listingPost").edit(`❓ ${reactedGuildUser} you don't have your username set for this platform. Please use ${Config.prefix}${register.name} in a bot channel first.`);
+                        return;
+                    }
 
-                    //create overarching Category
-                    session.guild.createChannel(`session #${session.id}`, "category", [
-                        {
-                            id: session.guild.id,
-                            deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                        },
-                        {
-                            id: sessionRole.id,
-                            allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                        },
-                        {
-                            id: client.user.id,
-                            allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
+                    //is session full?
+                    if (this.sessionRoles.get(session.id).members.size > session.maxParticipants) {
+                        this.sessionMessages.get(session.id).get("listingPost").edit(`The session is full.`);
+                        return;
+                    }
+                    //is user in a session already?
+                    for (let role of this.sessionRoles.values()) {
+                        if (reactedGuildUser.roles.has(role.id)) {
+                            this.sessionMessages.get(session.id).get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
+                            return;
                         }
-                    ]).then(category => {
-                        this.sessionChannels.set(session.id, <Discord.CategoryChannel>category);
-                        //create Text channel
-                        category.guild.createChannel("chat", "text", [
-                            {
-                                id: session.guild.id,
-                                deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                            },
-                            {
-                                id: sessionRole.id,
-                                allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                            },
-                            {
-                                id: client.user.id,
-                                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
-                            }
-                        ]).then(c => {
-                            let textchannel: Discord.TextChannel = <Discord.TextChannel>c;
-                            textchannel.setParent(category);
-                            textchannel.send("🛑 End the session").then(
-                                m => {
-                                    this.sessionMessages.get(session.id).set("sessionPre", <Discord.Message>m);
-                                    (<Discord.Message>m).react("🛑").then(() => {
-                                        let rc: Discord.ReactionCollector = (<Discord.Message>m).createReactionCollector(m => { return m.emoji.name == "🛑" });
-                                        rc.on("collect", (collected) => {
-                                            let modEnds: boolean = false;
+                    }
+                    reactedGuildUser.addRole(this.sessionRoles.get(session.id));
+                    this.sessionMessages.get(session.id).get("listingPost").edit(`${data.usedEmojis.get(session.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
+                    this.sessionPlayers.get(session.id).set(reactedGuildUser.id, { timestamp: Date.now(), user: reactedGuildUser });
+                    //send message to session text channel
 
-                                            for (let modID of data.permittedUsers.get(session.guild.id)) {
-                                                if (collected.users.has(modID)) modEnds = true;
-                                            }
+                    for (let c of this.sessionChannels.get(session.id).children.values()) {
+                        if (c.type == "text") {
+                            let mu: MongoUser = await db.getUser(reactedUser.id);
+                            this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, author, mu));
+                            (<Discord.TextChannel>c).send(Utils.JoinedEmbed(reactedGuildUser, mu, session.platform));
+                        }
+                    }
+                }
+            }
+        }
 
-                                            if ((collected.users.has(session.hostID) || modEnds) && session.state == "running") {
-                                                this.endSession(session, modEnds && !collected.users.has(session.hostID));
-                                                rc.stop();
-                                            }
-                                        });
-                                        category.setPosition(this.listing.get(session.guild.id).position - 1);
-                                    });
-                                }
-                            );
-                            textchannel.send(Utils.SessionToSessionEmbed(session, author, mu)).then(
-                                m => {
-                                    this.sessionMessages.get(session.id).set("sessionInfo", <Discord.Message>m);
-                                }
-                            );
-                        });
 
-                        //create Voice channel
-                        category.guild.createChannel("Voice", "voice", [
-                            {
-                                id: session.guild.id,
-                                deny: ["VIEW_CHANNEL", "CONNECT"]
-                            },
-                            {
-                                id: sessionRole.id,
-                                allow: ["VIEW_CHANNEL", "CONNECT"]
-                            },
-                            {
-                                id: client.user.id,
-                                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
-                            }
-                        ]).then(c => {
-                            let voicechannel: Discord.TextChannel = <Discord.TextChannel>c;
-                            voicechannel.setParent(category.id).catch(r => {
-                                console.error(r);
-                            });
-                        });
-                    });
-                });
-            });
+        //session channels & messages
+        let sessionRole: Discord.Role = await session.guild.createRole({ name: `session-${session.id}`, color: "#C27C0E", mentionable: true, hoist: true });
+        sessionRole.setPosition(data.levelRoles.get(session.guild.id).get(4).position + 1);
+        this.sessionRoles.set(session.id, sessionRole);
+        hostGuildMember.addRole(sessionRole);
+
+        //create overarching Category
+        let categoryChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await session.guild.createChannel(`session #${session.id}`, "category", [
+            {
+                id: session.guild.id,
+                deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
+            },
+            {
+                id: sessionRole.id,
+                allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
+            },
+            {
+                id: client.user.id,
+                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
+            }
+        ]);
+        this.sessionChannels.set(session.id, <Discord.CategoryChannel>categoryChannel);
+        //create Text channel
+        let sessionTextChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await categoryChannel.guild.createChannel("chat", "text", [
+            {
+                id: session.guild.id,
+                deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
+            },
+            {
+                id: sessionRole.id,
+                allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
+            },
+            {
+                id: client.user.id,
+                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
+            }
+        ]);
+        let textchannel: Discord.TextChannel = <Discord.TextChannel>sessionTextChannel;
+        textchannel.setParent(categoryChannel);
+        let sessionPreMessage: Discord.Message | Discord.Message[] = await textchannel.send("🛑 End the session");
+        this.sessionMessages.get(session.id).set("sessionPre", <Discord.Message>sessionPreMessage);
+        await (<Discord.Message>sessionPreMessage).react("🛑");
+        let endCollector: Discord.ReactionCollector = (<Discord.Message>sessionPreMessage).createReactionCollector(m => { return m.emoji.name == "🛑" });
+        endCollector.on("collect", (collected) => {
+            let modEnds: boolean = false;
+
+            for (let modID of data.permittedUsers.get(session.guild.id)) {
+                if (collected.users.has(modID)) modEnds = true;
+            }
+
+            if ((collected.users.has(session.hostID) || modEnds) && session.state == "running") {
+                this.endSession(session, modEnds && !collected.users.has(session.hostID));
+                endCollector.stop();
+            }
+        });
+        categoryChannel.setPosition(this.listing.get(session.guild.id).position - 1);
+        let m: Discord.Message | Discord.Message[] = await textchannel.send(Utils.SessionToSessionEmbed(session, author, mu));
+
+        this.sessionMessages.get(session.id).set("sessionInfo", <Discord.Message>m);
+
+        //create Voice channel
+        let sessionVoiceChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await categoryChannel.guild.createChannel("Voice", "voice", [
+            {
+                id: session.guild.id,
+                deny: ["VIEW_CHANNEL", "CONNECT"]
+            },
+            {
+                id: sessionRole.id,
+                allow: ["VIEW_CHANNEL", "CONNECT"]
+            },
+            {
+                id: client.user.id,
+                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
+            }
+        ]);
+        let voicechannel: Discord.VoiceChannel = <Discord.VoiceChannel>sessionVoiceChannel;
+        voicechannel.setParent(categoryChannel.id).catch(r => {
+            console.error(r);
         });
     }
 
-    leaveSession(session: TestingSession, member: Discord.GuildMember, kicked: boolean = false) {
+    async leaveSession(session: TestingSession, member: Discord.GuildMember, kicked: boolean = false) {
         this.sessionMessages.get(session.id).get("sessionInfo").channel.send(Utils.LeftEmbed(member, kicked));
         member.removeRole(this.sessionRoles.get(session.id));
         if (!kicked)
@@ -247,10 +221,9 @@ export class SessionManager {
         this.sessionPlayers.get(session.id).get(member.id);
         this.sessionPlayers.get(session.id).delete(member.id);
         this.playersOffline.delete(member.id);
-        db.getUser(member.id, mu => {
-			this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, member.user, mu));
-			this.sessionMessages.get(session.id).get("listingPost").edit(`${data.usedEmojis.get(session.guild.id).get("left")} ${member} left the session.`)
-        });
+        let mu: MongoUser = await db.getUser(member.id);
+        this.sessionMessages.get(session.id).get("listingEntry").edit("", Utils.SessionToListingEmbed(session, member.user, mu));
+        this.sessionMessages.get(session.id).get("listingPost").edit(`${data.usedEmojis.get(session.guild.id).get("left")} ${member} left the session.`)
     }
 
     endSession(session: TestingSession, byMod: boolean = false) {
@@ -277,8 +250,8 @@ export class SessionManager {
         this.sessionMessages.delete(session.id);
 
         //remove session from saved list
-		this.runningSessions.splice(this.runningSessions.indexOf(session), 1);
-		this.sessionPlayers.delete(session.id);
+        this.runningSessions.splice(this.runningSessions.indexOf(session), 1);
+        this.sessionPlayers.delete(session.id);
 
         //finalise
         this.updateCategoryName(session.guild);
@@ -337,7 +310,7 @@ export class SessionManager {
         }
     }
 
-    
+
     checkWaitingSessions() {
         for (let i: number = 0; i < this.waitingSessions.length; i++) {
             if (this.waitingSessions[i].setupTimestamp < Date.now() - 600000) {

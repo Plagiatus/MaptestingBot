@@ -53,11 +53,13 @@ class Database {
             }
         });
     }
-    getUser(userID, callback) {
-        this.users.find({ "discordID": userID }).limit(1).next((_err, result) => {
-            if (result) {
-                let mu = result;
-                callback(mu);
+    getUser(userID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = yield this.users.find({ "discordID": userID }); //.limit(1).next((_err, result) => {
+            let resultArray = yield result.limit(1).toArray();
+            if (resultArray.length > 0) {
+                let mu = resultArray[0];
+                return mu;
             }
             else {
                 let mu = {
@@ -73,7 +75,7 @@ class Database {
                     sessionsJoined: 0
                 };
                 this.insertUser(mu);
-                callback(mu);
+                return mu;
             }
         });
     }

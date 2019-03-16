@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const main_1 = require("../main");
 const utils_1 = require("../utils");
@@ -14,16 +22,20 @@ exports.caniping = {
     individualCooldown: 1,
     hidden: false,
     channel: ["bot"],
-    execute: function ping(message, args) {
-        main_1.db.getUser(message.author.id, mu => {
-            let timeLeft = utils_1.Utils.getPingCooldown(utils_1.Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
-            if (timeLeft < 0) {
-                message.reply("you can ping at your next session.");
-            }
-            else {
-                message.reply(`you can ping again in ${Math.floor(timeLeft / (60 * 60 * 1000))} hours and ${Math.floor(timeLeft / (60 * 1000) % 60)} minutes.`);
-            }
-        });
+    execute: function canIPing(message, args) {
+        canIPingWithUser(message);
         return true;
     }
 };
+function canIPingWithUser(message) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let mu = yield main_1.db.getUser(message.author.id);
+        let timeLeft = utils_1.Utils.getPingCooldown(utils_1.Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
+        if (timeLeft < 0) {
+            message.reply("you can ping at your next session.");
+        }
+        else {
+            message.reply(`you can ping again in ${Math.floor(timeLeft / (60 * 60 * 1000))} hours and ${Math.floor(timeLeft / (60 * 1000) % 60)} minutes.`);
+        }
+    });
+}

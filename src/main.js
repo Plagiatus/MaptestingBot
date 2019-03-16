@@ -142,6 +142,7 @@ function messageHandler(message) {
     }
 }
 function handlePresenceUpdate(oldMember, newMember) {
+    //TODO: fix the bot sending messages over and over
     if (oldMember.presence.status == newMember.presence.status)
         return;
     if (newMember.presence.status == "offline") {

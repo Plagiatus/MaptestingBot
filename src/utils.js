@@ -129,7 +129,7 @@ class Utils {
         return Math.floor(xp);
     }
     static handleSessionLeavingUserXP(session, uis) {
-        main_1.db.getUser(uis.user.id, mu => {
+        main_1.db.getUser(uis.user.id).then(mu => {
             let minutes = (Date.now() - uis.timestamp) / 60000;
             if (mu.discordID == session.hostID) {
                 mu.hostedSessionsDuration += minutes;

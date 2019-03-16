@@ -172,6 +172,7 @@ function messageHandler(message: Discord.Message) {
 
 
 function handlePresenceUpdate(oldMember:Discord.GuildMember, newMember:Discord.GuildMember) {
+    //TODO: fix the bot sending messages over and over
     if (oldMember.presence.status == newMember.presence.status) return;
 
     if (newMember.presence.status == "offline") {

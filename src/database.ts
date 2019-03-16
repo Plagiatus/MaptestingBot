@@ -60,43 +60,44 @@ export class Database {
         });
     }
 
-    getUser(userID: string, callback: (mu: MongoUser) => void) {
-        this.users.find({ "discordID": userID }).limit(1).next((_err, result) => {
-            if (result) {
-                let mu: MongoUser = <MongoUser>result;
-                callback(mu);
-            } else {
-                let mu: MongoUser = {
-                    discordID: userID,
-                    experience: 0,
-                    hostedSessionsDuration: 0,
-                    joinedSessionsDuration: 0,
-                    lastPing: Infinity,
-                    mcBedrockIGN: null,
-                    mcJavaIGN: null,
-                    muted: 0,
-                    sessionsHosted: 0,
-                    sessionsJoined: 0
-                }
-                this.insertUser(mu);
-                callback(mu);
+    async getUser(userID: string): Promise<MongoUser> {
+        let result: Mongo.Cursor = await this.users.find({ "discordID": userID })//.limit(1).next((_err, result) => {
+        let resultArray: MongoUser[] = <MongoUser[]>await result.limit(1).toArray();
+        if (resultArray.length > 0) {
+            let mu: MongoUser = resultArray[0];
+            return mu;
+        } else {
+            let mu: MongoUser = {
+                discordID: userID,
+                experience: 0,
+                hostedSessionsDuration: 0,
+                joinedSessionsDuration: 0,
+                lastPing: Infinity,
+                mcBedrockIGN: null,
+                mcJavaIGN: null,
+                muted: 0,
+                sessionsHosted: 0,
+                sessionsJoined: 0
             }
-        });
+            this.insertUser(mu);
+            return mu;
+        }
     }
+
 
     kick(reporter: User, user: User, reason: string) {
         console.log(`[DATABASE] ${reporter.tag} kicked ${user.tag} for ${reason}`);
-        this.kicks.find({"uID": user.id }).limit(1).next((_err, result) => {
+        this.kicks.find({ "uID": user.id }).limit(1).next((_err, result) => {
             let r: Report;
             if (result) {
                 r = <Report>result;
-                r.reasons.push({reporter: reporter.tag, reason: reason, date: new Date(Date.now())});
-                this.kicks.findOneAndUpdate({"uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
+                r.reasons.push({ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) });
+                this.kicks.findOneAndUpdate({ "uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
             } else {
                 r = {
                     uID: user.id,
                     username: user.tag,
-                    reasons: [{reporter: reporter.tag, reason: reason, date: new Date(Date.now())}]
+                    reasons: [{ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) }]
                 }
                 this.kicks.insertOne(r);
             }
@@ -105,17 +106,17 @@ export class Database {
 
     report(reporter: User, user: User, reason: string) {
         console.log(`[DATABASE] ${reporter.tag} reported ${user.tag} for ${reason}`);
-        this.reports.find({"uID": user.id }).limit(1).next((_err, result) => {
+        this.reports.find({ "uID": user.id }).limit(1).next((_err, result) => {
             let r: Report;
             if (result) {
                 r = <Report>result;
-                r.reasons.push({reporter: reporter.tag, reason: reason, date: new Date(Date.now())});
-                this.reports.findOneAndUpdate({"uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
+                r.reasons.push({ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) });
+                this.reports.findOneAndUpdate({ "uID": user.id }, { $set: r }).catch((reason) => console.log(reason));
             } else {
                 r = {
                     uID: user.id,
                     username: user.tag,
-                    reasons: [{reporter: reporter.tag, reason: reason, date: new Date(Date.now())}]
+                    reasons: [{ reporter: reporter.tag, reason: reason, date: new Date(Date.now()) }]
                 }
                 this.reports.insertOne(r);
             }

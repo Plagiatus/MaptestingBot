@@ -17,6 +17,7 @@ exports.help = {
     needsArgs: false,
     channel: ["bot", "session"],
     execute: function test(message, args) {
+        //TODO: make into embed maybe
         if (!args.length) {
             if (message.channel.type == "text") {
                 let response = "";
