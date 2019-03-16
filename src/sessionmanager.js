@@ -54,7 +54,7 @@ class SessionManager {
     }
     getRunningSession(id) {
         for (let i = 0; i < this.runningSessions.length; i++) {
-            if (this.runningSessions[i].id = id)
+            if (this.runningSessions[i].id == id)
                 return this.runningSessions[i];
         }
         return null;
@@ -75,6 +75,8 @@ class SessionManager {
     }
     endSession(id, byMod = false) {
         let s = this.getRunningSession(id);
+        if (!s)
+            return;
         s.endSession(byMod);
         //remove session from saved list
         this.runningSessions.splice(this.runningSessions.indexOf(s), 1);

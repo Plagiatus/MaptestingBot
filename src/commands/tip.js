@@ -35,7 +35,7 @@ exports.tip = {
         let sessionID = parseInt(message.channel.parent.name.split("#")[1]);
         for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
-                if (main_1.sessionManager.sessionPlayers.get(sessionID).has(message.mentions.members.first().id)) {
+                if (s.players.has(message.mentions.members.first().id)) {
                     main_1.db.getUser(message.author.id).then(mGive => {
                         if (mGive.experience > amount) {
                             main_1.db.getUser(message.mentions.users.first().id).then(mRecieve => {
