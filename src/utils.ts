@@ -75,7 +75,7 @@ export class Utils {
         let emb: RichEmbed = new RichEmbed()
             .setAuthor(author.username, author.avatarURL)
             .setTitle(session.mapTitle)
-            .setColor(this.getLevelColor(this.getLevelFromXP(mu.experience)))
+            .setColor(this.getCategoryColor(session.category))
             .addField("💬 Description", session.mapDescription);
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
