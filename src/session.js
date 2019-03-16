@@ -248,7 +248,7 @@ class Session {
     createMessages(author, mu) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let listingPreContent = `${this.hostGuildMember} ist hosting a testingsession, testing ${this.mapTitle}.`;
+                let listingPreContent = `${this.hostGuildMember} is hosting a testingsession, testing ${this.mapTitle}.`;
                 if (this.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 60 * 60 * 1000) {
                     listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
                     mu.lastPing = Date.now();
