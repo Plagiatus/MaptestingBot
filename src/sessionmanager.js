@@ -124,37 +124,32 @@ class SessionManager {
             sessionRole.setPosition(main_1.data.levelRoles.get(session.guild.id).get(4).position + 1);
             this.sessionRoles.set(session.id, sessionRole);
             hostGuildMember.addRole(sessionRole);
-            //create overarching Category
-            let categoryChannel = yield session.guild.createChannel(`session #${session.id}`, "category", [
+            let permissionObj = [
                 {
                     id: session.guild.id,
-                    deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
+                    deny: ["VIEW_CHANNEL", "READ_MESSAGES", "CONNECT", "SPEAK"]
                 },
                 {
                     id: sessionRole.id,
-                    allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
+                    allow: ["VIEW_CHANNEL", "READ_MESSAGES", "CONNECT", "SPEAK"]
                 },
                 {
                     id: main_1.client.user.id,
                     allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
                 }
-            ]);
+            ];
+            //moderators should get automatic permission
+            for (let i = 0; i < main_1.data.permittedRoles.get(session.guild.id).length; i++) {
+                permissionObj.push({
+                    id: main_1.data.permittedRoles.get(session.guild.id)[i],
+                    allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT", "SPEAK"]
+                });
+            }
+            //create overarching Category
+            let categoryChannel = yield session.guild.createChannel(`session #${session.id}`, "category", permissionObj);
             this.sessionChannels.set(session.id, categoryChannel);
             //create Text channel
-            let sessionTextChannel = yield categoryChannel.guild.createChannel("chat", "text", [
-                {
-                    id: session.guild.id,
-                    deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                },
-                {
-                    id: sessionRole.id,
-                    allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-                },
-                {
-                    id: main_1.client.user.id,
-                    allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
-                }
-            ]);
+            let sessionTextChannel = yield categoryChannel.guild.createChannel("chat", "text", permissionObj);
             let textchannel = sessionTextChannel;
             textchannel.setParent(categoryChannel);
             let sessionPreMessage = yield textchannel.send("🛑 End the session");
@@ -176,20 +171,7 @@ class SessionManager {
             let m = yield textchannel.send(utils_1.Utils.SessionToSessionEmbed(session, author, mu));
             this.sessionMessages.get(session.id).set("sessionInfo", m);
             //create Voice channel
-            let sessionVoiceChannel = yield categoryChannel.guild.createChannel("Voice", "voice", [
-                {
-                    id: session.guild.id,
-                    deny: ["VIEW_CHANNEL", "CONNECT"]
-                },
-                {
-                    id: sessionRole.id,
-                    allow: ["VIEW_CHANNEL", "CONNECT"]
-                },
-                {
-                    id: main_1.client.user.id,
-                    allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
-                }
-            ]);
+            let sessionVoiceChannel = yield categoryChannel.guild.createChannel("Voice", "voice", permissionObj);
             let voicechannel = sessionVoiceChannel;
             voicechannel.setParent(categoryChannel.id).catch(r => {
                 console.error(r);

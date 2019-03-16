@@ -69,6 +69,7 @@ export class SessionManager {
             db.insertUser(mu);
             this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: false, READ_MESSAGES: false });
         }
+
         //listing messages
         let newListingPreMessage: Discord.Message | Discord.Message[] = await this.listing.get(session.guild.id).send(listingPreContent);
         this.listing.get(session.guild.id).overwritePermissions(data.disableNotificationsRole.get(session.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
@@ -84,7 +85,7 @@ export class SessionManager {
         await (<Discord.Message>newListingPostMessage).react(data.usedEmojis.get(session.guild.id).get("join"));
         let joinCollector: Discord.ReactionCollector = (<Discord.Message>newListingPostMessage).createReactionCollector(m => { return m.emoji == data.usedEmojis.get(session.guild.id).get("join") }, { time: 18000000 });
         joinCollector.on("collect", handleCollection.bind(this));
-            async function handleCollection(collected: Discord.MessageReaction) {
+        async function handleCollection(collected: Discord.MessageReaction) {
             for (let reactedUser of collected.users.values()) {
                 if (reactedUser.id != client.user.id) {
                     //add users to session if they reacted
@@ -138,37 +139,35 @@ export class SessionManager {
         this.sessionRoles.set(session.id, sessionRole);
         hostGuildMember.addRole(sessionRole);
 
+        let permissionObj: Discord.ChannelCreationOverwrites[] = [
+            {
+                id: session.guild.id,
+                deny: ["VIEW_CHANNEL", "READ_MESSAGES", "CONNECT", "SPEAK"]
+            },
+            {
+                id: sessionRole.id,
+                allow: ["VIEW_CHANNEL", "READ_MESSAGES", "CONNECT", "SPEAK"]
+            },
+            {
+                id: client.user.id,
+                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
+            }
+        ];
+
+        //moderators should get automatic permission
+        for (let i: number = 0; i < data.permittedRoles.get(session.guild.id).length; i++) {
+            permissionObj.push({
+                id: data.permittedRoles.get(session.guild.id)[i],
+                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT", "SPEAK"]
+            });
+        }
+
         //create overarching Category
-        let categoryChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await session.guild.createChannel(`session #${session.id}`, "category", [
-            {
-                id: session.guild.id,
-                deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-            },
-            {
-                id: sessionRole.id,
-                allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-            },
-            {
-                id: client.user.id,
-                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
-            }
-        ]);
+        let categoryChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await session.guild.createChannel(`session #${session.id}`, "category", permissionObj);
         this.sessionChannels.set(session.id, <Discord.CategoryChannel>categoryChannel);
+
         //create Text channel
-        let sessionTextChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await categoryChannel.guild.createChannel("chat", "text", [
-            {
-                id: session.guild.id,
-                deny: ["VIEW_CHANNEL", "READ_MESSAGES"]
-            },
-            {
-                id: sessionRole.id,
-                allow: ["VIEW_CHANNEL", "READ_MESSAGES"]
-            },
-            {
-                id: client.user.id,
-                allow: ["ADD_REACTIONS", "READ_MESSAGES", "SEND_MESSAGES", "MANAGE_MESSAGES", "MANAGE_CHANNELS", "VIEW_CHANNEL"]
-            }
-        ]);
+        let sessionTextChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await categoryChannel.guild.createChannel("chat", "text", permissionObj);
         let textchannel: Discord.TextChannel = <Discord.TextChannel>sessionTextChannel;
         textchannel.setParent(categoryChannel);
         let sessionPreMessage: Discord.Message | Discord.Message[] = await textchannel.send("🛑 End the session");
@@ -193,20 +192,7 @@ export class SessionManager {
         this.sessionMessages.get(session.id).set("sessionInfo", <Discord.Message>m);
 
         //create Voice channel
-        let sessionVoiceChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await categoryChannel.guild.createChannel("Voice", "voice", [
-            {
-                id: session.guild.id,
-                deny: ["VIEW_CHANNEL", "CONNECT"]
-            },
-            {
-                id: sessionRole.id,
-                allow: ["VIEW_CHANNEL", "CONNECT"]
-            },
-            {
-                id: client.user.id,
-                allow: ["MANAGE_CHANNELS", "VIEW_CHANNEL", "CONNECT"]
-            }
-        ]);
+        let sessionVoiceChannel: Discord.TextChannel | Discord.VoiceChannel | Discord.CategoryChannel = await categoryChannel.guild.createChannel("Voice", "voice", permissionObj);
         let voicechannel: Discord.VoiceChannel = <Discord.VoiceChannel>sessionVoiceChannel;
         voicechannel.setParent(categoryChannel.id).catch(r => {
             console.error(r);

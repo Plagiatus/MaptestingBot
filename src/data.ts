@@ -3,6 +3,7 @@ import { client} from "./main";
 
 export class Data {
     permittedUsers: Map<string, string[]>;
+    permittedRoles: Map<string, string[]>;
     disableNotificationsRole: Map<string, Role>;
     usedEmojis: Map<string, Map<string, Emoji>>;
     levelRoles: Map<string, Map<number, Role>>;
@@ -10,6 +11,7 @@ export class Data {
 
     constructor() {
         this.initializePermittedUsers();
+        this.initializePermittedRoles();
         this.initializeEmojis();
         this.initializeMutedRoles();
         this.initializelevelRoles();
@@ -128,6 +130,18 @@ export class Data {
         //     });
         // }
 
+    }
+
+    private initializePermittedRoles() {
+        this.permittedRoles = new Map<string, string[]>();
+        for (let g of client.guilds.values()) {
+            this.permittedRoles.set(g.id, []);
+            for (let r of g.roles.values()) {
+                if (r.hasPermission(["MANAGE_CHANNELS", "MANAGE_MESSAGES"])) {
+                    this.permittedRoles.get(g.id).push(r.id);
+                }
+            }
+        }
     }
 
     isUserPermitted(guildID: string, userID: string): boolean {

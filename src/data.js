@@ -4,6 +4,7 @@ const main_1 = require("./main");
 class Data {
     constructor() {
         this.initializePermittedUsers();
+        this.initializePermittedRoles();
         this.initializeEmojis();
         this.initializeMutedRoles();
         this.initializelevelRoles();
@@ -111,6 +112,17 @@ class Data {
         //         }
         //     });
         // }
+    }
+    initializePermittedRoles() {
+        this.permittedRoles = new Map();
+        for (let g of main_1.client.guilds.values()) {
+            this.permittedRoles.set(g.id, []);
+            for (let r of g.roles.values()) {
+                if (r.hasPermission(["MANAGE_CHANNELS", "MANAGE_MESSAGES"])) {
+                    this.permittedRoles.get(g.id).push(r.id);
+                }
+            }
+        }
     }
     isUserPermitted(guildID, userID) {
         if (this.permittedUsers.has(guildID)) {
