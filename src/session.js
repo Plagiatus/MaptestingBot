@@ -198,6 +198,7 @@ class Session {
             let msg;
             try {
                 msg = (yield this.textChannel.send(utils_1.Utils.SessionToSessionEmbed(this, this.hostGuildMember.user, mu)));
+                yield msg.pin();
                 return msg;
             }
             catch (error) {
@@ -226,7 +227,7 @@ class Session {
                                 modEnds = true;
                         }
                         if ((collected.users.has(this.hostID) || modEnds) && this.state == "running") {
-                            main_1.sessionManager.endSession(this, modEnds && !collected.users.has(this.hostID));
+                            main_1.sessionManager.endSession(this.id, modEnds && !collected.users.has(this.hostID));
                             endCollector.stop();
                         }
                     });

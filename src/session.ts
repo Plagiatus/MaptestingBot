@@ -202,6 +202,7 @@ export class Session implements TestingSession {
         let msg: Discord.Message;
         try {
             msg = <Discord.Message>await this.textChannel.send(Utils.SessionToSessionEmbed(this, this.hostGuildMember.user, mu));
+            await msg.pin();
             return msg;
         } catch (error) {
             console.error(`[SESSION] [${this.id}] Error in createSessionMessage: ${error}`);
@@ -219,6 +220,7 @@ export class Session implements TestingSession {
             endCollector.on("collect", handleEndCollectorOn.bind(this));
 
             async function handleEndCollectorOn(collected: Discord.MessageReaction) {
+
                 let modEnds: boolean = false;
 
                 for (let modID of data.permittedUsers.get(this.guild.id)) {
@@ -226,7 +228,7 @@ export class Session implements TestingSession {
                 }
 
                 if ((collected.users.has(this.hostID) || modEnds) && this.state == "running") {
-                    sessionManager.endSession(this, modEnds && !collected.users.has(this.hostID));
+                    sessionManager.endSession(this.id, modEnds && !collected.users.has(this.hostID));
                     endCollector.stop();
                 }
             }
