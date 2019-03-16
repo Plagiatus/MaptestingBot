@@ -30,8 +30,8 @@ export let startsession: Command = {
             message.reply("you already have a session running. You can only have one session running at a time.");
             return true;
         }
-        for (let role of sessionManager.sessionRoles.values()) {
-            if (message.member.roles.has(role.id)) {
+        for (let s of sessionManager.runningSessions) {
+            if (message.member.roles.has(s.role.id)) {
                 message.reply("you already are in a session. You can only be in one session at a time.");
                 return false;
             }

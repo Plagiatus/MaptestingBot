@@ -57,13 +57,13 @@ export class Utils {
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
         let testers: string = "noone yet";
-        if (sessionManager.sessionPlayers.get(session.id).size > 1) testers = "";
-        for (let p of sessionManager.sessionPlayers.get(session.id).values()) {
+        if (sessionManager.getRunningSession(session.id).players.size > 1) testers = "";
+        for (let p of sessionManager.getRunningSession(session.id).players.values()) {
             if (p.user.id != session.hostID) {
                 testers += `${p.user}\n`;
             }
         }
-        emb.addField(`😃 Participants ${sessionManager.sessionPlayers.get(session.id).size - 1}/${session.maxParticipants}`, testers, true)
+        emb.addField(`😃 Participants ${sessionManager.getRunningSession(session.id).players.size - 1}/${session.maxParticipants}`, testers, true)
             .addField(`🇭 Host`, `${author}`, true)
             .setThumbnail(Config.sessionCategories[session.category].img)
             .setFooter(`${version} ${session.platform == "java" ? session.version : ""}`);
@@ -233,10 +233,10 @@ export class Utils {
     }
 
     public static getSessionFromUserId(_userID: string): TestingSession {
-        for (let [key, value] of sessionManager.sessionPlayers.entries()) {
-            if (value.has(_userID)) {
+        for (let s of sessionManager.runningSessions) {
+            if (s.players.has(_userID)) {
                 return sessionManager.runningSessions.find(rs => {
-                    return rs.id == key
+                    return rs.id == s.id;
                 });
             }
         }

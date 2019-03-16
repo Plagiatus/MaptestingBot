@@ -176,8 +176,8 @@ function handlePresenceUpdate(oldMember:Discord.GuildMember, newMember:Discord.G
     if (oldMember.presence.status == newMember.presence.status) return;
 
     if (newMember.presence.status == "offline") {
-        for (let s of sessionManager.sessionPlayers.keys()) {
-            if (sessionManager.sessionPlayers.get(s).has(newMember.id)) {
+        for (let s of sessionManager.runningSessions) {
+            if (s.players.has(newMember.id)) {
                 newMember.send("You've gone offline while in a session. You will be removed from the session in 2 minutes if you don't come back online.\nIf you are the host, the session will be ended in 2 minutes.");
                 sessionManager.playersOffline.set(newMember.id,{timestamp: Date.now(), user: newMember});
             }
