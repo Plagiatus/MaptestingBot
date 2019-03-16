@@ -31,7 +31,7 @@ export let leave: Command = {
         }
 
         //user is able to leave
-        sessionManager.leaveSession(sessionManager.runningSessions.find(s => {return s.id == sessionID}), message.guild.members.get(message.author.id));
+        sessionManager.leaveSession(sessionID, message.guild.members.get(message.author.id));
 
         message.delete();
 

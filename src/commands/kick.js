@@ -16,6 +16,7 @@ exports.kick = {
     hidden: false,
     channel: ["session"],
     execute: function kick(message, args) {
+        //TODO: Make it so a kicked player can't rejoin the session
         if (!message.channel.parent.name.includes("session")) {
             message.reply(`How did you manage to run this command? Please tell an Admin about this!`);
             return false;
@@ -35,10 +36,10 @@ exports.kick = {
         let sessionID = parseInt(message.channel.parent.name.split("#")[1]);
         for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
-                if (main_1.sessionManager.sessionPlayers.get(sessionID).has(message.mentions.members.first().id)) {
+                if (s.players.has(message.mentions.members.first().id)) {
                     args.shift();
                     let reason = args.join(" ");
-                    main_1.sessionManager.leaveSession(main_1.sessionManager.runningSessions.find(s => { return s.id == sessionID; }), message.mentions.members.first(), true);
+                    main_1.sessionManager.leaveSession(s.id, message.mentions.members.first(), true);
                     main_1.db.kick(message.author, message.mentions.members.first().user, reason);
                     return true;
                 }

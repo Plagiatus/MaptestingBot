@@ -28,7 +28,7 @@ exports.leave = {
             }
         }
         //user is able to leave
-        main_1.sessionManager.leaveSession(main_1.sessionManager.runningSessions.find(s => { return s.id == sessionID; }), message.guild.members.get(message.author.id));
+        main_1.sessionManager.leaveSession(sessionID, message.guild.members.get(message.author.id));
         message.delete();
         return true;
     }

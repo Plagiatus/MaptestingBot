@@ -62,7 +62,7 @@ class SessionManager {
     leaveSession(id, member, kicked = false) {
         return __awaiter(this, void 0, void 0, function* () {
             let s = this.getRunningSession(id);
-            s.sessionMessages.get("sessionInfo").channel.send(utils_1.Utils.LeftEmbed(member, kicked));
+            s.textChannel.send(utils_1.Utils.LeftEmbed(member, kicked));
             member.removeRole(s.role);
             if (!kicked)
                 utils_1.Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
