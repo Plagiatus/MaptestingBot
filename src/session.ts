@@ -396,6 +396,7 @@ export class Session implements TestingSession {
     }
 
     destroySession(){
+        this.role.delete();
         setTimeout(this.voiceChannel.delete.bind(this.voiceChannel), 500);
         setTimeout(this.textChannel.delete.bind(this.textChannel), 1000);
         setTimeout(this.categoryChannel.delete.bind(this.categoryChannel), 1500);
