@@ -68,8 +68,7 @@ class SessionManager {
                 utils_1.Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
             s.players.delete(member.id);
             this.playersOffline.delete(member.id);
-            let mu = yield main_1.db.getUser(member.id);
-            s.sessionMessages.get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(s, member.user, mu));
+            s.sessionMessages.get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(s, s.hostGuildMember.user));
             s.sessionMessages.get("listingPost").edit(`${main_1.data.usedEmojis.get(s.guild.id).get("left")} ${member} left the session.`);
         });
     }
@@ -90,7 +89,7 @@ class SessionManager {
     destroySession(session) {
         session.destroySession();
         //log
-        console.log(`[SESSIONMANAGER] [${session.id}] Ended`);
+        console.log(`[SESSIONMANAGER] [${session.id}] Ended. There are now ${this.runningSessions.length} running.`);
     }
     updateCategoryName(guild) {
         let newName = "ERROR";

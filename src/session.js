@@ -298,7 +298,7 @@ class Session {
     createListingMessage(author, mu, depth = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let newListingMessage = yield this.listing.send(utils_1.Utils.SessionToListingEmbed(this, author, mu));
+                let newListingMessage = yield this.listing.send(utils_1.Utils.SessionToListingEmbed(this, author));
                 return newListingMessage;
             }
             catch (error) {
@@ -379,7 +379,7 @@ class Session {
                     this.players.set(reactedGuildUser.id, { timestamp: Date.now(), user: reactedGuildUser });
                     //send message to session text channel
                     let mu = yield main_1.db.getUser(reactedUser.id);
-                    this.sessionMessages.get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(this, this.hostGuildMember.user, mu));
+                    this.sessionMessages.get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(this, this.hostGuildMember.user));
                     this.textChannel.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, this.platform));
                 }
             }

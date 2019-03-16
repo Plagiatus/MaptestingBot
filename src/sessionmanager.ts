@@ -68,8 +68,8 @@ export class SessionManager {
             Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
         s.players.delete(member.id);
         this.playersOffline.delete(member.id);
-        let mu: MongoUser = await db.getUser(member.id);
-        s.sessionMessages.get("listingEntry").edit("", Utils.SessionToListingEmbed(s, member.user, mu));
+
+        s.sessionMessages.get("listingEntry").edit("", Utils.SessionToListingEmbed(s, s.hostGuildMember.user));
         s.sessionMessages.get("listingPost").edit(`${data.usedEmojis.get(s.guild.id).get("left")} ${member} left the session.`);
     }
 
@@ -92,7 +92,7 @@ export class SessionManager {
     destroySession(session: Session) {
         session.destroySession();
         //log
-        console.log(`[SESSIONMANAGER] [${session.id}] Ended`);
+        console.log(`[SESSIONMANAGER] [${session.id}] Ended. There are now ${this.runningSessions.length} running.`);
     }
 
     updateCategoryName(guild: Discord.Guild) {

@@ -41,7 +41,7 @@ class Utils {
     static getLevelImage(level) {
         return Config.xpSettings.levels[level].img;
     }
-    static SessionToListingEmbed(session, author, mu) {
+    static SessionToListingEmbed(session, author) {
         let version = session.platform == "java" ? "Minecraft: Java Edition " : "Minecraft: Bedrock";
         let emb = new discord_js_1.RichEmbed()
             .setAuthor(author.username, author.avatarURL)

@@ -295,7 +295,7 @@ export class Session implements TestingSession {
 
     private async createListingMessage(author: Discord.User, mu: MongoUser, depth: number = 0): Promise<Discord.Message> {
         try {
-            let newListingMessage: Discord.Message = <Discord.Message>await this.listing.send(Utils.SessionToListingEmbed(this, author, mu));
+            let newListingMessage: Discord.Message = <Discord.Message>await this.listing.send(Utils.SessionToListingEmbed(this, author));
             return newListingMessage;
         } catch (error) {
             console.error(`[SESSION] [${this.id}] Error in createListingMessage: ${error}`);
@@ -368,7 +368,7 @@ export class Session implements TestingSession {
                 //send message to session text channel
 
                 let mu: MongoUser = await db.getUser(reactedUser.id);
-                this.sessionMessages.get("listingEntry").edit("", Utils.SessionToListingEmbed(this, this.hostGuildMember.user, mu));
+                this.sessionMessages.get("listingEntry").edit("", Utils.SessionToListingEmbed(this, this.hostGuildMember.user));
                 this.textChannel.send(Utils.JoinedEmbed(reactedGuildUser, mu, this.platform));
 
             }

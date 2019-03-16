@@ -46,7 +46,7 @@ export class Utils {
         return Config.xpSettings.levels[level].img;
     }
 
-    public static SessionToListingEmbed(session: TestingSession, author: User, mu: MongoUser): RichEmbed {
+    public static SessionToListingEmbed(session: TestingSession, author: User): RichEmbed {
         let version: string = session.platform == "java" ? "Minecraft: Java Edition " : "Minecraft: Bedrock"
         let emb: RichEmbed = new RichEmbed()
             .setAuthor(author.username, author.avatarURL)
