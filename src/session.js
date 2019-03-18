@@ -353,10 +353,10 @@ class Session {
                     let reactedGuildUser = yield this.guild.fetchMember(reactedUser.id);
                     let reacedMongoUser = yield main_1.db.getUser(reactedGuildUser.id);
                     //are they offline?
-                    if (reactedGuildUser.presence.status == "offline") {
-                        this.sessionMessages.get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
-                        return;
-                    }
+                    // if (reactedGuildUser.presence.status == "offline") {
+                    //     this.sessionMessages.get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
+                    //     return;
+                    // }
                     //did they set their username?
                     if ((!reacedMongoUser.mcJavaIGN && this.platform == "java") || (!reacedMongoUser.mcBedrockIGN && this.platform == "bedrock")) {
                         this.sessionMessages.get("listingPost").edit(`❓ ${reactedGuildUser} you don't have your username set for this platform. Please use ${Config.prefix}${register_js_1.register.name} in a bot channel first.`);
@@ -368,7 +368,7 @@ class Session {
                         return;
                     }
                     //is user in a session already?
-                    for (let ses of main_1.sessionManager.runningSessions.values()) {
+                    for (let ses of main_1.sessionManager.runningSessions) {
                         if (reactedGuildUser.roles.has(ses.role.id)) {
                             this.sessionMessages.get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
                             return;

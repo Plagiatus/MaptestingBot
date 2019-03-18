@@ -338,10 +338,10 @@ export class Session implements TestingSession {
                 let reactedGuildUser: Discord.GuildMember = await this.guild.fetchMember(reactedUser.id);
                 let reacedMongoUser: MongoUser = await db.getUser(reactedGuildUser.id);
                 //are they offline?
-                if (reactedGuildUser.presence.status == "offline") {
-                    this.sessionMessages.get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
-                    return;
-                }
+                // if (reactedGuildUser.presence.status == "offline") {
+                //     this.sessionMessages.get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
+                //     return;
+                // }
 
                 //did they set their username?
                 if ((!reacedMongoUser.mcJavaIGN && this.platform == "java") || (!reacedMongoUser.mcBedrockIGN && this.platform == "bedrock")) {
@@ -355,7 +355,7 @@ export class Session implements TestingSession {
                     return;
                 }
                 //is user in a session already?
-                for (let ses of sessionManager.runningSessions.values()) {
+                for (let ses of sessionManager.runningSessions) {
                     if (reactedGuildUser.roles.has(ses.role.id)) {
                         this.sessionMessages.get("listingPost").edit(`❌ ${reactedGuildUser} you already are in a session.`);
                         return;

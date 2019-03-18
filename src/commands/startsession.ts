@@ -15,7 +15,7 @@ export let startsession: Command = {
     individualCooldown: 10,
     hidden: false,
     channel: ["bot"],
-    execute: function ping(message: Message, args: string[]): boolean {
+    execute: function startsession(message: Message, args: string[]): boolean {
 		//TODO: rework this so it doesn't start a session with DMs.
         sessionManager.checkWaitingSessions();
         if (sessionManager.waitingSessions.some((s) => {
@@ -37,10 +37,10 @@ export let startsession: Command = {
             }
         }
 
-        if(message.author.presence.status == "offline"){
-            message.reply("you are marked as offline, that means you can't start a session. Only not-offline users can start a session.")
-            return false;
-        }
+        // if(message.author.presence.status == "offline"){
+        //     message.reply("you are marked as offline, that means you can't start a session. Only not-offline users can start a session.")
+        //     return false;
+        // }
 
         let session: TestingSession = {
             endTimestamp: Infinity,
