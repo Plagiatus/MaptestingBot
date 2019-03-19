@@ -1,0 +1,46 @@
+html {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #36393f;
+}
+
+h1 {
+	color: #f8ffff;
+	text-align: center;
+}
+
+input {
+	width: 96%;
+	margin: 5px;
+	margin-left: 2%;
+	margin-right: 2%;
+	font-size: 2em;
+	border-radius: 10px;
+	padding: 4px;
+	padding-left: 10px;
+	background-color: #2f3136;
+	color: #f8ffff;
+}
+
+.result {
+	background-color: #2f3136;
+	color: #f8ffff;
+	/* height: 5em; */
+	overflow: auto;
+	margin: 10px;
+	border-radius: 10px;
+	position: relative;
+}
+
+.result div {
+	float: left;
+	width: 20%;
+	text-align: center;
+}
+
+.result p {
+	margin: 5px;
+}
+
+.result p:first-of-type {
+	font-size: 2em;
+}
