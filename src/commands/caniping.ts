@@ -14,7 +14,7 @@ export let caniping: Command = {
     globalCooldown: 0,
     individualCooldown: 1,
     hidden: false,
-    channel: ["nonSession"],
+    channel: ["bot"],
     execute: function canIPing(message: Message, args: string[]): boolean {
         canIPingWithUser(message);
         return true;

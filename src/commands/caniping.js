@@ -21,7 +21,7 @@ exports.caniping = {
     globalCooldown: 0,
     individualCooldown: 1,
     hidden: false,
-    channel: ["nonSession"],
+    channel: ["bot"],
     execute: function canIPing(message, args) {
         canIPingWithUser(message);
         return true;
