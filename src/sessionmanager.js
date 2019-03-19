@@ -30,7 +30,6 @@ class SessionManager {
     startNew(session) {
         return __awaiter(this, void 0, void 0, function* () {
             //TODO: don't use DMs for starting a session, move channel and role creation to to setupSession
-            //TODO: if a muted user pings, remove their mute role and make them aware of their hipocracy.
             console.log(`[SESSIONMANAGER] [${session.id}] Start`);
             if (session.maxParticipants <= 0)
                 session.maxParticipants = Infinity;

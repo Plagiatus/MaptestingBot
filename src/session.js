@@ -13,6 +13,7 @@ const main_1 = require("./main");
 const utils_1 = require("./utils");
 const register_js_1 = require("./commands/register.js");
 const tip_js_1 = require("./commands/tip.js");
+const caniping_js_1 = require("./commands/caniping.js");
 class Session {
     constructor(ts, listingChannel) {
         this.id = ts.id;
@@ -249,11 +250,18 @@ class Session {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let listingPreContent = `${this.hostGuildMember} is hosting a testingsession, testing ${this.mapTitle}.`;
-                if (this.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 60 * 60 * 1000) {
+                if (this.ping && this.hostGuildMember.roles.has(main_1.data.disableNotificationsRole.get(this.guild.id).id)) {
+                    yield this.hostGuildMember.removeRole(main_1.data.disableNotificationsRole.get(this.guild.id));
+                    author.send(`You are trying to ping eventhough you yourself have notifications disabled. _Kinda hypocritical_, don't you think? :thinking:\nI've removed your muted role for you.`);
+                }
+                if (this.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[utils_1.Utils.getLevelFromXP(mu.experience)].pingcooldown * 60 * 60 * 1000) {
                     listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
                     mu.lastPing = Date.now();
                     main_1.db.insertUser(mu);
                     this.listing.overwritePermissions(main_1.data.disableNotificationsRole.get(this.guild.id).id, { VIEW_CHANNEL: false, READ_MESSAGES: false });
+                }
+                else if (this.ping) {
+                    author.send(`You tried to ping for your current session, but you still are on cooldown for this. You are currently Level ${utils_1.Utils.getLevelFromXP(mu.experience)} which means your cooldown between pings is ${Config.xpSettings.levels[utils_1.Utils.getLevelFromXP(mu.experience)].pingcooldown} hours.\nUse the command \`${caniping_js_1.caniping.name}\` to get you current cooldown.`);
                 }
                 let newListingPreMessage = yield this.createPreMessage(listingPreContent);
                 this.listing.overwritePermissions(main_1.data.disableNotificationsRole.get(this.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });

@@ -16,12 +16,12 @@ exports.caniping = {
     description: "Allows you to check if (and if not, when) you can ping the next time.",
     usage: "",
     needsArgs: false,
-    guildOnly: true,
+    guildOnly: false,
     grantedOnly: false,
     globalCooldown: 0,
     individualCooldown: 1,
     hidden: false,
-    channel: ["bot"],
+    channel: ["nonSession"],
     execute: function canIPing(message, args) {
         canIPingWithUser(message);
         return true;

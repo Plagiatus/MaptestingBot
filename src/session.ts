@@ -6,6 +6,7 @@ import { mute } from "./commands/mute.js";
 import { register } from "./commands/register.js";
 import { createCipher } from "crypto";
 import { tip } from "./commands/tip.js";
+import { caniping } from "./commands/caniping.js";
 
 export type sessionMessageTypes = "listingPre" | "listingEntry" | "listingPost" | "sessionPre" | "sessionInfo";
 
@@ -244,13 +245,19 @@ export class Session implements TestingSession {
 
     private async createMessages(author: Discord.User, mu: MongoUser) {
         try {
-            let listingPreContent: string = `${this.hostGuildMember} is hosting a testingsession, testing ${this.mapTitle}.`;
-            if (this.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[0].pingcooldown * 60 * 60 * 1000) {
+			let listingPreContent: string = `${this.hostGuildMember} is hosting a testingsession, testing ${this.mapTitle}.`;
+			if(this.ping && this.hostGuildMember.roles.has(data.disableNotificationsRole.get(this.guild.id).id)){
+				await this.hostGuildMember.removeRole(data.disableNotificationsRole.get(this.guild.id));
+				author.send(`You are trying to ping eventhough you yourself have notifications disabled. _Kinda hypocritical_, don't you think? :thinking:\nI've removed your muted role for you.`)
+			}
+            if (this.ping && Date.now() - mu.lastPing > Config.xpSettings.levels[Utils.getLevelFromXP(mu.experience)].pingcooldown * 60 * 60 * 1000) {
                 listingPreContent += ` @here\n_(if you want to mute pings, head to the bot-commands channel and use the ${Config.prefix}mute command)_`;
                 mu.lastPing = Date.now();
                 db.insertUser(mu);
                 this.listing.overwritePermissions(data.disableNotificationsRole.get(this.guild.id).id, { VIEW_CHANNEL: false, READ_MESSAGES: false });
-            }
+            } else if (this.ping){
+				author.send(`You tried to ping for your current session, but you still are on cooldown for this. You are currently Level ${Utils.getLevelFromXP(mu.experience)} which means your cooldown between pings is ${Config.xpSettings.levels[Utils.getLevelFromXP(mu.experience)].pingcooldown} hours.\nUse the command \`${caniping.name}\` to get you current cooldown.`);
+			}
             let newListingPreMessage: Discord.Message = await this.createPreMessage(listingPreContent);
 
             this.listing.overwritePermissions(data.disableNotificationsRole.get(this.guild.id).id, { VIEW_CHANNEL: true, READ_MESSAGES: true });
