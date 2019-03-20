@@ -27,7 +27,7 @@ exports.register = {
             return true;
         }
         let username = args.join(" ");
-        main_1.db.getUser(message.author.id).then(mu => {
+        main_1.db.getUser(message.author.id, message.author.username).then(mu => {
             if (platform == "java") {
                 request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
                     if (!error && resp.statusCode == 200) {

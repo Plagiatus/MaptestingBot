@@ -2,6 +2,7 @@ import * as Mongo from "mongodb";
 import * as SConfig from "./secretconfig.json"
 import { MongoUser, Report } from "./utils.js";
 import { User } from "discord.js";
+import { client } from "./main.js";
 
 
 export class Database {
@@ -60,14 +61,20 @@ export class Database {
         });
     }
 
-    async getUser(userID: string): Promise<MongoUser> {
+    async getUser(userID: string, userName: string): Promise<MongoUser> {
         let result: Mongo.Cursor = await this.users.find({ "discordID": userID })//.limit(1).next((_err, result) => {
         let resultArray: MongoUser[] = <MongoUser[]>await result.limit(1).toArray();
         if (resultArray.length > 0) {
-            let mu: MongoUser = resultArray[0];
+			let mu: MongoUser = resultArray[0];
+			if(!mu.discordName){
+				mu.discordName = userName;
+				this.insertUser(mu);
+			}
+			mu.discordName = userName;
             return mu;
         } else {
             let mu: MongoUser = {
+				discordName: userName,
                 discordID: userID,
                 experience: 0,
                 hostedSessionsDuration: 0,
@@ -82,7 +89,13 @@ export class Database {
             this.insertUser(mu);
             return mu;
         }
-    }
+	}
+	
+	async getAll(): Promise<MongoUser[]> {
+		let result: Mongo.Cursor = await this.users.find();
+		let resultArray: MongoUser[] = <MongoUser[]> await result.toArray();
+		return resultArray;
+	}
 
 
     kick(reporter: User, user: User, reason: string) {

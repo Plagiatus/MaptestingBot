@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Http = require("http");
 const Url = require("url");
+const utils_1 = require("./utils");
 const main_1 = require("./main");
 const request = require("request");
 class SessionStarter {
@@ -23,6 +24,31 @@ class SessionStarter {
         let query = Url.parse(_request.url, true);
         var sessionid = parseInt(query.query.id);
         if (!sessionid) {
+            let view = query.query.view;
+            if (view == "list") {
+                let allUsers = "[";
+                main_1.db.getAll().then(mus => {
+                    for (let i = 0; i < mus.length; i++) {
+                        allUsers += `{"name":"${mus[i].discordName}","xp":${mus[i].experience},"lvl":${utils_1.Utils.getLevelFromXP(mus[i].experience)},"h":${mus[i].sessionsHosted},"j":${mus[i].sessionsJoined}}`;
+                        if (i < mus.length - 1)
+                            allUsers += ",";
+                    }
+                    allUsers += "]";
+                    request.get("https://plagiatus.github.io/MaptestingBot/server/list.html", function (error, resp, body) {
+                        if (!error && resp.statusCode == 200) {
+                            let resp = body.toString();
+                            resp = resp.replace("RESULT", allUsers);
+                            respond(_response, resp);
+                        }
+                        else {
+                            respond(_response, "An Error occurred when trying to load list website");
+                        }
+                    });
+                }).catch(e => {
+                    respond(_response, "Something went wrong.");
+                });
+                return;
+            }
             console.log(`[HTTPSERVER] someone tried to start a session without an ID.`);
             request.get("https://plagiatus.github.io/MaptestingBot/server/error.html", function (error, resp, body) {
                 if (!error && resp.statusCode == 200) {

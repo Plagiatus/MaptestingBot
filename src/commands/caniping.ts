@@ -22,7 +22,7 @@ export let caniping: Command = {
 }
 
 async function canIPingWithUser(message: Message) {
-    let mu: MongoUser = await db.getUser(message.author.id);
+    let mu: MongoUser = await db.getUser(message.author.id, message.author.username);
     let timeLeft: number = Utils.getPingCooldown(Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
     if (timeLeft < 0) {
         message.reply("you can ping at your next session.");

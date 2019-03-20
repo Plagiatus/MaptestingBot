@@ -1,7 +1,7 @@
 import * as Http from "http";
 import * as Url from "url";
-import { TestingSession} from "./utils";
-import { sessionManager } from "./main";
+import { TestingSession, Utils} from "./utils";
+import { sessionManager, db } from "./main";
 import * as request from "request";
 
 export class SessionStarter {
@@ -29,6 +29,32 @@ export class SessionStarter {
         let query: Url.UrlWithParsedQuery = Url.parse(_request.url, true);
         var sessionid: number = parseInt(<string>query.query.id);
         if (!sessionid) {
+			let view: string = <string>query.query.view;
+			
+			if(view == "list"){
+				let allUsers: string = "[";
+				db.getAll().then( mus => {
+					for(let i: number = 0; i < mus.length; i++){
+						allUsers += `{"name":"${mus[i].discordName}","xp":${mus[i].experience},"lvl":${Utils.getLevelFromXP(mus[i].experience)},"h":${mus[i].sessionsHosted},"j":${mus[i].sessionsJoined}}`;
+						if(i < mus.length - 1) allUsers += ",";
+					}
+					allUsers += "]";
+					request.get("https://plagiatus.github.io/MaptestingBot/server/list.html", function (error, resp, body) {
+						if(!error && resp.statusCode == 200){
+							let resp: string = body.toString();
+							resp = resp.replace("RESULT",allUsers);
+							respond(_response,resp);
+						}
+						else {
+							respond(_response, "An Error occurred when trying to load list website");
+						}
+					});
+				}).catch(e => {
+					respond(_response,"Something went wrong.")
+				});
+				return;
+			}
+
             console.log(`[HTTPSERVER] someone tried to start a session without an ID.`);
             request.get("https://plagiatus.github.io/MaptestingBot/server/error.html", function (error, resp, body) {
 

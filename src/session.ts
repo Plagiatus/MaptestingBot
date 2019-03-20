@@ -72,7 +72,7 @@ export class Session implements TestingSession {
 
         //save author
         let author: Discord.User = this.hostGuildMember.user;
-        let mu: MongoUser = await db.getUser(author.id);
+        let mu: MongoUser = await db.getUser(author.id, author.username);
 
         if (!mu) {
             console.error(`[SESSION] [${this.id}] Couldn't get Mongo User`);
@@ -343,7 +343,7 @@ export class Session implements TestingSession {
                 //add users to session if they reacted
                 collected.remove(reactedUser);
                 let reactedGuildUser: Discord.GuildMember = await this.guild.fetchMember(reactedUser.id);
-                let reacedMongoUser: MongoUser = await db.getUser(reactedGuildUser.id);
+                let reacedMongoUser: MongoUser = await db.getUser(reactedGuildUser.id, reactedGuildUser.user.username);
                 //are they offline?
                 // if (reactedGuildUser.presence.status == "offline") {
                 //     this.sessionMessages.get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
@@ -374,7 +374,7 @@ export class Session implements TestingSession {
 
                 //send message to session text channel
 
-                let mu: MongoUser = await db.getUser(reactedUser.id);
+                let mu: MongoUser = await db.getUser(reactedUser.id, reactedUser.username);
                 this.sessionMessages.get("listingEntry").edit("", Utils.SessionToListingEmbed(this, this.hostGuildMember.user));
                 this.textChannel.send(Utils.JoinedEmbed(reactedGuildUser, mu, this.platform));
 

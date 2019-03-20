@@ -16,7 +16,7 @@ exports.stats = {
     hidden: false,
     channel: ["bot"],
     execute: function test(message, args) {
-        main_1.db.getUser(message.author.id).then(callback);
+        main_1.db.getUser(message.author.id, message.author.username).then(callback);
         return true;
         function callback(mu) {
             if (!mu)

@@ -39,9 +39,9 @@ export let tip: Command = {
         for (let s of sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 if (s.players.has(message.mentions.members.first().id)) {
-                    db.getUser(message.author.id).then( mGive => {
+                    db.getUser(message.author.id, message.author.username).then( mGive => {
                         if (mGive.experience > amount) {
-                            db.getUser(message.mentions.users.first().id).then(mRecieve => {
+                            db.getUser(message.mentions.users.first().id, message.mentions.users.first().username).then(mRecieve => {
                                 let level = Utils.getLevelFromXP(mRecieve.experience);
                                 mRecieve.experience += amount;
                                 if (Utils.getLevelFromXP(mRecieve.experience) > level) {

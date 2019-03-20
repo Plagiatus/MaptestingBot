@@ -29,7 +29,7 @@ exports.caniping = {
 };
 function canIPingWithUser(message) {
     return __awaiter(this, void 0, void 0, function* () {
-        let mu = yield main_1.db.getUser(message.author.id);
+        let mu = yield main_1.db.getUser(message.author.id, message.author.username);
         let timeLeft = utils_1.Utils.getPingCooldown(utils_1.Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
         if (timeLeft < 0) {
             message.reply("you can ping at your next session.");

@@ -36,9 +36,9 @@ exports.tip = {
         for (let s of main_1.sessionManager.runningSessions) {
             if (s.id == sessionID && s.hostID == message.author.id) {
                 if (s.players.has(message.mentions.members.first().id)) {
-                    main_1.db.getUser(message.author.id).then(mGive => {
+                    main_1.db.getUser(message.author.id, message.author.username).then(mGive => {
                         if (mGive.experience > amount) {
-                            main_1.db.getUser(message.mentions.users.first().id).then(mRecieve => {
+                            main_1.db.getUser(message.mentions.users.first().id, message.mentions.users.first().username).then(mRecieve => {
                                 let level = utils_1.Utils.getLevelFromXP(mRecieve.experience);
                                 mRecieve.experience += amount;
                                 if (utils_1.Utils.getLevelFromXP(mRecieve.experience) > level) {

@@ -46,7 +46,7 @@ class Session {
             this.players.set(this.hostGuildMember.id, { timestamp: Date.now(), user: this.hostGuildMember });
             //save author
             let author = this.hostGuildMember.user;
-            let mu = yield main_1.db.getUser(author.id);
+            let mu = yield main_1.db.getUser(author.id, author.username);
             if (!mu) {
                 console.error(`[SESSION] [${this.id}] Couldn't get Mongo User`);
                 author.send("Couldn't connect to database.");
@@ -359,7 +359,7 @@ class Session {
                     //add users to session if they reacted
                     collected.remove(reactedUser);
                     let reactedGuildUser = yield this.guild.fetchMember(reactedUser.id);
-                    let reacedMongoUser = yield main_1.db.getUser(reactedGuildUser.id);
+                    let reacedMongoUser = yield main_1.db.getUser(reactedGuildUser.id, reactedGuildUser.user.username);
                     //are they offline?
                     // if (reactedGuildUser.presence.status == "offline") {
                     //     this.sessionMessages.get("listingPost").edit(`🔴 ${reactedGuildUser} you are marked as offline. Offline users can't join sessions.`);
@@ -386,7 +386,7 @@ class Session {
                     this.sessionMessages.get("listingPost").edit(`${main_1.data.usedEmojis.get(this.guild.id).get("joined")} ${reactedGuildUser} joined the session.`);
                     this.players.set(reactedGuildUser.id, { timestamp: Date.now(), user: reactedGuildUser });
                     //send message to session text channel
-                    let mu = yield main_1.db.getUser(reactedUser.id);
+                    let mu = yield main_1.db.getUser(reactedUser.id, reactedUser.username);
                     this.sessionMessages.get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(this, this.hostGuildMember.user));
                     this.textChannel.send(utils_1.Utils.JoinedEmbed(reactedGuildUser, mu, this.platform));
                 }

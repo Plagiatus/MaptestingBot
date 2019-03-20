@@ -30,7 +30,7 @@ export let register: Command = {
         }
 		let username: string = args.join(" ");
 		
-        db.getUser(message.author.id).then(mu => {
+		db.getUser(message.author.id, message.author.username).then(mu => {
             if (platform == "java") {
                 request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
                     if(!error && resp.statusCode == 200){

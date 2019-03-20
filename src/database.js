@@ -53,16 +53,22 @@ class Database {
             }
         });
     }
-    getUser(userID) {
+    getUser(userID, userName) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield this.users.find({ "discordID": userID }); //.limit(1).next((_err, result) => {
             let resultArray = yield result.limit(1).toArray();
             if (resultArray.length > 0) {
                 let mu = resultArray[0];
+                if (!mu.discordName) {
+                    mu.discordName = userName;
+                    this.insertUser(mu);
+                }
+                mu.discordName = userName;
                 return mu;
             }
             else {
                 let mu = {
+                    discordName: userName,
                     discordID: userID,
                     experience: 0,
                     hostedSessionsDuration: 0,
@@ -77,6 +83,13 @@ class Database {
                 this.insertUser(mu);
                 return mu;
             }
+        });
+    }
+    getAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = yield this.users.find();
+            let resultArray = yield result.toArray();
+            return resultArray;
         });
     }
     kick(reporter, user, reason) {

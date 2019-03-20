@@ -39,7 +39,7 @@ exports.addxp = {
 };
 function addXPToMember(message, gm, exp) {
     return __awaiter(this, void 0, void 0, function* () {
-        let mu = yield main_1.db.getUser(gm.id);
+        let mu = yield main_1.db.getUser(gm.id, gm.user.username);
         if (!mu.experience)
             mu.experience = 0;
         mu.experience += exp;
