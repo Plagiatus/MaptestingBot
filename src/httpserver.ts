@@ -40,7 +40,6 @@ export class SessionStarter {
 						if(i < mus.length - 1) allUsers += ",";
 					}
 					allUsers += "]";
-					console.log(allUsers);
 					request.get("https://plagiatus.github.io/MaptestingBot/server/list.html", function (error, resp, body) {
 						if(!error && resp.statusCode == 200){
 							let resp: string = body.toString();
