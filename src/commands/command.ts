@@ -2,7 +2,7 @@ import { Message } from "discord.js";
 import { ping } from "./ping";
 import { test } from "./test";
 import { help } from "./help";
-import { stats } from "./stats";
+import { rankings } from "./rankings";
 // import { promote } from "./promote";
 // import { demote } from "./demote";
 import { bobdosomething } from "./bobdosomething";
@@ -16,6 +16,7 @@ import { mute } from "./mute";
 import { caniping } from "./caniping";
 import { report } from "./report";
 import { kick } from "./kick";
+import { stat } from "./stat";
 
 type CommandHandler = (message: Message, args?: string[]) => boolean;
 
@@ -51,7 +52,8 @@ commands.set(ping.name, ping);
 commands.set(test.name, test);
 // commands.set(demote.name, demote);
 // commands.set(promote.name, promote);
-commands.set(stats.name, stats);
+commands.set(stat.name, stat);
+commands.set(rankings.name, rankings);
 commands.set(addxp.name, addxp);
 commands.set(report.name, report);
 

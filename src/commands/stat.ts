@@ -3,9 +3,9 @@ import { Message, RichEmbed } from "discord.js";
 import { MongoUser, Utils } from "../utils";
 import { db } from "../main";
 
-export let stats: Command = {
-    name: "stats",
-    aliases: ["stat", "me", "lvl", "level", "xp"],
+export let stat: Command = {
+    name: "stat",
+    aliases: ["me", "lvl", "level", "xp"],
     description: "Check out your own stats as they are saved on the server.",
     usage: "",
     globalCooldown: 0,
@@ -15,7 +15,7 @@ export let stats: Command = {
     needsArgs: false,
     hidden: false,
     channel: ["bot"],
-    execute: function test(message: Message, args: string[]): boolean {
+    execute: function stat(message: Message, args: string[]): boolean {
         db.getUser(message.author.id, message.author.username).then(callback);
         return true;
 

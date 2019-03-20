@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const utils_1 = require("../utils");
 const main_1 = require("../main");
-exports.stats = {
-    name: "stats",
-    aliases: ["stat", "me", "lvl", "level", "xp"],
+exports.stat = {
+    name: "stat",
+    aliases: ["me", "lvl", "level", "xp"],
     description: "Check out your own stats as they are saved on the server.",
     usage: "",
     globalCooldown: 0,
@@ -15,7 +15,7 @@ exports.stats = {
     needsArgs: false,
     hidden: false,
     channel: ["bot"],
-    execute: function test(message, args) {
+    execute: function stat(message, args) {
         main_1.db.getUser(message.author.id, message.author.username).then(callback);
         return true;
         function callback(mu) {

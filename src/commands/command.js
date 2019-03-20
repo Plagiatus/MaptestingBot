@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const ping_1 = require("./ping");
 const test_1 = require("./test");
 const help_1 = require("./help");
-const stats_1 = require("./stats");
+const rankings_1 = require("./rankings");
 // import { promote } from "./promote";
 // import { demote } from "./demote";
 const bobdosomething_1 = require("./bobdosomething");
@@ -17,6 +17,7 @@ const mute_1 = require("./mute");
 const caniping_1 = require("./caniping");
 const report_1 = require("./report");
 const kick_1 = require("./kick");
+const stat_1 = require("./stat");
 class Command {
 }
 exports.Command = Command;
@@ -28,7 +29,8 @@ exports.commands.set(ping_1.ping.name, ping_1.ping);
 exports.commands.set(test_1.test.name, test_1.test);
 // commands.set(demote.name, demote);
 // commands.set(promote.name, promote);
-exports.commands.set(stats_1.stats.name, stats_1.stats);
+exports.commands.set(stat_1.stat.name, stat_1.stat);
+exports.commands.set(rankings_1.rankings.name, rankings_1.rankings);
 exports.commands.set(addxp_1.addxp.name, addxp_1.addxp);
 exports.commands.set(report_1.report.name, report_1.report);
 //session
