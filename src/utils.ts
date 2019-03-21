@@ -56,7 +56,7 @@ export class Utils {
             .addBlankField();
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
-        let testers: string = "noone yet";
+        let testers: string = "no-one yet";
         if (sessionManager.getRunningSession(session.id).players.size > 1) testers = "";
         for (let p of sessionManager.getRunningSession(session.id).players.values()) {
             if (p.user.id != session.hostID) {
@@ -139,44 +139,43 @@ export class Utils {
         return Math.floor(xp);
     }
 
-    public static handleSessionLeavingUserXP(session: TestingSession, uis: UserInSession) {
-        db.getUser(uis.user.id).then(mu => {
-            let minutes = (Date.now() - uis.timestamp) / 60000;
-            if (mu.discordID == session.hostID) {
-                mu.hostedSessionsDuration += minutes;
-                mu.sessionsHosted += 1;
-                let level = Utils.getLevelFromXP(mu.experience);
-                mu.experience += Utils.minutesToXP(minutes, "hosted");
-                if (Utils.getLevelFromXP(mu.experience) > level) {
-                    this.handleLevelup(mu, session.guild);
-                }
-                else {
-                    db.insertUser(mu);
-                }
-            } else {
-                mu.joinedSessionsDuration += minutes;
-                mu.sessionsJoined += 1;
-                let level = Utils.getLevelFromXP(mu.experience);
-                mu.experience += Utils.minutesToXP(minutes, "joined");
-                if (Utils.getLevelFromXP(mu.experience) > level) {
-                    this.handleLevelup(mu, session.guild);
-                }
-                else {
-                    db.insertUser(mu);
-                }
+    public static async handleSessionLeavingUserXP(session: TestingSession, uis: UserInSession) {
+        let mu: MongoUser = await db.getUser(uis.user.id)
+        let minutes = (Date.now() - uis.timestamp) / 60000;
+        if (mu.discordID == session.hostID) {
+            mu.hostedSessionsDuration += minutes;
+            mu.sessionsHosted += 1;
+            let level = Utils.getLevelFromXP(mu.experience);
+            mu.experience += Utils.minutesToXP(minutes, "hosted");
+            if (Utils.getLevelFromXP(mu.experience) > level) {
+                await this.handleLevelup(mu, session.guild);
             }
-        });
+            else {
+                db.insertUser(mu);
+            }
+        } else {
+            mu.joinedSessionsDuration += minutes;
+            mu.sessionsJoined += 1;
+            let level = Utils.getLevelFromXP(mu.experience);
+            mu.experience += Utils.minutesToXP(minutes, "joined");
+            if (Utils.getLevelFromXP(mu.experience) > level) {
+                await this.handleLevelup(mu, session.guild);
+            }
+            else {
+                db.insertUser(mu);
+            }
+        }
     }
 
-    public static setLevelRole(gm: GuildMember, level: number) {
-        gm.removeRoles(Array.from(data.levelRoles.get(gm.guild.id).values())).then(() => {
-            if (level > 0) {
-                gm.addRole(data.levelRoles.get(gm.guild.id).get(level));
-            }
-        });
+    public static async setLevelRole(gm: GuildMember, level: number) {
+        await gm.removeRoles(Array.from(data.levelRoles.get(gm.guild.id).values()));
+        if (level > 0) {
+            gm.addRole(data.levelRoles.get(gm.guild.id).get(level));
+        }
+
     }
 
-    public static handleLevelup(mu: MongoUser, guild: Guild) {
+    public static async handleLevelup(mu: MongoUser, guild: Guild) {
         let newLvl: number = Utils.getLevelFromXP(mu.experience);
         let gMember: GuildMember = guild.members.get(mu.discordID);
         //reset ping cooldown as an additional reward
@@ -193,7 +192,7 @@ export class Utils {
             }
         }
 
-        this.setLevelRole(gMember, newLvl);
+        await this.setLevelRole(gMember, newLvl);
         db.insertUser(mu);
     }
 
@@ -242,7 +241,7 @@ export class Utils {
         }
     }
 }
-        
+
 
 export interface MongoUser {
     discordID: string;

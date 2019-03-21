@@ -62,9 +62,9 @@ export class SessionManager {
     async leaveSession(id: number, member: Discord.GuildMember, kicked: boolean = false) {
         let s: Session = this.getRunningSession(id);
         s.textChannel.send(Utils.LeftEmbed(member, kicked));
-        member.removeRole(s.role);
+        await member.removeRole(s.role);
         if (!kicked)
-            Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
+            await Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
         s.players.delete(member.id);
         this.playersOffline.delete(member.id);
 
