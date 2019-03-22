@@ -140,7 +140,7 @@ export class Utils {
 	}
 
     public static async handleSessionLeavingUserXP(session: TestingSession, uis: UserInSession) {
-        let mu: MongoUser = await db.getUser(uis.user.id)
+        let mu: MongoUser = await db.getUser(uis.user.id, uis.user.user.username);
         let minutes = (Date.now() - uis.timestamp) / 60000;
         if (mu.discordID == session.hostID) {
             mu.hostedSessionsDuration += minutes;

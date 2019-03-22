@@ -137,12 +137,8 @@ class Utils {
         return Math.floor(xp);
     }
     static handleSessionLeavingUserXP(session, uis) {
-<<<<<<< HEAD
-        main_1.db.getUser(uis.user.id, uis.user.nickname).then(mu => {
-=======
         return __awaiter(this, void 0, void 0, function* () {
-            let mu = yield main_1.db.getUser(uis.user.id);
->>>>>>> session-class
+            let mu = yield main_1.db.getUser(uis.user.id, uis.user.user.username);
             let minutes = (Date.now() - uis.timestamp) / 60000;
             if (mu.discordID == session.hostID) {
                 mu.hostedSessionsDuration += minutes;
