@@ -62,9 +62,9 @@ class SessionManager {
         return __awaiter(this, void 0, void 0, function* () {
             let s = this.getRunningSession(id);
             s.textChannel.send(utils_1.Utils.LeftEmbed(member, kicked));
-            member.removeRole(s.role);
+            yield member.removeRole(s.role);
             if (!kicked)
-                utils_1.Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
+                yield utils_1.Utils.handleSessionLeavingUserXP(s, s.players.get(member.id));
             s.players.delete(member.id);
             this.playersOffline.delete(member.id);
             s.sessionMessages.get("listingEntry").edit("", utils_1.Utils.SessionToListingEmbed(s, s.hostGuildMember.user));

@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const command_1 = require("./commands/command");
@@ -51,7 +59,7 @@ class Utils {
             .addBlankField();
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
-        let testers = "noone yet";
+        let testers = "no-one yet";
         if (main_1.sessionManager.getRunningSession(session.id).players.size > 1)
             testers = "";
         for (let p of main_1.sessionManager.getRunningSession(session.id).players.values()) {
@@ -129,7 +137,12 @@ class Utils {
         return Math.floor(xp);
     }
     static handleSessionLeavingUserXP(session, uis) {
+<<<<<<< HEAD
         main_1.db.getUser(uis.user.id, uis.user.nickname).then(mu => {
+=======
+        return __awaiter(this, void 0, void 0, function* () {
+            let mu = yield main_1.db.getUser(uis.user.id);
+>>>>>>> session-class
             let minutes = (Date.now() - uis.timestamp) / 60000;
             if (mu.discordID == session.hostID) {
                 mu.hostedSessionsDuration += minutes;
@@ -137,7 +150,7 @@ class Utils {
                 let level = Utils.getLevelFromXP(mu.experience);
                 mu.experience += Utils.minutesToXP(minutes, "hosted");
                 if (Utils.getLevelFromXP(mu.experience) > level) {
-                    this.handleLevelup(mu, session.guild);
+                    yield this.handleLevelup(mu, session.guild);
                 }
                 else {
                     main_1.db.insertUser(mu);
@@ -149,7 +162,7 @@ class Utils {
                 let level = Utils.getLevelFromXP(mu.experience);
                 mu.experience += Utils.minutesToXP(minutes, "joined");
                 if (Utils.getLevelFromXP(mu.experience) > level) {
-                    this.handleLevelup(mu, session.guild);
+                    yield this.handleLevelup(mu, session.guild);
                 }
                 else {
                     main_1.db.insertUser(mu);
@@ -158,29 +171,32 @@ class Utils {
         });
     }
     static setLevelRole(gm, level) {
-        gm.removeRoles(Array.from(main_1.data.levelRoles.get(gm.guild.id).values())).then(() => {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield gm.removeRoles(Array.from(main_1.data.levelRoles.get(gm.guild.id).values()));
             if (level > 0) {
                 gm.addRole(main_1.data.levelRoles.get(gm.guild.id).get(level));
             }
         });
     }
     static handleLevelup(mu, guild) {
-        let newLvl = Utils.getLevelFromXP(mu.experience);
-        let gMember = guild.members.get(mu.discordID);
-        //reset ping cooldown as an additional reward
-        mu.lastPing = 0;
-        let emb = new discord_js_1.RichEmbed()
-            .setAuthor(gMember.displayName, gMember.user.displayAvatarURL)
-            .setTitle("LEVELUP!")
-            .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`)
-            .setColor(this.getLevelColor(newLvl));
-        for (let c of guild.channels.values()) {
-            if (c.name.startsWith("bot") && c.type == "text") {
-                c.send(emb);
+        return __awaiter(this, void 0, void 0, function* () {
+            let newLvl = Utils.getLevelFromXP(mu.experience);
+            let gMember = guild.members.get(mu.discordID);
+            //reset ping cooldown as an additional reward
+            mu.lastPing = 0;
+            let emb = new discord_js_1.RichEmbed()
+                .setAuthor(gMember.displayName, gMember.user.displayAvatarURL)
+                .setTitle("LEVELUP!")
+                .addField("Contratulations", `${guild.members.get(mu.discordID)} just reached Level ${newLvl}. ${Utils.getRandomCompliment()}`)
+                .setColor(this.getLevelColor(newLvl));
+            for (let c of guild.channels.values()) {
+                if (c.name.startsWith("bot") && c.type == "text") {
+                    c.send(emb);
+                }
             }
-        }
-        this.setLevelRole(gMember, newLvl);
-        main_1.db.insertUser(mu);
+            yield this.setLevelRole(gMember, newLvl);
+            main_1.db.insertUser(mu);
+        });
     }
     static getRandomCompliment() {
         let rand = Math.floor(Math.random() * 8);
