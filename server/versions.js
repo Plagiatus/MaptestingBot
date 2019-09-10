@@ -12,7 +12,7 @@ function displayVersions() {
     }
 }
 function displayReleaseVersions(_version) {
-    let oldest = 9;
+    let oldest = 7;
     let prevMajor = "";
     let optGroup;
     for (let i = 0; i < versions.length; i++) {

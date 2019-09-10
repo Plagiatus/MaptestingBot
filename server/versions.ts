@@ -19,7 +19,7 @@ function displayVersions() {
 }
 
 function displayReleaseVersions(_version: HTMLSelectElement) {
-  let oldest: number = 9;
+  let oldest: number = 7;
   let prevMajor: string = ""
   let optGroup: HTMLOptGroupElement;
   for (let i: number = 0; i < versions.length; i++) {
