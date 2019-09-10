@@ -96,6 +96,9 @@ select {
     border-radius: 10px;
     padding: 4px;
 }
+select > optgroup {
+    background-color: #36393f;
+}
 input#sessionid{
     background-color: #36393f;
     color: #a0a0a0;
