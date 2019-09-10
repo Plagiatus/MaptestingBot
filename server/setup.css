@@ -1,48 +1,48 @@
 html {
-    font-family: Helvetica, Arial, sans-serif;
-    background: #36393f;
-    color: #f8ffff;
+  font-family: Helvetica, Arial, sans-serif;
+  background: #36393f;
+  color: #f8ffff;
 }
 p {
-    margin-bottom: 3px;
+  margin-bottom: 3px;
 }
 h1{
-    text-align: center;
+  text-align: center;
 }
 
 form {
-    position: relative;
-    text-align: center;
+  position: relative;
+  text-align: center;
 }
 
 form > div {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 label {
-    border-radius: 10px;
-    padding: 10px;
-    display: block;
-    margin: 5px;
+  border-radius: 10px;
+  padding: 10px;
+  display: block;
+  margin: 5px;
 }
 
 fieldset {
-    width: 400px;
-    height: 600px;            
-    border-radius: 10px;
-    text-align: left;
+  width: 400px;
+  height: 600px;            
+  border-radius: 10px;
+  text-align: left;
 }
 fieldset:nth-of-type(2) > label{
-    border: 1px solid #f8f8f8 ;
-    text-align: center;
-    width: 300px;
+  border: 1px solid #f8f8f8 ;
+  text-align: center;
+  width: 300px;
 }
 fieldset:nth-of-type(3) > label{
-    position: relative;
+  position: relative;
 }
 fieldset:nth-of-type(3) > label > input{
-    position: absolute;
+  position: absolute;
     top: 33%;
 }
 fieldset:nth-of-type(3) > label > img{
@@ -52,83 +52,92 @@ fieldset:nth-of-type(3) > label > p{
     margin-left: 30px;
     margin-top: 0.25em;
     margin-bottom: 0px;
-}
-
-a {
+  }
+  
+  a {
     display: block;
     font-style: italic;
     font-size: 0.8em;
-}
+  }
 button {
-    width: 1200px;
-    font-size: 2em;
-    border-radius: 10px;
-    margin: 10px;
-    color: #acadaf;
+  width: 1200px;
+  font-size: 2em;
+  border-radius: 10px;
+  margin: 10px;
+  color: #acadaf;
     background-color: #2f3136;
-}
+  }
 button:hover {
-    background-color: #2c2c2c;
+  background-color: #2c2c2c;
 }
 
 textarea {
-    width: 95%;
-    height: 5em;
-    font-family: inherit;
-    background-color: #484c52;
-    border-radius: 10px;
-    border-color: #484c52;
-    color: #f8ffff;
-    padding: 4px;
+  width: 95%;
+  height: 5em;
+  font-family: inherit;
+  background-color: #484c52;
+  border-radius: 10px;
+  border-color: #484c52;
+  color: #f8ffff;
+  padding: 4px;
 }
 
 input {
-    background-color: #484c52;
-    color: #f8ffff;
-    border-radius: 10px;
-    border-color: #484c52;
-    padding: 4px;
+  background-color: #484c52;
+  color: #f8ffff;
+  border-radius: 10px;
+  border-color: #484c52;
+  padding: 4px;
 }
 select {
-    background-color: #484c52;
-    border-color: #484c52;
-    color: #f8ffff;
-    border-radius: 10px;
-    padding: 4px;
+  background-color: #484c52;
+  border-color: #484c52;
+  color: #f8ffff;
+  border-radius: 10px;
+  padding: 4px;
 }
 select > optgroup {
-    background-color: #36393f;
+  background-color: #36393f;
 }
 input#sessionid{
-    background-color: #36393f;
-    color: #a0a0a0;
+  background-color: #36393f;
+  color: #a0a0a0;
 }
 
 div#timer {
-    position: absolute;
-    top:10px;
-    right: 10px;
-    background-color: #53bb74;
-    text-shadow: #484c52;
-    font-size: 2em;
-    padding: 5px;
-    border-radius: 10px;
-    width: 85px;
-    text-align: center;
-    z-index: 100;
+  position: absolute;
+  top:10px;
+  right: 10px;
+  background-color: #53bb74;
+  text-shadow: #484c52;
+  font-size: 2em;
+  padding: 5px;
+  border-radius: 10px;
+  width: 85px;
+  text-align: center;
+  z-index: 100;
 }
 
 div#timerdesc{
-    display: table-cell;
-    position: absolute;
-    top: 2em;
-    right: 10px;
-    padding: 5px;
-    border-radius: 10px;
-    width: 85px;
-    text-align: center;
-    line-height: 4em;
-    height: 3em;
-    z-index: 99;
-    background-color: #2c2c2c;
+display: table-cell;
+  position: absolute;
+  top: 2em;
+  right: 10px;
+  padding: 5px;
+  border-radius: 10px;
+  width: 85px;
+  text-align: center;
+  line-height: 4em;
+  height: 3em;
+  z-index: 99;
+  background-color: #2c2c2c;
+}
+
+label[for=snapshots]{
+  border: none !important; 
+  border-radius: 0;
+  padding: 2px;
+  display: initial;
+  margin: 3px;
+  font-size: 0.8em;
 }

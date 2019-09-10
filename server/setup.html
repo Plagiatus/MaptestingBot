@@ -10,8 +10,8 @@
     <!-- <link rel="stylesheet" href="./setup.css"> -->
     <script src="https://plagiatus.github.io/MaptestingBot/server/timer.js"></script>
     <script src="https://plagiatus.github.io/MaptestingBot/server/versions.js"></script>
-    <!-- <script src="./timer.js"></script> -->
-    <!-- <script src="./versions.js"></script> -->
+    <!-- <script src="./timer.js"></script>
+    <script src="./versions.js"></script> -->
     <script>
         startTimestamp = STARTTIMESTAMPHERE;
     </script>
@@ -41,12 +41,15 @@
                 <input type="text" name="id" readonly value="sessionIDValue" id="sessionid">
                 <p>Version</p>
                 <select name="version" id="version">
-                    <option value="1.14">1.14</option>
-                    <option value="1.13">1.13</option>
-                    <option value="1.12">1.12</option>
-                    <option value="1.11">1.11</option>
-                    <option value="snapshot">Snapshot (please specify elsewhere)</option>
+                  <option value="1.14">1.14</option>
+                  <option value="1.13">1.13</option>
+                  <option value="1.12">1.12</option>
+                  <option value="1.11">1.11</option>
+                  <option value="snapshot">Snapshot (please specify elsewhere)</option>
                 </select>
+                <br>
+                <input type="checkbox" name="snapshots" id="snapshots">
+                <label for="snapshots">Snapshots?</label>
                 <a>If you're not on Java, ignore this</a>
                 <p>IP/Server address</p>
                 <input type="text" name="ip" required placeholder="host:port"><a>Please include the port (if you know it). For Realms enter <strong>Realms</strong></a>
@@ -66,7 +69,7 @@
                 </label>
 
             </fieldset>
-            <fieldset>
+            <fieldset id="other">
                 <legend>Other</legend>
                 <p>Category</p>
                 <label>
