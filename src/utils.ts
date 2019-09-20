@@ -52,7 +52,7 @@ export class Utils {
             .setAuthor(author.username, author.avatarURL)
             .setTitle("🌍 " + session.mapTitle)
             .setColor(this.getCategoryColor(session.category))
-            .addField("💬 Description", session.mapDescription)
+            .addField("💬 Description", session.mapDescription + ".")
             .addBlankField();
         if (session.additionalInfo != "")
             emb.addField("ℹ️ Additional Info", session.additionalInfo);
