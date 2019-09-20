@@ -52,10 +52,10 @@ export class Utils {
             .setAuthor(author.username, author.avatarURL)
             .setTitle("🌍 " + session.mapTitle)
             .setColor(this.getCategoryColor(session.category))
-            .addField("💬 Description", session.mapDescription + ".")
+            .addField("💬 Description", session.mapDescription + ".") //TODO all these "." dots are only quick fixes for a partial crash of the server. Find a better solution!
             .addBlankField();
         if (session.additionalInfo != "")
-            emb.addField("ℹ️ Additional Info", session.additionalInfo);
+            emb.addField("ℹ️ Additional Info", session.additionalInfo + ".");
         let testers: string = "no-one yet";
         if (sessionManager.getRunningSession(session.id).players.size > 1) testers = "";
         for (let p of sessionManager.getRunningSession(session.id).players.values()) {
@@ -76,10 +76,9 @@ export class Utils {
 			.setAuthor(author.username, author.avatarURL)
 			.setTitle(session.mapTitle)
 			.setColor(this.getCategoryColor(session.category))
-			.addField("💬 Description", session.mapDescription);
+			.addField("💬 Description", session.mapDescription + ".");
 		if (session.additionalInfo != "")
-			emb.addField("ℹ️ Additional Info", session.additionalInfo);
-
+			emb.addField("ℹ️ Additional Info", session.additionalInfo + ".");
 		emb.addField("🌐 IP/Server", `\`${session.ip}\``, true);
 		if (session.resourcepack != "")
 			emb.addField("🗃️ Resourcepack", `[Download here](${session.resourcepack})`, true);
