@@ -17,7 +17,7 @@ export let rankings: Command = {
 	channel: ["bot"],
 	execute: function rankings(message: Message, args: string[]): boolean {
 		let embed: RichEmbed = new RichEmbed()
-			.addField("Listing of all players", "[Click here](http://35.196.88.56:8100/?view=list)");
+			.addField("Listing of all players", "[Click here](http://192.52.36.37:8100/?view=list)");
 
 		message.channel.send(embed);
 		return true;
