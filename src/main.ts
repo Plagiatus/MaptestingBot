@@ -79,13 +79,18 @@ function messageHandler(message: Discord.Message) {
                 !((<Discord.TextChannel>message.channel).parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all" }))
             ) {
                 message.delete();
-                if (command.channel.some(v => { return v == "bot" })) {
+                if (command.channel.some(v => { return v == "bot" }) && !command.channel.some(v => { return v == "bot" })) {
                     return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
                         (<Discord.Message>m).delete(5000);
                     });
                 }
-                if (command.channel.some(v => { return v == "session" })) {
+                if (!command.channel.some(v => { return v == "bot" }) && command.channel.some(v => { return v == "session" })) {
                     return message.channel.send("This command can only be executed in a session channel.").then(m => {
+                        (<Discord.Message>m).delete(5000);
+                    });
+                }
+                if (command.channel.some(v => { return v == "bot" }) && command.channel.some(v => { return v == "session" })) {
+                    return message.channel.send("This command can only be executed in the bot-commands or a session channel.").then(m => {
                         (<Discord.Message>m).delete(5000);
                     });
                 }
