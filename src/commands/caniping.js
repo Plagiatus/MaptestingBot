@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -34,8 +35,11 @@ function canIPingWithUser(message) {
         if (timeLeft < 0) {
             message.reply("you can ping at your next session.");
         }
-        else {
+        else if (timeLeft != Infinity) {
             message.reply(`you can ping again in ${Math.floor(timeLeft / (60 * 60 * 1000))} hours and ${Math.floor(timeLeft / (60 * 1000) % 60)} minutes.`);
+        }
+        else {
+            message.reply(`you can not ping until you've leveled up.`);
         }
     });
 }

@@ -26,7 +26,9 @@ async function canIPingWithUser(message: Message) {
     let timeLeft: number = Utils.getPingCooldown(Utils.getLevelFromXP(mu.experience)) - Date.now() + mu.lastPing;
     if (timeLeft < 0) {
         message.reply("you can ping at your next session.");
-    } else {
+    } else if (timeLeft != Infinity){
         message.reply(`you can ping again in ${Math.floor(timeLeft / (60 * 60 * 1000))} hours and ${Math.floor(timeLeft / (60 * 1000) % 60)} minutes.`);
+      } else {
+        message.reply(`you can not ping until you've leveled up.`);
     }
 }
