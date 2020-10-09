@@ -28,9 +28,16 @@ export let register: Command = {
             message.reply(`the first argument must be either "Java" or "Bedrock".`);
             return true;
         }
-		let username: string = args.join(" ");
-		
-		db.getUser(message.author.id, message.author.username).then(mu => {
+        let username: string = args.join(" ");
+        username = username.trim();
+
+        let rxCheck = username.match(new RegExp(/[a-z0-9A-Z_ ]*/g));
+        if(rxCheck.length != 2){
+          message.reply(`please provide a real username.`)
+          return true;
+        }
+        
+        db.getUser(message.author.id, message.author.username).then(mu => {
             if (platform == "java") {
                 request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
                     if(!error && resp.statusCode == 200){

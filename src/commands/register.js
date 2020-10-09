@@ -27,6 +27,12 @@ exports.register = {
             return true;
         }
         let username = args.join(" ");
+        username = username.trim();
+        let rxCheck = username.match(new RegExp(/[a-z0-9A-Z_ ]*/g));
+        if (rxCheck.length != 2) {
+            message.reply(`please provide a real username.`);
+            return true;
+        }
         main_1.db.getUser(message.author.id, message.author.username).then(mu => {
             if (platform == "java") {
                 request.get(`https://api.mojang.com/users/profiles/minecraft/${username}`, function (error, resp, body) {
