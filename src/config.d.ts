@@ -1,4 +1,5 @@
 declare module "*.json" {
+    const ip: string;
     const prefix: string;
     const xpSettings: {
         levels: [

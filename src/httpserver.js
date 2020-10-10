@@ -64,6 +64,10 @@ class SessionStarter {
             });
             return;
         }
+        else {
+            //TODO: validate recieved data and abort if anything went wrong
+            //return;
+        }
         let newSession = JSON.parse(JSON.stringify(query.query));
         for (let s of main_1.sessionManager.waitingSessions) {
             if (s.id == newSession.id) {

@@ -2,6 +2,7 @@ import { Command } from "./command";
 import { Message, RichEmbed } from "discord.js";
 import { MongoUser, Utils } from "../utils";
 import { db } from "../main";
+import * as Config from "../config.json";
 
 export let rankings: Command = {
 	name: "ranking",
@@ -17,7 +18,7 @@ export let rankings: Command = {
 	channel: ["bot"],
 	execute: function rankings(message: Message, args: string[]): boolean {
 		let embed: RichEmbed = new RichEmbed()
-			.addField("Listing of all players", "[Click here](http://192.52.36.37:8100/?view=list)");
+			.addField("Listing of all players", `[Click here](http://${Config.ip}:8100/?view=list)`);
 
 		message.channel.send(embed);
 		return true;
