@@ -15,7 +15,8 @@ class Database {
     constructor(callback) {
         this.starting = false;
         this.started = false;
-        this.databaseURL = `mongodb://${SConfig.dbuser}:${SConfig.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
+        this.databaseURL = `mongodb+srv://${SConfig.dbuser}:${SConfig.dbpass}@maptestingserver.a8x7m.mongodb.net/maptestingserver?retryWrites=true&w=majorit`;
+        // this.databaseURL = `mongodb://${SConfig.dbuser}:${SConfig.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
         console.debug("[DATABASE] starting");
         this.connect(callback);
