@@ -22,7 +22,7 @@ exports.report = {
         args.shift();
         let reason = args.join(" ");
         main_1.db.report(message.author, message.mentions.users.first(), reason);
-        message.reply("thank you, your report has been recieved.");
+        message.reply("thank you, your report has been received.");
         message.delete();
         return true;
     }

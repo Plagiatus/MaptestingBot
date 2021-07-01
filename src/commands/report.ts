@@ -24,7 +24,7 @@ export let report: Command = {
         args.shift();
         let reason: string = args.join(" ");
         db.report(message.author, message.mentions.users.first(), reason);
-        message.reply("thank you, your report has been recieved.")
+        message.reply("thank you, your report has been received.")
         message.delete();
         return true;
     }
