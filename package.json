@@ -12,7 +12,7 @@
 	},
 	"dependencies": {
 		"@types/request": "^2.48.1",
-		"discord.js": "^11.4.2",
+		"discord.js": "^12.5.1",
 		"mongodb": "^3.1.13",
 		"request": "^2.88.0"
 	}

@@ -25,7 +25,7 @@ class Database {
         if (!this.starting) {
             this.starting = true;
             console.debug("[DATABASE] Connecting....");
-            Mongo.MongoClient.connect(this.databaseURL, (_e, _db) => {
+            Mongo.MongoClient.connect(this.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true }, (_e, _db) => {
                 if (_e) {
                     console.log("[DATABASE] Unable to connect, error: ", _e);
                     this.starting = false;

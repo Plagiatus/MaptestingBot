@@ -29,7 +29,7 @@ export class Database {
         if (!this.starting) {
             this.starting = true;
             console.debug("[DATABASE] Connecting....");
-            Mongo.MongoClient.connect(this.databaseURL, (_e: Mongo.MongoError, _db: Mongo.Db) => {
+            Mongo.MongoClient.connect(this.databaseURL, { useNewUrlParser: true, useUnifiedTopology: true}, (_e: Mongo.MongoError, _db: Mongo.Db) => {
                 if (_e) {
                     console.log("[DATABASE] Unable to connect, error: ", _e);
                     this.starting = false;

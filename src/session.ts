@@ -4,7 +4,6 @@ import { data, db, client, sessionManager } from "./main";
 import { TestingSession, Utils, MongoUser, UserInSession } from "./utils";
 import { mute } from "./commands/mute.js";
 import { register } from "./commands/register.js";
-import { createCipher } from "crypto";
 import { tip } from "./commands/tip.js";
 import { caniping } from "./commands/caniping.js";
 
