@@ -16,20 +16,21 @@ class Data {
         if (Data.instance) {
             return Data.instance;
         }
+        this.path = "./srcv2/";
         this.loadConfigs();
-        this.loadCommands();
+        // this.loadCommands();
         Data.instance = this;
     }
     loadConfigs() {
-        this.config = JSON.parse(fs.readFileSync("./config.json", { encoding: "utf-8" }));
-        this.secretConfig = JSON.parse(fs.readFileSync("./secretconfig.json", { encoding: "utf-8" }));
+        this.config = JSON.parse(fs.readFileSync(this.path + "config.json", { encoding: "utf-8" }));
+        this.secretConfig = JSON.parse(fs.readFileSync(this.path + "secretconfig.json", { encoding: "utf-8" }));
     }
     loadCommands() {
         return __awaiter(this, void 0, void 0, function* () {
-            let path = "./js/commands/";
+            let path = this.path + "js/commands/";
             let files = fs.readdirSync(path).filter(file => file.endsWith(".js"));
             for (let f of files) {
-                let command = yield Promise.resolve().then(() => require("./commands/" + f));
+                let command = yield Promise.resolve().then(() => require(this.path + "js/commands/" + f));
                 this.commands.set(command.name, command);
             }
         });
