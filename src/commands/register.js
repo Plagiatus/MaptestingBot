@@ -50,22 +50,19 @@ exports.register = {
                 return true;
             }
             else if (platform == "bedrock") {
-                request.get(`https://xboxapi.com/v2/xuid/${username}`, function (error, resp, body) {
-                    let noProblem = false;
-                    if (noProblem)
-                        noProblem = !error;
-                    if (noProblem)
-                        noProblem = !!resp;
-                    if (!error && resp && resp.statusCode == 200) {
+                request.get(`https://xbl.io/api/v2/friends/search?gt=${username}`, function (error, resp, body) {
+                    var _a;
+                    console.log(body);
+                    if (!error && resp && resp.statusCode == 200 && ((_a = JSON.parse(body)) === null || _a === void 0 ? void 0 : _a.profileUsers)) {
                         mu.mcBedrockIGN = username;
                         main_1.db.insertUser(mu);
                         message.reply(`Thank you. Set your Bedrock Username to \`${username}\``);
                     }
-                    if (error || !resp) {
+                    else {
                         message.reply(`Couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request due to rate limitations. If you're sure that you spelled it correctly, please try again in an hour.\n_If this problem persists, please contact an Admin_`);
                         console.log("[BEDROCK API] Error: ", error, resp === null || resp === void 0 ? void 0 : resp.statusCode, resp === null || resp === void 0 ? void 0 : resp.statusMessage);
                     }
-                }).setHeader("X-AUTH", SConfig.xboxtoken);
+                }).setHeader("X-Authorization", SConfig.xboxtoken);
                 return true;
             }
             message.reply("How did you manage to end up with this message? Please tell an Admin about this. Error: REG1");
