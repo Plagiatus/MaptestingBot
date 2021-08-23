@@ -54,14 +54,17 @@ export let register: Command = {
 			}
 			else if (platform == "bedrock") {
 				request.get(`https://xbl.io/api/v2/friends/search?gt=${username}`, function (error, resp, body) {
-					console.log(body);
-					if (!error && resp && resp.statusCode == 200 && JSON.parse(body)?.profileUsers) {
+					try {
+						if(error) throw error;
+						if(!resp) throw new Error("No response");
+						if(resp.statusCode != 200) throw new Error("Response status code not 200");
+						if(!JSON.parse(body)?.profileUsers) throw new Error ("User not found"); 
 						mu.mcBedrockIGN = username;
 						db.insertUser(mu);
 						message.reply(`Thank you. Set your Bedrock Username to \`${username}\``);
-					} else {
-						message.reply(`Couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request due to rate limitations. If you're sure that you spelled it correctly, please try again in an hour.\n_If this problem persists, please contact an Admin_`);
-						console.log("[BEDROCK API] Error: ", error, resp?.statusCode, resp?.statusMessage);
+					} catch (error) {
+						message.reply(`Couldn't set your Bedrock Username to \`${username}\`. You either misspelled it or the API denied the request, e.g. due to rate limitations. If you're sure that you spelled it correctly, please try again later.\n_If this problem persists, please contact an Admin_`);
+						console.log("[BEDROCK API] Error: ", error.message ? error.message : error);
 					}
 				}).setHeader("X-Authorization", SConfig.xboxtoken);
 				return true;
