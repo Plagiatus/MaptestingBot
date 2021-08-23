@@ -18,7 +18,7 @@ export class Database {
     started: boolean = false;
 
     constructor(callback?: Function) {
-        this.databaseURL = `mongodb+srv://${SConfig.dbuser}:${SConfig.dbpass}@maptestingserver.a8x7m.mongodb.net/maptestingserver?retryWrites=true&w=majorit`;
+        this.databaseURL = `mongodb+srv://${SConfig.dbuser}:${SConfig.dbpass}@maptestingserver.a8x7m.mongodb.net/maptestingserver?retryWrites=true&w=majority`;
         // this.databaseURL = `mongodb://${SConfig.dbuser}:${SConfig.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
         console.debug("[DATABASE] starting");
@@ -29,7 +29,7 @@ export class Database {
         if (!this.starting) {
             this.starting = true;
             console.debug("[DATABASE] Connecting....");
-            Mongo.MongoClient.connect(this.databaseURL, (_e: Mongo.MongoError, _db: Mongo.Db) => {
+            Mongo.MongoClient.connect(this.databaseURL, { useUnifiedTopology: true }, (_e: Mongo.MongoError, _db: Mongo.Db) => {
                 if (_e) {
                     console.log("[DATABASE] Unable to connect, error: ", _e);
                     this.starting = false;
@@ -47,19 +47,20 @@ export class Database {
         }
     }
 
-    insertUser(_doc: MongoUser): void {
+    async insertUser(_doc: MongoUser): Promise<void> {
         // try insertion then activate callback "handleInsert"
-        this.users.findOne({ "discordID": _doc.discordID }).then(result => {
+        let resultCursor: Mongo.Cursor = await this.users.find({ "discordID": _doc.discordID }).limit(1);
+				let results = await resultCursor.toArray();
+				let result = results[0];
 
-            //found object, so we need to update it.
-            if (result) {
-                this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
-            }
-            //haven't found object, so we need to create a new one.
-            else {
-                this.users.insertOne(_doc);
-            }
-        });
+				//found object, so we need to update it.
+				if (result) {
+						this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+				}
+				//haven't found object, so we need to create a new one.
+				else {
+						this.users.insertOne(_doc);
+				}
     }
 
     async getUser(userID: string, userName: string): Promise<MongoUser> {

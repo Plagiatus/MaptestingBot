@@ -15,7 +15,7 @@ class Database {
     constructor(callback) {
         this.starting = false;
         this.started = false;
-        this.databaseURL = `mongodb+srv://${SConfig.dbuser}:${SConfig.dbpass}@maptestingserver.a8x7m.mongodb.net/maptestingserver?retryWrites=true&w=majorit`;
+        this.databaseURL = `mongodb+srv://${SConfig.dbuser}:${SConfig.dbpass}@maptestingserver.a8x7m.mongodb.net/maptestingserver?retryWrites=true&w=majority`;
         // this.databaseURL = `mongodb://${SConfig.dbuser}:${SConfig.dbpass}@ds127115.mlab.com:27115/maptestingserver`;
         this.databaseName = "maptestingserver";
         console.debug("[DATABASE] starting");
@@ -25,7 +25,7 @@ class Database {
         if (!this.starting) {
             this.starting = true;
             console.debug("[DATABASE] Connecting....");
-            Mongo.MongoClient.connect(this.databaseURL, (_e, _db) => {
+            Mongo.MongoClient.connect(this.databaseURL, { useUnifiedTopology: true }, (_e, _db) => {
                 if (_e) {
                     console.log("[DATABASE] Unable to connect, error: ", _e);
                     this.starting = false;
@@ -43,8 +43,11 @@ class Database {
         }
     }
     insertUser(_doc) {
-        // try insertion then activate callback "handleInsert"
-        this.users.findOne({ "discordID": _doc.discordID }).then(result => {
+        return __awaiter(this, void 0, void 0, function* () {
+            // try insertion then activate callback "handleInsert"
+            let resultCursor = yield this.users.find({ "discordID": _doc.discordID }).limit(1);
+            let results = yield resultCursor.toArray();
+            let result = results[0];
             //found object, so we need to update it.
             if (result) {
                 this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
