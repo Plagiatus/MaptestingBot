@@ -16,8 +16,8 @@ function init(){
 }
 
 function updateTimer(){
-    let minutes = Math.floor((600000 + startTimestamp - Date.now())/60000);
-    let seconds = Math.floor((600000 + startTimestamp - Date.now())/1000 % 60);
+    let minutes = Math.floor((20 * 60 * 1000 + startTimestamp - Date.now())/ (60 * 1000));
+    let seconds = Math.floor((20 * 60 * 1000 + startTimestamp - Date.now())/ 1000 % 60);
     if(minutes < 0 || seconds < 0){
         clearInterval(intervalID);
         minutes = 0;

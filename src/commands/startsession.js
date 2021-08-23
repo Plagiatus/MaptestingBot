@@ -58,7 +58,7 @@ exports.startsession = {
             ping: false
         };
         //send DM to user to start session
-        message.author.send(`Session preparations started. Set up your session here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}\n_This link is valid for 10 minutes_.`)
+        message.author.send(`Session preparations started. Set up your session here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}\n_This link is valid for 20 minutes_.`)
             .then(() => {
             message.reply("i've sent you a DM with the link to set up your session.");
             main_1.sessionManager.waitingSessions.push(session);
