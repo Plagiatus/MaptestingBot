@@ -12,8 +12,8 @@
 	},
 	"dependencies": {
 		"@types/request": "^2.48.1",
-		"discord.js": "^11.4.2",
-		"mongodb": "^3.1.13",
+		"discord.js": "11.4.2",
+		"mongodb": "^3.6.11",
 		"request": "^2.88.0"
 	}
 }
