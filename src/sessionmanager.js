@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SessionManager = void 0;
 const utils_1 = require("./utils");
 const main_1 = require("./main");
 const session_1 = require("./session");
@@ -62,6 +63,9 @@ class SessionManager {
     leaveSession(id, member, kicked = false) {
         return __awaiter(this, void 0, void 0, function* () {
             let s = this.getRunningSession(id);
+            if (!s) {
+                return;
+            }
             s.textChannel.send(utils_1.Utils.LeftEmbed(member, kicked));
             yield member.removeRole(s.role);
             if (!kicked)
