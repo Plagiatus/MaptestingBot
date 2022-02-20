@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rankings = void 0;
 const discord_js_1 = require("discord.js");
-const Config = require("../config.json");
 exports.rankings = {
     name: "ranking",
     aliases: ["lvls", "levels", "rankings", "list"],
@@ -16,7 +16,7 @@ exports.rankings = {
     channel: ["bot"],
     execute: function rankings(message, args) {
         let embed = new discord_js_1.RichEmbed()
-            .addField("Listing of all players", `[Click here](http://${Config.ip}:8100/?view=list)`);
+            .addField("Listing of all players", `[Click here](https://start.maptesting.de/?view=list)`);
         message.channel.send(embed);
         return true;
     }
