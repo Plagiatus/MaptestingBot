@@ -176,6 +176,7 @@ export class Utils {
 
     public static async handleLevelup(mu: MongoUser, guild: Guild) {
         let newLvl: number = Utils.getLevelFromXP(mu.experience);
+				if(!guild.members.has(mu.discordID)) return;
         let gMember: GuildMember = guild.members.get(mu.discordID);
         //reset ping cooldown as an additional reward
         mu.lastPing = 0;

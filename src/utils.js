@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Utils = void 0;
 const discord_js_1 = require("discord.js");
 const command_1 = require("./commands/command");
 const Config = require("./config.json");
@@ -178,6 +179,8 @@ class Utils {
     static handleLevelup(mu, guild) {
         return __awaiter(this, void 0, void 0, function* () {
             let newLvl = Utils.getLevelFromXP(mu.experience);
+            if (!guild.members.has(mu.discordID))
+                return;
             let gMember = guild.members.get(mu.discordID);
             //reset ping cooldown as an additional reward
             mu.lastPing = 0;
