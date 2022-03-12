@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Database = void 0;
 const Mongo = require("mongodb");
 const SConfig = require("./secretconfig.json");
 class Database {
@@ -66,7 +67,7 @@ class Database {
                 let mu = resultArray[0];
                 if (!mu.discordName) {
                     mu.discordName = userName;
-                    this.insertUser(mu);
+                    yield this.insertUser(mu);
                 }
                 mu.discordName = userName;
                 return mu;
