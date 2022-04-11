@@ -51,11 +51,11 @@ class Database {
             let result = results[0];
             //found object, so we need to update it.
             if (result) {
-                this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+                yield this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
             }
             //haven't found object, so we need to create a new one.
             else {
-                this.users.insertOne(_doc);
+                yield this.users.insertOne(_doc);
             }
         });
     }
@@ -86,7 +86,7 @@ class Database {
                     sessionsHosted: 0,
                     sessionsJoined: 0
                 };
-                this.insertUser(mu);
+                yield this.insertUser(mu);
                 return mu;
             }
         });

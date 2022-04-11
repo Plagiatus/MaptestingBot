@@ -55,11 +55,11 @@ export class Database {
 
 		//found object, so we need to update it.
 		if (result) {
-			this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
+			await this.users.findOneAndUpdate(result, { $set: _doc }).catch((reason) => console.log(reason));
 		}
 		//haven't found object, so we need to create a new one.
 		else {
-			this.users.insertOne(_doc);
+			await this.users.insertOne(_doc);
 		}
 	}
 
@@ -88,7 +88,7 @@ export class Database {
 				sessionsHosted: 0,
 				sessionsJoined: 0
 			}
-			this.insertUser(mu);
+			await this.insertUser(mu);
 			return mu;
 		}
 	}
