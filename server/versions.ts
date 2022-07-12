@@ -56,7 +56,7 @@ function displaySnapshotVersions(_version: HTMLSelectElement) {
 
 function getVersions() {
   let xhr: XMLHttpRequest = new XMLHttpRequest();
-  xhr.open("GET", "https://launchermeta.mojang.com/mc/game/version_manifest.json");
+  xhr.open("GET", "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json");
   xhr.addEventListener("readystatechange", foundVersions);
   xhr.send();
 }
