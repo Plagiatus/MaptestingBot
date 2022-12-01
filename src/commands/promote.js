@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.promote = void 0;
 exports.promote = {
     name: "promote",
     aliases: [],

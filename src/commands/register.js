@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.register = void 0;
 const SConfig = require("../secretconfig.json");
 const Config = require("../config.json");
 const main_1 = require("../main");

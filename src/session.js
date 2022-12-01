@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Session = void 0;
 const Config = require("./config.json");
 const main_1 = require("./main");
 const utils_1 = require("./utils");

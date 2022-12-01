@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.kick = void 0;
 const main_1 = require("../main");
 const stopsession_1 = require("./stopsession");
 const Config = require("../config.json");

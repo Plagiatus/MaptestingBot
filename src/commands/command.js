@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.commands = exports.Command = void 0;
 const ping_1 = require("./ping");
 const test_1 = require("./test");
 const help_1 = require("./help");

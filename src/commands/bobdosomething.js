@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.bobdosomething = void 0;
 exports.bobdosomething = {
     name: "bobdosomething",
     aliases: ["bob!"],

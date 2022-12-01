@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.tip = void 0;
 const main_1 = require("../main");
 const utils_1 = require("../utils");
 exports.tip = {

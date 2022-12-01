@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.demote = void 0;
 exports.demote = {
     name: "demote",
     aliases: [],

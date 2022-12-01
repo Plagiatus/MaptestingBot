@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.mute = void 0;
 const main_1 = require("../main");
 exports.mute = {
     name: "mute",

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.caniping = void 0;
 const main_1 = require("../main");
 const utils_1 = require("../utils");
 exports.caniping = {

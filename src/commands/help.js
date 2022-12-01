@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.help = void 0;
 const discord_js_1 = require("discord.js");
 const command_1 = require("./command");
 const config_json_1 = require("../config.json");
