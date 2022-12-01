@@ -40,10 +40,8 @@ class SessionStarter {
             if (s.id == newSession.id) {
                 console.log(`[HTTPSERVER] session with id ${sessionid} successfully recieved. starting...`);
                 _response.redirect("/success.html");
-                console.log(newSession.ping);
                 //@ts-expect-error
                 newSession.ping = newSession.ping == "true" ? true : false;
-                console.log(newSession.ping);
                 let sess = {
                     additionalInfo: newSession.additionalInfo,
                     endTimestamp: Infinity,
