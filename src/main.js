@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sessionManager = exports.db = exports.data = exports.client = void 0;
 const Discord = require("discord.js");
 const Config = require("./config.json");
 const SConfig = require("./secretconfig.json");
@@ -59,7 +60,8 @@ function messageHandler(message) {
         if (message.channel.parent) {
             if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; })) &&
                 !(message.channel.parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all"; }))) {
-                message.delete();
+                if (message.deletable)
+                    message.delete();
                 if (command.channel.some(v => { return v == "bot"; }) && !command.channel.some(v => { return v == "bot"; })) {
                     return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
                         m.delete(5000);
@@ -82,7 +84,8 @@ function messageHandler(message) {
         }
         else {
             if (!(message.channel.name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all"; }))) {
-                message.delete();
+                if (message.deletable)
+                    message.delete();
                 if (command.channel.some(v => { return v == "bot"; })) {
                     return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
                         m.delete(5000);

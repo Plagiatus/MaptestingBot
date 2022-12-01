@@ -78,7 +78,7 @@ function messageHandler(message: Discord.Message) {
             if (!((<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" })) &&
                 !((<Discord.TextChannel>message.channel).parent.name.startsWith("session") && command.channel.some(v => { return v == "session" || v == "all" }))
             ) {
-                message.delete();
+                if (message.deletable) message.delete();
                 if (command.channel.some(v => { return v == "bot" }) && !command.channel.some(v => { return v == "bot" })) {
                     return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
                         (<Discord.Message>m).delete(5000);
@@ -100,7 +100,7 @@ function messageHandler(message: Discord.Message) {
             }
         } else {
             if (!((<Discord.TextChannel>message.channel).name.startsWith("bot") && command.channel.some(v => { return v == "bot" || v == "all" }))) {
-                message.delete();
+                if (message.deletable) message.delete();
                 if (command.channel.some(v => { return v == "bot" })) {
                     return message.channel.send("This command can only be executed in the bot-commands channel.").then(m => {
                         (<Discord.Message>m).delete(5000);
