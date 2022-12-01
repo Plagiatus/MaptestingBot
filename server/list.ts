@@ -1,5 +1,3 @@
-document.addEventListener("DOMContentLoaded", load);
-
 interface User {
 	name: string;
 	lvl:number;
@@ -13,12 +11,12 @@ let users: User[] = [];
 let results: HTMLDivElement; 
 let searchInput: HTMLInputElement;
 
-function load(){
+load();
+async function load(){
 	results = <HTMLDivElement> document.getElementById("results");
 	searchInput = <HTMLInputElement> document.getElementById("name-input");
 	searchInput.addEventListener("input",filterByName);
-	let rawData: string = results.innerHTML;
-	users = JSON.parse(rawData);
+	users = await(await fetch("/full-list")).json()
 	users.sort(sortByXP);
 	display(users);
 }

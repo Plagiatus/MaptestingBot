@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Error</title>
-    <link rel="stylesheet" href="https://plagiatus.github.io/MaptestingBot/server/setup.css">
-    <link rel="shortcut icon" type="image/x-icon" href="https://plagiatus.github.io/MaptestingBot/server/favicon.ico">
+    <link rel="stylesheet" href="./setup.css">
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
     <style>
     p{
         text-align: center;
@@ -21,7 +21,15 @@
     <p>Please try again.</p>
     <div style="height: 200px;"></div>
     <p>Further Information:
-        <a>None available. This probably is a bug.</a>
+        <a id="further-info">None available. This probably is a bug.</a>
     </p>
 </body>
 </html>
+
+<script>
+    let fi = document.getElementById("further-info");
+    let url = new URL(window.location.href);
+    if(url.searchParams.has("error")){
+        fi.innerHTML = url.searchParams.get("error");
+    }
+</script>

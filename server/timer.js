@@ -3,6 +3,10 @@ let startTimestamp = Date.now();
 let timerDiv;
 let intervalID;
 function init() {
+    let url = new URL(window.location.href);
+    if (url.searchParams.has("timestamp")) {
+        startTimestamp = Number(url.searchParams.get("timestamp"));
+    }
     if (startTimestamp == undefined) {
         startTimestamp = Date.now();
         console.log("timestamp was null");

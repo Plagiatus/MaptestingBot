@@ -1,15 +1,25 @@
-document.addEventListener("DOMContentLoaded", load);
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 let users = [];
 let results;
 let searchInput;
+load();
 function load() {
-    results = document.getElementById("results");
-    searchInput = document.getElementById("name-input");
-    searchInput.addEventListener("input", filterByName);
-    let rawData = results.innerHTML;
-    users = JSON.parse(rawData);
-    users.sort(sortByXP);
-    display(users);
+    return __awaiter(this, void 0, void 0, function* () {
+        results = document.getElementById("results");
+        searchInput = document.getElementById("name-input");
+        searchInput.addEventListener("input", filterByName);
+        users = yield (yield fetch("/full-list")).json();
+        users.sort(sortByXP);
+        display(users);
+    });
 }
 function filterByName() {
     let filteredUsers = Object.assign([], users);

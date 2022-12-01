@@ -26,7 +26,7 @@ function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerRes
     if (!sessionid) {
         respond(_response, "something went wrong, please retry.");
     } else {
-        request.get("https://plagiatus.github.io/MaptestingBot/server/setup.html", function (error, resp, body) {
+        request.get("./setup.html", function (error, resp, body) {
             
             if (!error && resp.statusCode == 200) {
                 let resp: string = body.toString();

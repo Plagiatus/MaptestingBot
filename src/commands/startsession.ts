@@ -62,7 +62,7 @@ export let startsession: Command = {
             ping: false
         }
         //send DM to user to start session
-        message.author.send(`Session preparations started. Set up your session here: https://maptestingbot.herokuapp.com/?sessionid=${session.id}&timestamp=${session.setupTimestamp}\n_This link is valid for 20 minutes_.`)
+        message.author.send(`Session preparations started. Set up your session here: https://start.maptesting.de/setup.html?sessionid=${session.id}&timestamp=${session.setupTimestamp}\n_This link is valid for 20 minutes_.`)
             .then(() => {
                 message.reply("i've sent you a DM with the link to set up your session.");
                 sessionManager.waitingSessions.push(session);
